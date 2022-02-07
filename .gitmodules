@@ -1,0 +1,3 @@
+[submodule "nuudel"]
+	path = nuudel
+	url = https://github.com/c0des1gn/nuudel.git
