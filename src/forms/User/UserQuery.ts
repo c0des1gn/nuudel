@@ -27,9 +27,6 @@ export const GET_USER_QUERY = gql`
         currency
         locale
       }
-      _partner {
-        custom
-      }
     }
   }
 `;
@@ -57,9 +54,6 @@ export const GET_COURIER = gql`
         lastname
         phone
         mobile
-        _partner {
-          custom
-        }
       }
     }
   }

@@ -170,10 +170,6 @@ export class User extends CoreType {
   @Property({ required: false })
   settings: object;
 
-  @Field(type => Partner, { nullable: true })
-  @Property({ required: false })
-  _partner?: object;
-
   public async comparePassword(password: string): Promise<Boolean> {
     //const [salt, key] = this.password.split(":");
     //return key === crypto.scryptSync(password, salt, 64).toString('hex');
@@ -241,9 +237,6 @@ export class UserInput implements Partial<User> {
     },
   })
   settings: object;
-
-  @Field(type => PartnerInput, { nullable: true })
-  _partner?: object;
 }
 
 @ArgsType()
@@ -294,9 +287,6 @@ export class UserArg {
     },
   })
   settings: object;
-
-  @Field(type => PartnerInput, { nullable: true })
-  _partner?: object;
 }
 
 @ObjectType()
@@ -355,10 +345,6 @@ export class CurrentUser {
   @Field()
   @Property({ required: false })
   mobile: string;
-
-  @Field(type => Partner, { nullable: true })
-  @Property({ required: false })
-  _partner?: object;
 }
 
 @ObjectType()
@@ -443,10 +429,6 @@ export class Courier {
   @Field()
   @Property({ required: false })
   mobile: string;
-
-  @Field(type => Partner, { nullable: true })
-  @Property({ required: false })
-  _partner: object;
 }
 
 @InputType()
@@ -469,9 +451,6 @@ export class CourierInput implements Partial<Courier> {
 
   @Field()
   mobile: string;
-
-  @Field(type => PartnerInput, { nullable: true })
-  _partner: object;
 }
 
 // we need to create a temporary class for the abstract, generic class "instance"
@@ -1023,7 +1002,6 @@ export class UserResolver extends UserBaseResolver {
           permission: this.getPermission(ctx.user.type),
           phone: r.phone,
           mobile: r.mobile,
-          _partner: r._partner,
         };
       }
     }

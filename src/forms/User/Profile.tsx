@@ -31,7 +31,7 @@ import { dateToString, closeDialog } from 'nuudel-utils';
 import SaveIcon from '@material-ui/icons/Save';
 import styles from '../../theme/styles/styles.module.scss';
 import { Gender, userType, Vehicle } from '../Signup/types';
-import { IPartner, ICurrentUser, IWarehouse } from 'nuudel-core';
+import { ICurrentUser, IWarehouse } from 'nuudel-core';
 import { IParentProps } from '../IParentProps';
 
 interface EditUserForm {
@@ -45,7 +45,6 @@ interface EditUserForm {
   web: string;
   gender: string;
   type: string;
-  _partner: IPartner;
 }
 
 export const initialValues = {
@@ -59,9 +58,6 @@ export const initialValues = {
   avatar: { uri: '' },
   gender: 'Male',
   type: 'User',
-  _partner: {
-    custom: false,
-  },
 };
 
 const required: string = 'Заавал';
@@ -97,9 +93,6 @@ const userSchema: Yup.SchemaOf<EditUserForm> = Yup.object().shape({
     ),
   avatar: Yup.object().shape({ uri: Yup.string() }),
   type: Yup.string(),
-  _partner: Yup.object().shape({
-    custom: Yup.boolean(),
-  }),
 });
 
 interface IProps {
@@ -175,7 +168,6 @@ const EditUser: React.FC<IProps> = ({ ...props }) => {
       web: data.web,
       gender: data.gender,
       type: data.type,
-      _partner: data._partner || null,
     };
     return newData;
   };

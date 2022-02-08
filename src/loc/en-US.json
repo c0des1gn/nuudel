@@ -25,10 +25,7 @@
     "avatar": "Avatar",
     "web": "Website",
     "type": "Type",
-    "_status": "Status",
-    "_partner": {
-      "custom": "custom"
-    }
+    "_status": "Status"
   },
   "Shelf": "Shelf",
   "Options": "Options",

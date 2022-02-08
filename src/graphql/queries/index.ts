@@ -17,9 +17,6 @@ export const currentUserQuery = gql`
       }
       phone
       mobile
-      _partner {
-        custom
-      }
     }
   }
 `;

@@ -13,7 +13,6 @@ export const UPDATE_USER_MUTATION = gql`
     $avatar: ImageInput
     $web: Link
     $type: UserType = User
-    $_partner: PartnerInput
   ) {
     updateUser(
       _id: $_id
@@ -27,7 +26,6 @@ export const UPDATE_USER_MUTATION = gql`
       avatar: $avatar
       web: $web
       type: $type
-      _partner: $_partner
     ) {
       _id
       _createdby
@@ -52,9 +50,6 @@ export const UPDATE_USER_MUTATION = gql`
         notification
         currency
         locale
-      }
-      _partner {
-        custom
       }
     }
   }

@@ -17,7 +17,6 @@ export interface ISignUpFormValues {
   web: string;
   about: string;
   birthday: Date;
-  _partner: IPartner;
 }
 
 export const userType: string[] = ['Admin', 'User', 'Viewer', 'Manager'];
@@ -45,9 +44,6 @@ export const initialValues: ISignUpFormValues = {
   web: '',
   about: '',
   birthday: new Date('1970-01-01 12:00:00'),
-  _partner: {
-    custom: true,
-  },
 };
 const required: string = 'Заавал';
 const min: string = t('min length') || 'Хамгийн багадаа:';
@@ -173,8 +169,5 @@ export const validateSchema = Yup.object()
     birthday: Yup.date(),
     avatar: Yup.object().shape({ uri: Yup.string() }),
     //check: Yup.boolean().oneOf([true], t('agreement') || 'Зөвшөөрөх'),
-    _partner: Yup.object().shape({
-      custom: Yup.boolean(),
-    }),
   })
   .concat(signupPasswordValidationSchema);

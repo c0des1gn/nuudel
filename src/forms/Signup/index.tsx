@@ -208,7 +208,6 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
       web: data.web,
       about: data.about,
       birthday: data.birthday,
-      _partner: data._partner || null,
     };
     return newData;
   };
