@@ -76,7 +76,14 @@ const MyApp: React.FC = ({ Component, pageProps, router }: any) => {
     //  jssStyles.parentElement.removeChild(jssStyles);
     //}
   }, []);
-
+  const GA = {
+    __html: `
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('globals', '${NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}');
+`,
+  };
   return (
     <I18nextProvider i18n={i18n}>
       <ThemeProvider theme={theme}>
@@ -97,11 +104,7 @@ const MyApp: React.FC = ({ Component, pageProps, router }: any) => {
             ></script>
           )}
           {NEXT_PUBLIC_GOOGLE_ANALYTICS_ID && (
-            <script
-              dangerouslySetInnerHTML={{
-                __html: '',
-              }}
-            ></script>
+            <script dangerouslySetInnerHTML={GA}></script>
           )}
         </Head>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
