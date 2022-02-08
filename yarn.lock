@@ -7856,10 +7856,10 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
 
-nuudel-core@^0.1.35:
-  version "0.1.35"
-  resolved "https://registry.yarnpkg.com/nuudel-core/-/nuudel-core-0.1.35.tgz#f3fa8aaf8020534edcd994269a302f1979f2383c"
-  integrity sha512-RC1qkSpDQ+G0iY1inzJ7/YdNxFTqmTwxYJGzHAfCJEqBcoODaWe+TJ703l+Jk30lZ4VAUHFb8pGkD9VpoRhvEQ==
+nuudel-core@^0.1.36:
+  version "0.1.36"
+  resolved "https://registry.yarnpkg.com/nuudel-core/-/nuudel-core-0.1.36.tgz#7e58432506730078c4347a301202f206da73a7ad"
+  integrity sha512-+L36Q8PtgdvFQxb9uOsj6JZkQ9EPOuj5DSAfyiOpY6zDk2SbrH+j/LnUsdihrE9RYDPC9ty1iYTDpAZawPinrw==
   dependencies:
     "@ckeditor/ckeditor5-build-classic" "^28.0.0"
     "@ckeditor/ckeditor5-react" "^3.0.2"
