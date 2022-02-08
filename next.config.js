@@ -27,6 +27,7 @@ module.exports = withTM({
   },
   //reactStrictMode: true,
   env: {
+    ENV: process.env.NODE_ENV,
     HOST: process.env.HOST,
     WEB: process.env.WEB,
     PORT: process.env.PORT,
