@@ -1,0 +1,180 @@
+@use "sass:map";
+@import '../../theme/variables/colors';
+@import '../../theme/variables/sizes';
+
+.searchBar {
+  font-family: $fontfamily;
+}
+
+.button {
+  overflow: 'hidden';
+}
+.buttonText {
+  font-size: $h6;
+}
+.item {
+  margin-bottom: 0;
+}
+.text {
+  font-size: $font;
+}
+.h1 {
+  font-size: $h1;
+}
+.label {
+  font-size: $font;
+}
+
+.padding {
+  padding: $padding-half;
+}
+.paddingBig {
+  padding: $padding;
+}
+.bg {
+  background-color: $background;
+}
+.form {
+  width: 100%;
+}
+.input {
+  font-family: $fontfamily;
+  &:invalid {
+    border: $danger solid 1px;
+  }
+}
+.loading {
+  overflow: 'hidden';
+}
+.loadingLabel {
+  color: $placeholder;
+  font-size: $big;
+}
+.box {
+  justify-content: 'center';
+}
+.slider {
+  width: 100%;
+}
+.font {
+  font-size: $font;
+}
+.placeholder {
+  text-align: 'center';
+  color: $placeholder;
+}
+.delete-button {
+  background-color: $danger;
+  margin: $padding-half;
+}
+.flexone {
+  flex: 1;
+}
+.paddingbottom {
+  padding-bottom: $padding-half;
+}
+.paddingBottomBig {
+  padding-bottom: $padding;
+}
+.paddingtop {
+  padding-top: $padding-half;
+}
+.colorbox {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  margin-right: 5px;
+  border: 1px solid $placeholder;
+}
+
+.wrapper {
+  margin: 8px;
+  position: relative;
+}
+
+.marginTopBig {
+  margin-top: $margingbottom-big;
+}
+.marginTop {
+  margin-top: $margingbottom;
+}
+.marginTopSmall {
+  margin-top: $margingbottom-small;
+}
+
+.marginLeftBig {
+  margin-left: $margingbottom-big;
+}
+.marginLeft {
+  margin-left: $margingbottom;
+}
+.marginLeftSmall {
+  margin-left: $margingbottom-small;
+}
+
+.marginRightBig {
+  margin-right: $margingbottom-big;
+}
+.marginRight {
+  margin-right: $margingbottom;
+}
+.marginRightSmall {
+  margin-right: $margingbottom-small;
+}
+
+.marginBottomBig {
+  margin-bottom: $margingbottom-big;
+}
+.marginBottom {
+  margin-bottom: $margingbottom;
+}
+.marginBottomSmall {
+  margin-bottom: $margingbottom-small;
+}
+
+.marginNormal {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+.paddingNormal {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+$ccolor: #08182b;
+.container {
+  color: $ccolor;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: 'transparent';
+}
+
+.listContainer {
+  display: block;
+}
+
+.optionAdornment {
+  background-color: $background-grey;
+  border-radius: 2px 0 0 2px;
+  margin-left: -13px;
+  padding: 18px 13px;
+  width: 200px;
+  color: $text-dark;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.link {
+  padding-top: 8px;
+  padding-bottom: 15px;
+}
+
+.swichPadding {
+  padding-top: $padding * 2;
+}

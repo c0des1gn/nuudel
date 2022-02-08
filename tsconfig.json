@@ -1,32 +1,38 @@
 {
   "compilerOptions": {
-    "composite": true,
-    "outDir": "./dist",
-    "rootDir": ".",
-    "sourceMap": true,
-    "noImplicitAny": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node",
     "module": "esnext",
-    "lib": ["es6", "dom", "es2017", "esnext.intl", "es2017.intl", "es2018.intl"],
-    "target": "ES6",
-    "jsx": "react",
+    "target": "esnext",
+    "jsx": "preserve",
+    "declaration": true,
+    "removeComments": true,
     "esModuleInterop": true,
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
     "baseUrl": ".",
+    "allowJs": true,
+    "preserveConstEnums": true,
+    "skipLibCheck": true,
+    "typeRoots": ["./@types", "./node_modules/@types"],
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "lib": ["dom", "dom.iterable", "es2017"],
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    //"types": ["node","jest"],
+    "allowSyntheticDefaultImports": true,
+    //"noUnusedLocals": true,
+    //"noUnusedParameters": true,
+    "isolatedModules": true,
     "paths": {
-      "@/*": ["src/*"]
+      "@Components": ["src/components"],
+      "@Translate": ["src/loc/i18n"],
+      "@App": ["src/modules/layouts/App/App"],
+      "@Variables": ["src/theme/variables/palette"],
+      "@Helper": ["src/common/helper"],
     }
   },
-  "exclude": [
-    "./dist",
-    "./node_modules"
-  ],
-  "references": [
-    { "path": "./service-worker" },
-    { "path": "./src" }
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist", "test", ".next", "next.config.js", "src/**/*.scss.d.ts", ".babelrc"]
 }

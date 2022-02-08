@@ -1,0 +1,21 @@
+{
+  "_id": "60bed89bd2adb43659a9af38",
+  "active": true,
+  "minVersion": "1.0.0",
+  "base_url": "http://localhost:8080",
+  "site_title": "Nuudel",
+  "site_description": "nuudel web app",
+  "site_keywords": [
+    "nuudel"
+  ],
+  "posts_per_page": 10,
+  "logo": {
+    "uri": "https://res.cloudinary.com/dinomn/image/upload/v1632805816/55_vda82t.png",
+    "width": 600,
+    "height": 600
+  },
+  "phone": "",
+  "location": "",
+  "web": "localhost",
+  "color": "#f58c22"
+}

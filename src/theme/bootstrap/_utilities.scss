@@ -1,0 +1,217 @@
+// stylelint-disable indentation
+
+// Utilities
+
+$utilities: () !default;
+// stylelint-disable-next-line scss/dollar-variable-default
+$utilities: map-merge(
+  (
+    // scss-docs-end utils-vertical-align
+      // scss-docs-start utils-float
+      'float':
+      (
+        responsive: true,
+        property: float,
+        values: (
+          start: left,
+          end: right,
+          none: none,
+        ),
+      ),
+    // scss-docs-end utils-float
+      // scss-docs-start utils-overflow
+      'overflow':
+      (
+        property: overflow,
+        values: auto hidden visible scroll,
+      ),
+    // scss-docs-end utils-overflow
+      // scss-docs-start utils-display
+      'display':
+      (
+        responsive: true,
+        print: true,
+        property: display,
+        class: d,
+        values: inline inline-block block grid table table-row table-cell flex
+          inline-flex none,
+      ),
+    // scss-docs-end utils-borders
+      // Sizing utilities
+      // scss-docs-start utils-sizing
+      'width':
+      (
+        property: width,
+        class: w,
+        values: (
+          25: 25%,
+          50: 50%,
+          75: 75%,
+          100: 100%,
+          auto: auto,
+        ),
+      ),
+    'max-width': (
+      property: max-width,
+      class: mw,
+      values: (
+        100: 100%,
+      ),
+    ),
+    'viewport-width': (
+      property: width,
+      class: vw,
+      values: (
+        100: 100vw,
+      ),
+    ),
+    'min-viewport-width': (
+      property: min-width,
+      class: min-vw,
+      values: (
+        100: 100vw,
+      ),
+    ),
+    'height': (
+      property: height,
+      class: h,
+      values: (
+        25: 25%,
+        50: 50%,
+        75: 75%,
+        100: 100%,
+        auto: auto,
+      ),
+    ),
+    'max-height': (
+      property: max-height,
+      class: mh,
+      values: (
+        100: 100%,
+      ),
+    ),
+    'viewport-height': (
+      property: height,
+      class: vh,
+      values: (
+        100: 100vh,
+      ),
+    ),
+    'min-viewport-height': (
+      property: min-height,
+      class: min-vh,
+      values: (
+        100: 100vh,
+      ),
+    ),
+    // scss-docs-end utils-sizing
+      // Flex utilities
+      // scss-docs-start utils-flex
+      'flex':
+      (
+        responsive: true,
+        property: flex,
+        values: (
+          fill: 1 1 auto,
+        ),
+      ),
+    'flex-direction': (
+      responsive: true,
+      property: flex-direction,
+      class: flex,
+      values: row column row-reverse column-reverse,
+    ),
+    'flex-grow': (
+      responsive: true,
+      property: flex-grow,
+      class: flex,
+      values: (
+        grow-0: 0,
+        grow-1: 1,
+      ),
+    ),
+    'flex-shrink': (
+      responsive: true,
+      property: flex-shrink,
+      class: flex,
+      values: (
+        shrink-0: 0,
+        shrink-1: 1,
+      ),
+    ),
+    'flex-wrap': (
+      responsive: true,
+      property: flex-wrap,
+      class: flex,
+      values: wrap nowrap wrap-reverse,
+    ),
+    'gap': (
+      responsive: true,
+      property: gap,
+      class: gap,
+      values: $spacers,
+    ),
+    'justify-content': (
+      responsive: true,
+      property: justify-content,
+      values: (
+        start: flex-start,
+        end: flex-end,
+        center: center,
+        between: space-between,
+        around: space-around,
+        evenly: space-evenly,
+      ),
+    ),
+    'align-items': (
+      responsive: true,
+      property: align-items,
+      values: (
+        start: flex-start,
+        end: flex-end,
+        center: center,
+        baseline: baseline,
+        stretch: stretch,
+      ),
+    ),
+    'align-content': (
+      responsive: true,
+      property: align-content,
+      values: (
+        start: flex-start,
+        end: flex-end,
+        center: center,
+        between: space-between,
+        around: space-around,
+        stretch: stretch,
+      ),
+    ),
+    'align-self': (
+      responsive: true,
+      property: align-self,
+      values: (
+        auto: auto,
+        start: flex-start,
+        end: flex-end,
+        center: center,
+        baseline: baseline,
+        stretch: stretch,
+      ),
+    ),
+    'order': (
+      responsive: true,
+      property: order,
+      values: (
+        first: -1,
+        0: 0,
+        1: 1,
+        2: 2,
+        3: 3,
+        4: 4,
+        5: 5,
+        last: 6,
+      ),
+    )
+  ),
+  $utilities
+);

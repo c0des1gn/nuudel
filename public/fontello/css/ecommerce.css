@@ -1,0 +1,182 @@
+@font-face {
+  font-family: 'ecommerce';
+  src: url('../font/ecommerce.eot?76233749');
+  src: url('../font/ecommerce.eot?76233749#iefix') format('embedded-opentype'),
+       url('../font/ecommerce.woff2?76233749') format('woff2'),
+       url('../font/ecommerce.woff?76233749') format('woff'),
+       url('../font/ecommerce.ttf?76233749') format('truetype'),
+       url('../font/ecommerce.svg?76233749#ecommerce') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+/* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
+/* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
+/*
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: 'ecommerce';
+    src: url('../font/ecommerce.svg?76233749#ecommerce') format('svg');
+  }
+}
+*/
+[class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "ecommerce";
+  font-style: normal;
+  font-weight: normal;
+  speak: never;
+
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Uncomment for 3D effect */
+  /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
+}
+
+.icon-picture-1:before { content: '\e800'; } /* '' */
+.icon-stop:before { content: '\e801'; } /* '' */
+.icon-ruler:before { content: '\e802'; } /* '' */
+.icon-th:before { content: '\e803'; } /* '' */
+.icon-email:before { content: '\e804'; } /* '' */
+.icon-basket:before { content: '\e80c'; } /* '' */
+.icon-hanger:before { content: '\e822'; } /* '' */
+.icon-box-1:before { content: '\e824'; } /* '' */
+.icon-filter:before { content: '\e830'; } /* '' */
+.icon-star-half:before { content: '\e832'; } /* '' */
+.icon-star-empty:before { content: '\e834'; } /* '' */
+.icon-star-1:before { content: '\e835'; } /* '' */
+.icon-heart-empty:before { content: '\e837'; } /* '' */
+.icon-heart:before { content: '\e838'; } /* '' */
+.icon-panel:before { content: '\e83b'; } /* '' */
+.icon-th-list:before { content: '\e83e'; } /* '' */
+.icon-th-large:before { content: '\e840'; } /* '' */
+.icon-ebay:before { content: '\e842'; } /* '' */
+.icon-bag-1:before { content: '\e845'; } /* '' */
+.icon-barcode:before { content: '\e846'; } /* '' */
+.icon-amazon:before { content: '\e847'; } /* '' */
+.icon-calculator:before { content: '\e84a'; } /* '' */
+.icon-apple:before { content: '\e84d'; } /* '' */
+.icon-twitter:before { content: '\e84f'; } /* '' */
+.icon-facebook:before { content: '\e850'; } /* '' */
+.icon-cart:before { content: '\e852'; } /* '' */
+.icon-credit-card:before { content: '\e869'; } /* '' */
+.icon-package:before { content: '\e870'; } /* '' */
+.icon-trolley:before { content: '\e873'; } /* '' */
+.icon-discount-1:before { content: '\e874'; } /* '' */
+.icon-gift:before { content: '\e894'; } /* '' */
+.icon-cardview:before { content: '\e900'; } /* '' */
+.icon-shop:before { content: '\e916'; } /* '' */
+.icon-wallet:before { content: '\e943'; } /* '' */
+.icon-taobao:before { content: '\e966'; } /* '' */
+.icon-coupang:before { content: '\e967'; } /* '' */
+.icon-map:before { content: '\e968'; } /* '' */
+.icon-discount:before { content: '\e969'; } /* '' */
+.icon-truck:before { content: '\e96a'; } /* '' */
+.icon-aperture:before { content: '\e96b'; } /* '' */
+.icon-scan-aperture:before { content: '\e96c'; } /* '' */
+.icon-clock:before { content: '\e970'; } /* '' */
+.icon-cloud:before { content: '\e971'; } /* '' */
+.icon-download-arrow-1:before { content: '\e977'; } /* '' */
+.icon-download-arrow-2:before { content: '\e978'; } /* '' */
+.icon-envelope:before { content: '\e97c'; } /* '' */
+.icon-info:before { content: '\e97d'; } /* '' */
+.icon-file:before { content: '\e97e'; } /* '' */
+.icon-heart-1:before { content: '\e980'; } /* '' */
+.icon-home:before { content: '\e981'; } /* '' */
+.icon-left-arrow:before { content: '\e982'; } /* '' */
+.icon-close:before { content: '\e983'; } /* '' */
+.icon-loupe:before { content: '\e984'; } /* '' */
+.icon-minus-symbol:before { content: '\e985'; } /* '' */
+.icon-open-envelope:before { content: '\e986'; } /* '' */
+.icon-open-lock:before { content: '\e987'; } /* '' */
+.icon-padlock:before { content: '\e988'; } /* '' */
+.icon-paper-plane:before { content: '\e989'; } /* '' */
+.icon-camera:before { content: '\e98a'; } /* '' */
+.icon-plus-symbol:before { content: '\e98e'; } /* '' */
+.icon-right-arrow:before { content: '\e990'; } /* '' */
+.icon-settings-1:before { content: '\e991'; } /* '' */
+.icon-star-2:before { content: '\e993'; } /* '' */
+.icon-up-arrow:before { content: '\e995'; } /* '' */
+.icon-user-1:before { content: '\e997'; } /* '' */
+.icon-mart:before { content: '\e998'; } /* '' */
+.icon-sort:before { content: '\f0dc'; } /* '' */
+.icon-plus:before { content: '\f102'; } /* '' */
+.icon-contact:before { content: '\f103'; } /* '' */
+.icon-alarm:before { content: '\f105'; } /* '' */
+.icon-check:before { content: '\f107'; } /* '' */
+.icon-attachment:before { content: '\f10a'; } /* '' */
+.icon-bag:before { content: '\f10d'; } /* '' */
+.icon-dismiss:before { content: '\f10e'; } /* '' */
+.icon-bell:before { content: '\f110'; } /* '' */
+.icon-binoculars:before { content: '\f111'; } /* '' */
+.icon-box:before { content: '\f117'; } /* '' */
+.icon-brash:before { content: '\f119'; } /* '' */
+.icon-card:before { content: '\f11a'; } /* '' */
+.icon-close-1:before { content: '\f11f'; } /* '' */
+.icon-star-half-alt:before { content: '\f123'; } /* '' */
+.icon-chat:before { content: '\f125'; } /* '' */
+.icon-comment:before { content: '\f126'; } /* '' */
+.icon-hourglass:before { content: '\f12a'; } /* '' */
+.icon-settings:before { content: '\f12d'; } /* '' */
+.icon-minimise:before { content: '\f12f'; } /* '' */
+.icon-crop:before { content: '\f134'; } /* '' */
+.icon-calendar:before { content: '\f138'; } /* '' */
+.icon-diamond:before { content: '\f13c'; } /* '' */
+.icon-pencil:before { content: '\f149'; } /* '' */
+.icon-eye:before { content: '\f152'; } /* '' */
+.icon-lighting:before { content: '\f158'; } /* '' */
+.icon-org:before { content: '\f15b'; } /* '' */
+.icon-sort-alt-up:before { content: '\f160'; } /* '' */
+.icon-apps:before { content: '\f163'; } /* '' */
+.icon-closed-eye:before { content: '\f166'; } /* '' */
+.icon-picture:before { content: '\f16b'; } /* '' */
+.icon-login:before { content: '\f16c'; } /* '' */
+.icon-layers:before { content: '\f16f'; } /* '' */
+.icon-arrow-left:before { content: '\f171'; } /* '' */
+.icon-location:before { content: '\f173'; } /* '' */
+.icon-location-1:before { content: '\f174'; } /* '' */
+.icon-burger:before { content: '\f17b'; } /* '' */
+.icon-mic:before { content: '\f17d'; } /* '' */
+.icon-minus:before { content: '\f17e'; } /* '' */
+.icon-options:before { content: '\f181'; } /* '' */
+.icon-exit:before { content: '\f188'; } /* '' */
+.icon-pin:before { content: '\f18f'; } /* '' */
+.icon-user:before { content: '\f193'; } /* '' */
+.icon-refresh:before { content: '\f198'; } /* '' */
+.icon-back:before { content: '\f199'; } /* '' */
+.icon-arrow-right:before { content: '\f19d'; } /* '' */
+.icon-google:before { content: '\f1a0'; } /* '' */
+.icon-search:before { content: '\f1a3'; } /* '' */
+.icon-shield:before { content: '\f1a8'; } /* '' */
+.icon-shop-cart:before { content: '\f1aa'; } /* '' */
+.icon-shopping-cart:before { content: '\f1ab'; } /* '' */
+.icon-star:before { content: '\f1ad'; } /* '' */
+.icon-tag:before { content: '\f1b1'; } /* '' */
+.icon-trash:before { content: '\f1bd'; } /* '' */
+.icon-resize:before { content: '\f1dc'; } /* '' */
+.icon-film:before { content: '\f1df'; } /* '' */
+.icon-mute:before { content: '\f1e1'; } /* '' */
+.icon-volume:before { content: '\f1e3'; } /* '' */
+.icon-window:before { content: '\f1e7'; } /* '' */
+.icon-facebook-squared:before { content: '\f308'; } /* '' */

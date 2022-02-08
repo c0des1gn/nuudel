@@ -1,0 +1,11 @@
+node_modules
+test
+dist
+.prettierrc
+Dockerfile
+yarn-error.log
+.git
+.gitignore
+.npmrc
+.vscode
+README.md

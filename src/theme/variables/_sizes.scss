@@ -1,0 +1,79 @@
+$base: 14px;
+
+$fontfamily: 'Montserrat'; //'open sans';
+$font: $base;
+$opacity: 0.6;
+$border-radius: 4px;
+$button-border-radius: 999;
+$border-width: 1px;
+$padding: 16px;
+$padding-half: 8px;
+$padding-small: 5px;
+$margingbottom-small: 5px;
+$margingbottom: 16px;
+$margingbottom-big: 25px;
+// typography
+$h1: $base * 2.5;
+// ~30
+$h2: $base * 2.25;
+// ~27
+$h3: $base * 2;
+// ~24
+$h4: $base * 1.75;
+// ~21
+$h5: $base * 1.5;
+// ~18
+$h6: $base * 1.25;
+// ~15
+$big: $base + 2;
+// ~14
+$body: $base + 1;
+// ~13
+$small: $base * 0.85;
+// ~10
+// icons
+$icon: $base;
+$icon-normal: $base * 1.25;
+$icon-medium: $base * 1.5;
+$icon-large: $base * 1.75;
+$icon-huge: $base * 3.5;
+// button styles
+$button-width: $base * 9;
+$button-height: $base * 2.75;
+$button-shadow-radius: 3;
+// block styles
+$block-shadow-opacity: 0.15;
+$block-shadow-radius: 8;
+$android-elevation: 1;
+// card styles
+$card-border-radius: $base * 0.4;
+$card-border-width: $base * 0.05;
+$card-width: width - $base * 2;
+$card-margin-vertical: $base * 0.875;
+$card-footer-horizontal: $base * 0.75;
+$card-footer-vertical: $base * 0.75;
+$card-avatar-width: $base * 2.5;
+$card-avatar-height: $base * 2.5;
+$card-avatar-radius: $base * 1.25;
+$card-image-height: $base * 12.5;
+$card-round: $base * 0.1875;
+$card-rounded: $base * 0.5;
+// input styles
+$input-border-radius: $base * 0.5;
+$input-border-width: $base * 0.05;
+$input-height: $base * 2.75;
+$input-horizontal: $base;
+$input-vertical-text: 14;
+$input-vertical-label: calc($base / 2);
+$input-text: $base * 0.875;
+$input-rounded: $base * 1.5;
+// checkbox
+$checkbox-width: 20;
+$checkbox-height: 20;
+// slider
+$track-size: 4;
+$thumb-size: 25;
+// radio button
+$radio-width: 24;
+$radio-height: 24;
+$radio-thickness: 2;

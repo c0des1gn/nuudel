@@ -1,0 +1,87 @@
+@use "sass:map";
+@import '../../theme/variables/colors';
+@import '../../theme/variables/sizes';
+
+.container {
+  width: 100%;
+}
+.paragraph {
+  opacity: 0.65;
+}
+.eye {
+  font-size: $h4;
+}
+.error {
+  max-width: '50%';
+}
+.button {
+  background-color: $login;
+  margin-top: $padding;
+}
+.buttonText {
+  color: '#f1f1f1';
+}
+
+.buttonCont {
+  margin-top: $padding;
+}
+
+.logo {
+  margin: auto;
+}
+
+.root {
+  background-color: $background;
+}
+
+.linkCont {
+  text-align: right;
+  margin-top: $padding;
+}
+
+.link {
+  font-size: $body;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.marginLeft {
+  margin-left: $padding;
+}
+
+.title {
+  text-align: center;
+}
+
+.paperStyle {
+  padding: $margingbottom-big;
+  margin-top: 64px;
+  display: flex;
+  flex-direction: column;
+}
+
+.avatar {
+  margin: $padding;
+}
+
+.inlineBlock {
+  display: inline-block;
+}
+
+.paddingBig {
+  padding-top: $padding * 2;
+  padding-bottom: $padding * 2;
+}
+
+.padding {
+  padding-top: $padding;
+  padding-bottom: $padding;
+}
+
+.paddingTop {
+  padding-top: $padding;
+}
+.paddingBottom {
+  padding-bottom: $padding;
+}

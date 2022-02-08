@@ -1,0 +1,40 @@
+import { INotificationMessages } from 'nuudel-core';
+
+export interface IListFormState {
+  loading: boolean;
+  total: number;
+  filter: any;
+  data: any[];
+  next: boolean;
+  columns: any[];
+  fields: string[];
+  refreshing: boolean;
+  isSaving: boolean;
+  notifications: INotificationMessages[];
+  tableColumnExtensions: any;
+  columnOrder: string[];
+  startDate?: string;
+  endDate?: string;
+  ColumnWidths: any[];
+  filters: any[];
+  searchValue: string;
+  sorting: any;
+  pageSize: number;
+  pageSizes: number[];
+  currentPage: number;
+  hiddenColumnNames: string[];
+  fieldErrors: { [fieldName: string]: string };
+  showUnsupportedFields?: boolean;
+  selection: (string | number)[];
+  dialog: string;
+  assign: string;
+  drawer: string;
+  alert: boolean;
+  anchorEl: null | HTMLElement;
+  basepath?: string;
+  spining: boolean;
+  linkTitle: string;
+  exporting: boolean;
+  dialogPrint: any[];
+  totalSummaryItems: any[];
+}

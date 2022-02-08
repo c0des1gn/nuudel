@@ -1,0 +1,52 @@
+@use "sass:map";
+@import '../../../theme/variables/colors';
+@import '../../../theme/variables/sizes';
+
+.container {
+  background-color: $background;
+  padding: $padding-half;
+}
+
+.body {
+  background-color: transparent;
+  margin-left: 0;
+  padding-bottom: 0;
+  padding-right: 10px;
+  padding-top: 0;
+}
+
+.right {
+  flex: 1;
+  align-self: center;
+  align-items: flex-end;
+}
+
+.float {
+  position: absolute;
+  right: 10px;
+}
+.header {
+  margin-top: 40px;
+  border-style: solid;
+  background-color: $background-light;
+  border-top-color: $border-light;
+  border-top-width: 1;
+}
+.item {
+  display: flex;
+  margin: 8px;
+  flex: 1;
+  flex-direction: row;
+}
+.title {
+  flex: 0.3;
+  font-size: $h6 - 1px;
+  display: inline-flex;
+}
+.content {
+  flex: 0.7;
+  padding-left: 5px;
+  flex-wrap: wrap;
+  font-size: $body;
+  display: inline-flex;
+}
