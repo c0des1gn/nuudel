@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "{{description}}",
   "author": "{{author}}",
+  "license": "{{license}}",
   "keywords": [],
   "main": "./src/index.tsx",
   "dependencies": {
