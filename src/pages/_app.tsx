@@ -99,12 +99,7 @@ const MyApp: React.FC = ({ Component, pageProps, router }: any) => {
           {NEXT_PUBLIC_GOOGLE_ANALYTICS_ID && (
             <script
               dangerouslySetInnerHTML={{
-                __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('globals', '${NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}');
-            `,
+                __html: '',
               }}
             ></script>
           )}
