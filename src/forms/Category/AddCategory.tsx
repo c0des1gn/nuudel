@@ -162,7 +162,7 @@ const AddCategory: React.FunctionComponent = () => {
                   defaultValue={initialValues.name}
                   type="text"
                   maxLength={255}
-                  inputProps={{ pattern: '^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _-]+)?$' }}
+                  inputProps=\{{ pattern: '^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _-]+)?$' }}
                   fullWidth
                   variant="outlined"
                   margin="normal"
@@ -179,7 +179,7 @@ const AddCategory: React.FunctionComponent = () => {
                   defaultValue={initialValues.slug}
                   type="text"
                   maxLength={255}
-                  inputProps={{ pattern: '^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _-]+)?$' }}
+                  inputProps=\{{ pattern: '^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _-]+)?$' }}
                   fullWidth
                   variant="outlined"
                   margin="normal"
@@ -220,7 +220,7 @@ const AddCategory: React.FunctionComponent = () => {
           <Divider />
           <Box display="flex" justifyContent="flex-end" p={3}>
             <Button
-              style={{}}
+              style=\{{}}
               disabled={isSubmitting || disabled}
               color="primary"
               type="submit"

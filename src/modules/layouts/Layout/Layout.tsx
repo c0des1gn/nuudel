@@ -419,11 +419,11 @@ const Layout: React.FC<Props> = ({ children, ...props }) => {
           <Box
             className={classes.toolbar}
             color="text.primary"
-            style={{ justifyContent: 'space-evenly' }}
+            style=\{{ justifyContent: 'space-evenly' }}
           >
             <Avatar alt={CONF.site_title} src={CONF.logo.uri} />
             <Text variant="h5">&nbsp;{CONF.site_title}</Text>
-            <Grid container style={{ justifyContent: 'flex-end' }}>
+            <Grid container style=\{{ justifyContent: 'flex-end' }}>
               <IconButton onClick={hadleMobileMenu}>
                 <ChevronLeftIcon />
               </IconButton>
@@ -440,7 +440,7 @@ const Layout: React.FC<Props> = ({ children, ...props }) => {
             [classes.drawerOpen]: open,
             [classes.drawerClose]: !open,
           })}
-          classes={{
+          classes=\{{
             paper: clsx({
               [classes.drawerOpen]: open,
               [classes.drawerClose]: !open,
@@ -450,11 +450,11 @@ const Layout: React.FC<Props> = ({ children, ...props }) => {
           <Box
             className={classes.toolbar}
             color="text.primary"
-            style={{ justifyContent: 'space-evenly' }}
+            style=\{{ justifyContent: 'space-evenly' }}
           >
             <Avatar alt={CONF.site_title} src={CONF.logo.uri} />
             <Text variant="h5">&nbsp;{CONF.site_title}</Text>
-            <Grid container style={{ justifyContent: 'flex-end' }}>
+            <Grid container style=\{{ justifyContent: 'flex-end' }}>
               <IconButton onClick={() => handleDrawerOpen(false)}>
                 <ChevronLeftIcon />
               </IconButton>

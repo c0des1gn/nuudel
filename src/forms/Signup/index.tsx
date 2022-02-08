@@ -324,7 +324,7 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
                 required
                 variant="outlined"
                 margin="normal"
-                InputProps={{
+                InputProps=\{{
                   startAdornment: (
                     <InputAdornment position="start">
                       <AccountCircle />
@@ -492,7 +492,7 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
                               ? ''
                               : t(selected, { defaultValue: selected })
                           }
-                          inputProps={{
+                          inputProps=\{{
                             id: 'user-gender',
                           }}
                           options={Gender.map(c => ({

@@ -113,7 +113,7 @@ export default function HeaderUserbox() {
         onClick={handleClick}
         className={classes.sectionDesktop}
       >
-        <ListItem alignItems="flex-start" style={{ padding: '0 10px' }}>
+        <ListItem alignItems="flex-start" style=\{{ padding: '0 10px' }}>
           <ListItemAvatar>
             <Avatar
               alt={currentUser.firstname || currentUser.username}
@@ -121,7 +121,7 @@ export default function HeaderUserbox() {
             />
           </ListItemAvatar>
           <ListItemText
-            style={{ textTransform: 'capitalize' }}
+            style=\{{ textTransform: 'capitalize' }}
             primary={currentUser.firstname}
             secondary={
               <React.Fragment>
@@ -137,7 +137,7 @@ export default function HeaderUserbox() {
           />
         </ListItem>
         <span className="pl-1 pl-xl-3">
-          <i className="icon-download-arrow-1" style={{ fontSize: '20px' }} />
+          <i className="icon-download-arrow-1" style=\{{ fontSize: '20px' }} />
         </span>
       </Button>
       <div className={classes.sectionMobile}>
@@ -155,11 +155,11 @@ export default function HeaderUserbox() {
         keepMounted
         getContentAnchorEl={null}
         open={Boolean(anchorEl)}
-        anchorOrigin={{
+        anchorOrigin=\{{
           vertical: 'center',
           horizontal: 'center',
         }}
-        transformOrigin={{
+        transformOrigin=\{{
           vertical: 'center',
           horizontal: 'center',
         }}
@@ -176,7 +176,7 @@ export default function HeaderUserbox() {
                 sizes="44"
                 alt={currentUser.firstname || currentUser.username}
                 src={currentUser.avatar && currentUser.avatar.uri}
-                style={{ margin: '0 auto' }}
+                style=\{{ margin: '0 auto' }}
               />
             </Box>
             <div className="pl-3  pr-3">
@@ -213,7 +213,7 @@ export default function HeaderUserbox() {
                 }}
                 fullWidth={true}
                 startIcon={
-                  <i className="icon-exit" style={{ fontSize: '12px' }} />
+                  <i className="icon-exit" style=\{{ fontSize: '12px' }} />
                 }
                 color="secondary"
               >

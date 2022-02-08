@@ -110,10 +110,10 @@ export default function Topbar(props: any) {
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      anchorOrigin=\{{ vertical: 'bottom', horizontal: 'right' }}
       id={menuId}
       keepMounted
-      transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      transformOrigin=\{{ vertical: 'bottom', horizontal: 'right' }}
       open={isMenuOpen}
       TransitionComponent={Fade}
       onClose={handleMenuClose}
@@ -138,10 +138,10 @@ export default function Topbar(props: any) {
   const renderMobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      anchorOrigin=\{{ vertical: 'top', horizontal: 'right' }}
       id={mobileMenuId}
       keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      transformOrigin=\{{ vertical: 'top', horizontal: 'right' }}
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >

@@ -106,7 +106,7 @@ export class Slideshow extends React.Component<ISliderProps, ISliderStates> {
             spaceBetween={0}
             slidesPerView={1}
             navigation
-            thumbs={{ swiper: this.state.thumbsSwiper }}
+            thumbs=\{{ swiper: this.state.thumbsSwiper }}
             onSwiper={swiper => {}}
             onSlideChange={() => console.log('slide change')}
             className={styles.mainSlider}

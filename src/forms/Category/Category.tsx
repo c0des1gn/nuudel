@@ -270,7 +270,7 @@ const Category: React.FC = () => {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         ></Menu>
-        <Paper style={{ position: 'relative' }}>
+        <Paper style=\{{ position: 'relative' }}>
           <Grid rows={data} columns={columns} getRowId={getRowId}>
             <SelectionState
               selection={selection}

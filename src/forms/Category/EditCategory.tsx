@@ -154,7 +154,7 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
         <Grid container justifyContent="space-around" direction="row">
           <Grid
             item
-            style={{ paddingTop: 15, paddingBottom: 20 }}
+            style=\{{ paddingTop: 15, paddingBottom: 20 }}
             lg={10}
             md={10}
             sm={10}
@@ -168,7 +168,7 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
               placeholder={t('category.name')}
               type="text"
               maxLength={255}
-              inputProps={{ pattern: '^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _-]+)?$' }}
+              inputProps=\{{ pattern: '^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _-]+)?$' }}
               fullWidth
               variant="outlined"
               margin="normal"
@@ -179,7 +179,7 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
           </Grid>
           <Grid
             item
-            style={{ paddingTop: 15, paddingBottom: 20 }}
+            style=\{{ paddingTop: 15, paddingBottom: 20 }}
             lg={10}
             md={10}
             sm={10}
@@ -193,7 +193,7 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
               placeholder={t('category.slug')}
               type="text"
               maxLength={255}
-              inputProps={{ pattern: '^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _-]+)?$' }}
+              inputProps=\{{ pattern: '^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _-]+)?$' }}
               fullWidth
               variant="outlined"
               margin="normal"
@@ -204,7 +204,7 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
           </Grid>
           <Grid
             item
-            style={{ paddingTop: 15, paddingBottom: 20 }}
+            style=\{{ paddingTop: 15, paddingBottom: 20 }}
             lg={10}
             md={10}
             sm={10}
@@ -242,7 +242,7 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
             className={classes.submitButton}
           >
             <Button
-              style={{}}
+              style=\{{}}
               disabled={isSubmitting || disabled}
               color="primary"
               type="submit"

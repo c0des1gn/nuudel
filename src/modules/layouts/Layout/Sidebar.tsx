@@ -208,7 +208,7 @@ export default function Sidebar(props: any) {
         <Drawer
           anchor="left"
           variant="permanent"
-          classes={{
+          classes=\{{
             paper: clsx(classes.drawerPaper, {
               [classes.drawerOpen]: props.open,
               [classes.drawerClose]: !props.open,

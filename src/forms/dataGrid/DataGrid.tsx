@@ -115,7 +115,7 @@ const DialogCell = (props: any) => (
 const ButtonCell = ({ onClick, ...props }: any) => (
   <Table.Cell {...props}>
     {!props.value || props.value === '--' ? (
-      <div style={{ marginTop: '-14px', marginBottom: '-14px' }}>
+      <div style=\{{ marginTop: '-14px', marginBottom: '-14px' }}>
         <IconButton onClick={onClick}>
           <AssignmentIndIcon />
         </IconButton>
@@ -415,7 +415,7 @@ class DataGrid extends React.Component<
         onClick={() => {
           this.openLink(`${this.state.basepath}/${row._id}/display`);
         }}
-        style={{
+        style=\{{
           cursor: 'pointer',
           ...StatusColor[
             Object.keys(StatusColor).indexOf(row[this._highLightedRow]) < 0
@@ -1041,7 +1041,7 @@ class DataGrid extends React.Component<
                 // close all dialog second solution
                 <Link
                   noLinkStyle
-                  style={{ display: 'none' }}
+                  style=\{{ display: 'none' }}
                   onClick={() => this.closeDialogOrDrawer()}
                   id="closealldialogordrawer"
                 >
@@ -1217,7 +1217,7 @@ class DataGrid extends React.Component<
                     variant="outlined"
                     type="datetime-local"
                     size="small"
-                    InputProps={{
+                    InputProps=\{{
                       inputProps: {
                         min: '2022-01-01T00:00',
                         max: dateToString(this.state.endDate),
@@ -1233,7 +1233,7 @@ class DataGrid extends React.Component<
                     variant="outlined"
                     type="datetime-local"
                     size="small"
-                    InputProps={{
+                    InputProps=\{{
                       inputProps: {
                         min: dateToString(this.state.startDate),
                         max: dateToString(
@@ -1311,7 +1311,7 @@ class DataGrid extends React.Component<
                     <Table
                       columnExtensions={this.state.tableColumnExtensions}
                       cellComponent={this.Cell}
-                      messages={{
+                      messages=\{{
                         noData: t('noData'),
                       }}
                     />
@@ -1320,7 +1320,7 @@ class DataGrid extends React.Component<
                       columnExtensions={this.state.tableColumnExtensions}
                       cellComponent={this.Cell}
                       rowComponent={this.TableRow}
-                      messages={{
+                      messages=\{{
                         noData: t('noData'),
                       }}
                     />
@@ -1355,7 +1355,7 @@ class DataGrid extends React.Component<
                   {this.props.pagination === Paging.Pagination && (
                     <PagingPanel
                       pageSizes={pageSizes}
-                      messages={{
+                      messages=\{{
                         rowsPerPage: t('rowsPerPage'),
                         showAll: t('showAll'),
                         info: t('info'),
@@ -1372,14 +1372,14 @@ class DataGrid extends React.Component<
                   {this.props.IsColumnChooser && <ColumnChooser />}
                   {this.props.IsSearching && (
                     <SearchPanel
-                      messages={{ searchPlaceholder: t('Search') }}
+                      messages=\{{ searchPlaceholder: t('Search') }}
                     />
                   )}
                   {this.props.IsGrouping && (
                     <GroupingPanel showSortingControls={this.props.IsSorting} />
                   )}
                   <TableSummaryRow
-                    messages={{
+                    messages=\{{
                       count: t('count'),
                       sum: t('sum'),
                       min: t('min'),

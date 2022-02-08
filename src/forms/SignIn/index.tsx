@@ -105,7 +105,7 @@ const SignInForm: FunctionComponent<IProps> = (props: IProps) => {
                 e.preventDefault();
               }
             }}
-            InputProps={{
+            InputProps=\{{
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton

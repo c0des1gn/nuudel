@@ -299,7 +299,7 @@ const EditUser: React.FC<IProps> = ({ ...props }) => {
                   required
                   variant="outlined"
                   margin="normal"
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps=\{{ shrink: true }}
                   error={!!errors.phone}
                   helperText={errors?.phone?.message}
                   onChange={e => setChange('phone', e.target.value)}
@@ -315,7 +315,7 @@ const EditUser: React.FC<IProps> = ({ ...props }) => {
                   fullWidth
                   variant="outlined"
                   margin="normal"
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps=\{{ shrink: true }}
                   error={!!errors.mobile}
                   helperText={errors?.mobile?.message}
                   onChange={e => setChange('mobile', e.target.value)}
@@ -383,7 +383,7 @@ const EditUser: React.FC<IProps> = ({ ...props }) => {
                     renderValue={selected =>
                       !selected ? '' : t(selected, { defaultValue: selected })
                     }
-                    inputProps={{
+                    inputProps=\{{
                       id: 'user-gender',
                     }}
                     options={Gender.map(c => ({

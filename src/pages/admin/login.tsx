@@ -194,7 +194,7 @@ const SignInScreen = (props: IProps): JSX.Element => {
 
   const render = (
     <div
-      style={{
+      style=\{{
         minHeight: '90vh',
         margin: 0,
         padding: 0,

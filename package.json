@@ -1,9 +1,9 @@
 {
-  "name": "{{name}}",
+  "name": "\{{name}}",
   "version": "0.1.0",
-  "description": "{{description}}",
-  "author": "{{author}}",
-  "license": "{{license}}",
+  "description": "\{{description}}",
+  "author": "\{{author}}",
+  "license": "\{{license}}",
   "private": false,
   "prepublish": "tsm src",
   "scripts": {

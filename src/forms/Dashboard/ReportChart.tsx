@@ -284,7 +284,7 @@ const ReportChart: React.FC<Props> = ({
             onChange={handleSelect}
             defaultValue={'Month'}
             renderValue={selected => (!selected ? '' : t(selected))}
-            inputProps={{
+            inputProps=\{{
               id: 'date-label',
             }}
             options={chartDate.map(c => ({
