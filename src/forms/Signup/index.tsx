@@ -564,7 +564,6 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
                   onChange={e => {
                     setDisabled(!e.target.checked);
                   }}
-                  //inputProps={{ 'aria-label': 'primary checkbox' }}
                 />
                 <span>
                   {t('agree')}

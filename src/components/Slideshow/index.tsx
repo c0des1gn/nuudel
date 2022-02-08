@@ -106,8 +106,6 @@ export class Slideshow extends React.Component<ISliderProps, ISliderStates> {
             spaceBetween={0}
             slidesPerView={1}
             navigation
-            //pagination={{ clickable: true }}
-            //scrollbar={{ draggable: true }}
             thumbs={{ swiper: this.state.thumbsSwiper }}
             onSwiper={swiper => {}}
             onSlideChange={() => console.log('slide change')}

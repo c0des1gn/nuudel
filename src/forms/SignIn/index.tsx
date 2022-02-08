@@ -74,7 +74,6 @@ const SignInForm: FunctionComponent<IProps> = (props: IProps) => {
             autoComplete="username"
             fullWidth
             error={error && !!error.message}
-            //InputProps={{ startAdornment: ( <InputAdornment position="start"> <AccountCircle /> </InputAdornment>), }}
           />
         )}
         control={control}
