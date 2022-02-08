@@ -5,6 +5,12 @@
 <div align="center"><strong>🚀 Bootstrap your GraphQL server within seconds</strong></div>
 <div align="center">Advanced starter kit for a flexible GraphQL server for TypeScript - based on best practices from the GraphQL community.</div>
 
+## Create project
+
+```bash
+npx create-nuudel <name>
+```
+
 # start
 
 yarn build
