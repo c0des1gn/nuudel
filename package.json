@@ -9,7 +9,7 @@
   "scripts": {
     "clean": "rimraf dist && rimraf .next",
     "pre": "rimraf .next && tsm src",
-    "dev": "NODE_OPTIONS='--inspect' next dev",
+    "dev": "yarn run build && yarn run go",
     "build": "rimraf .next && dotenv -e .env.dev -- next build",
     "build:js": "yarn run clean && dotenv -- next build && tsc --project tsconfig.server.json",
     "next:build": "dotenv -- node ./script/setConfig && yarn run pre && dotenv -- next build",
