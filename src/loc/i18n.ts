@@ -2,7 +2,6 @@ import I8 from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { USER_LANG } from '../config';
 import { UI } from 'nuudel-core';
-import { setTranslate } from 'nuudel-utils';
 import memoize from 'lodash.memoize';
 
 const { NODE_ENV } = process.env;
@@ -59,7 +58,6 @@ if (!I8.isInitialized) {
       wait: true,
     },
   });
-  setTranslate(translate);
 }
 
 export { translate as t, defaultLocale, changeLanguage };

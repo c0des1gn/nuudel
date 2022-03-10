@@ -56,7 +56,7 @@
     "mapbox-gl": "^2.5.1",
     "next": "^11.1.4",
     "next-transpile-modules": "^9.0.0",
-    "nuudel-core": "^0.1.38",
+    "nuudel-core": "^0.1.45",
     "nuudel-main": "^1.0.10",
     "qrcode.react": "^1.0.1",
     "react": "^17.0.2",
