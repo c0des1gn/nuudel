@@ -473,6 +473,7 @@ class DataGrid extends React.Component<
       this.setState(
         {
           loading: true,
+          selection: [],
           currentPage: currentPage,
         },
         () => this.fetchData(currentPage),
