@@ -7,6 +7,9 @@ const path = require('path');
 const withTM = require('next-transpile-modules')(['nuudel-core']);
 
 module.exports = withTM({
+  experimental: {
+    outputStandalone: true,
+  },
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
   },
