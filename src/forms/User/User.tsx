@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Table } from '@Components';
-import { ICurrentUser } from 'nuudel-core';
+import { ICurrentUser } from '@Interfaces';
 //import { useRouter } from 'next/router';
 
 interface IUserProps {

@@ -31,7 +31,7 @@ import { dateToString, closeDialog } from 'nuudel-utils';
 import SaveIcon from '@material-ui/icons/Save';
 import styles from '../../theme/styles/styles.module.scss';
 import { Gender, userType, Vehicle } from '../Signup/types';
-import { ICurrentUser, IWarehouse } from 'nuudel-core';
+import { ICurrentUser, IWarehouse } from '@Interfaces';
 import { IParentProps } from '../IParentProps';
 
 interface EditUserForm {

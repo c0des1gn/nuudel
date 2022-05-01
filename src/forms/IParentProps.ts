@@ -1,5 +1,5 @@
 import { ControlMode, Permission } from 'nuudel-utils';
-import { ICurrentUser } from 'nuudel-core';
+import { ICurrentUser } from '@Interfaces';
 //import { PageProps } from '../_app';
 
 export interface IParentProps {

@@ -1,7 +1,7 @@
 import React from 'react';
 import User from '../../forms/User/User';
 import { PageProps } from '../_app';
-import { ICurrentUser } from 'nuudel-core';
+import { ICurrentUser } from '@Interfaces';
 
 interface IProps extends PageProps {
   error?: string;
