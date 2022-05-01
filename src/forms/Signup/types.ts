@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { t } from '@Translate';
-import { ICurrentUser, IPartner } from 'nuudel-core';
+import { ICurrentUser, IPartner } from '@Interfaces';
 
 export interface ISignUpFormValues {
   username: string;

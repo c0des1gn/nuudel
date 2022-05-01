@@ -28,6 +28,7 @@
     "paths": {
       "@Components": ["src/components"],
       "@Translate": ["src/loc/i18n"],
+      "@Interfaces": ["src/common/Interfaces"],
       "@App": ["src/modules/layouts/App/App"],
       "@Variables": ["src/theme/variables/palette"],
       "@Helper": ["src/common/helper"],
