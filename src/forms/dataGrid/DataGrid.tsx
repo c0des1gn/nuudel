@@ -280,6 +280,19 @@ class DataGrid extends React.Component<
           hiddenCol: string[] = [],
           linktitle = '';
 
+        // column translate
+        cols = cols.map(f => {
+          let trans: any = t(
+            f.name.indexOf('.') >= 0
+              ? f.name
+              : this.props.listname.toLowerCase() + '.' + f.name,
+            {
+              defaultValue: f.title,
+            },
+          );
+          f.title = typeof trans === 'object' ? f.title : trans;
+          return f;
+        });
         cols.forEach((item, index: number) => {
           colWidth.push({ columnName: item.name, width: 148 });
           if (item.name.startsWith('_')) {
