@@ -30,9 +30,8 @@ import { t } from '@Translate';
 import { dateToString, closeDialog } from 'nuudel-utils';
 import SaveIcon from '@material-ui/icons/Save';
 import styles from '../../theme/styles/styles.module.scss';
-import { Gender, userType, Vehicle } from '../Signup/types';
-import { ICurrentUser, IWarehouse } from '@Interfaces';
-import { IParentProps } from '../IParentProps';
+import { Gender } from '../Signup/types';
+import { ICurrentUser } from '@Interfaces';
 
 interface EditUserForm {
   firstname: string;

@@ -1,6 +1,10 @@
 import * as Yup from 'yup';
 import { t } from '@Translate';
-import { ICurrentUser, IPartner } from '@Interfaces';
+import { ICurrentUser } from '@Interfaces';
+
+export interface IPartner {
+  custom: boolean;
+}
 
 export interface ISignUpFormValues {
   username: string;
