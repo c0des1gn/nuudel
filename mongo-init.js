@@ -23,6 +23,12 @@ db.users.insertMany([
     email: '',
     type: 'Admin',
     _status: 'Active',
+    settings: {
+      notification: true,
+      currency: 'MNT',
+      locale: 'mn-MN',
+      _devices: [],
+    },
   },
 ]);
 
