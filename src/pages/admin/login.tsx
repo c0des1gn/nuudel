@@ -211,6 +211,7 @@ const SignInScreen = (props: IProps): JSX.Element => {
                 src={CONF.logo.uri}
                 //width={100}
                 height={100}
+                alt="logo"
               />
             ) : (
               <h2 className={styles.title}>{t('SignIn')}</h2>
