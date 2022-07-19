@@ -16,7 +16,7 @@
     "go": "dotenv -e .env.dev -- nodemon -e ts,c -x ts-node --project tsconfig.server.json api/index.ts --watch",
     "build": "rimraf .next && dotenv -e .env.dev -- next build",
     "build:js": "yarn run clean && dotenv -- next build && tsc --project tsconfig.server.json",
-    "next:build": "dotenv -- node ./script/setConfig.js && yarn run pre && next build",
+    "build:prod": "dotenv -- node ./script/setConfig.js && yarn run pre && next build",
     "next:start": "next start",
     "start": "dotenv -- nodemon -e ts,graphql -x ts-node --project tsconfig.server.json api/index.ts",
     "start:js": "dotenv -- nodemon dist/index.js -e js,graphql",
