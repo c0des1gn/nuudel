@@ -13,7 +13,7 @@
     "export": "next export",
     "dev": "NODE_OPTIONS='--inspect' next dev",
     "next": "dotenv -e .env.dev -- next dev -p 3000",
-    "go": "dotenv -e .env.dev -- nodemon -e ts,c -x ts-node --project tsconfig.server.json api/index.ts --watch",
+    "go": "dotenv -e .env.dev -- nodemon -e ts,graphql -x ts-node --project tsconfig.server.json api/index.ts --watch",
     "build": "rimraf .next && dotenv -e .env.dev -- next build",
     "build:js": "yarn run clean && dotenv -- next build && tsc --project tsconfig.server.json",
     "build:prod": "dotenv -- node ./script/setConfig.js && yarn run pre && next build",
