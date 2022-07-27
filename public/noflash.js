@@ -18,7 +18,7 @@
   var localStorageTheme = null;
   try {
     localStorageTheme = localStorage.getItem(storageKey);
-  } catch (err) {}
+  } catch {}
   var localStorageExists = localStorageTheme !== null;
   if (localStorageExists) {
     try {
@@ -35,7 +35,9 @@
   } else if (supportsColorSchemeQuery) {
     // source of truth from system
     setClassOnDocumentBody(mql.matches);
-    localStorage.setItem(storageKey, mql.matches);
+    try {
+      localStorage.setItem(storageKey, mql.matches);
+    } catch {}
   } else {
     // source of truth from document.body
     var isDarkMode = document.body.classList.contains(classNameDark);

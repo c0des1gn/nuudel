@@ -54,7 +54,6 @@
     "lodash.debounce": "^4.0.8",
     "lodash.memoize": "^4.1.2",
     "mailgen": "^2.0.15",
-    "mapbox-gl": "^2.5.1",
     "next": "^12.1.0",
     "next-transpile-modules": "^9.0.0",
     "nuudel-core": "^0.1.90",
