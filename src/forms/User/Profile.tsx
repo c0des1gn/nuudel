@@ -149,7 +149,10 @@ const EditUser: React.FC<IProps> = ({ ...props }) => {
       if (data) {
         setType(data.getUser.type);
         let newDate: any = getUsedFields(data.getUser);
-        reset(newDate);
+        reset({
+          ...newDate,
+          birthday: dateToString(newDate.birthday, 'YYYY-MM-DD'),
+        });
         setFormValues(newDate);
       }
     },
@@ -325,7 +328,7 @@ const EditUser: React.FC<IProps> = ({ ...props }) => {
                   margin="normal"
                   error={!!errors.birthday}
                   helperText={errors?.birthday?.message}
-                  onChange={e => setChange('birthday', e.target.value)}
+                  onChange={e => setChange('birthday', dateToString(e.target.value, 'YYYY-MM-DD'))}
                 />
               </Grid>
               <Grid item md={6} xs={12}>
