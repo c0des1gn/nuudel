@@ -197,7 +197,7 @@ const EditUser: React.FC<IProps> = ({ ...props }) => {
   const [updateUser] = useMutation<any, any>(UPDATE_USER_MUTATION, {
     onCompleted: data => {
       messageMutation({
-        variables: { msg: 'Item saved successfully', type: 'success' },
+        variables: { msg: 'User saved successfully', type: 'success' },
       });
       setTimeout(() => {
         if (props.IsDlg === true) {
@@ -207,29 +207,23 @@ const EditUser: React.FC<IProps> = ({ ...props }) => {
         }
       }, 1000);
     },
+    onError: err => {
+      messageMutation({
+        variables: {msg: err.message, type: 'error'},
+      });
+    },
+  }
   });
 
   const editTheUser = async (data: EditUserForm, resetForm: Function) => {
     // API call integration will be here. Handle success / error response accordingly.
     if (data) {
-      updateUser({
+      await updateUser({
         variables: {
           ...data,
           _id: props.id,
         },
-      })
-        .then(data => {
-          console.log('then of editUser');
-          messageMutation({
-            variables: { msg: 'User added successfully', type: 'success' },
-          });
-        })
-        .catch(err => {
-          console.log('error of editUser');
-          messageMutation({
-            variables: { msg: err.message, type: 'error' },
-          });
-        });
+      });
       // resetForm(initialValues)
     }
   };

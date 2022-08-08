@@ -19,7 +19,7 @@ import { registerEnumType } from 'type-graphql';
 import { Note, Image, Link } from 'nuudel-main';
 import { ImageObj, ImageInput } from './image.resolver';
 import { Language, Currency } from '../enums';
-import { IContext } from 'nuudel-main';
+import type { IContext } from 'nuudel-main';
 
 @ObjectType() //extends CoreType
 export class Settings {

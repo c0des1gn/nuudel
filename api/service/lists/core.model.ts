@@ -14,7 +14,7 @@ import {
   Args,
   Ctx,
 } from 'type-graphql';
-import { IContext } from 'nuudel-main';
+import type { IContext } from 'nuudel-main';
 import {
   prop as Property,
   getModelForClass,

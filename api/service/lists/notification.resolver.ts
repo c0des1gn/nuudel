@@ -33,7 +33,7 @@ import {
 import { PubSubEngine } from 'graphql-subscriptions';
 import { Note, Image, Link } from 'nuudel-main';
 import { ImageInput } from './image.resolver';
-import { IContext } from 'nuudel-main';
+import type { IContext } from 'nuudel-main';
 import {
   Pushnotification,
   PushnotificationInput,

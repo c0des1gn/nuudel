@@ -13,13 +13,7 @@ import { makeContext, ConnectDB } from 'nuudel-main';
 import fastifyCron from 'fastify-cron';
 import { defaultJob } from './service/jobs/rates';
 import { Verification, Reset } from './controller';
-import {
-  ProfileCallback,
-  Upload,
-  Remove,
-  SentNotification,
-  Recapcha,
-} from 'nuudel-main';
+import { ProfileCallback, Upload, Remove, SentNotification } from 'nuudel-main';
 
 import fastifyMultipart from 'fastify-multipart';
 import fastifyCompress from 'fastify-compress';
@@ -203,7 +197,7 @@ app.decorate('authenticate', async (request, reply) => {
   }
 });
 
-app.post('/recapcha', Recapcha);
+//app.post('/recapcha', Recaptcha);
 app.post('/upload', { preValidation: [(app as any).authenticate] }, Upload);
 app.post('/remove', { preValidation: [(app as any).authenticate] }, Remove);
 app.post(

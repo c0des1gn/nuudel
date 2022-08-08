@@ -25,7 +25,7 @@ import { Note, Image, Link } from 'nuudel-main';
 import { ImageObj, ImageInput } from './image.resolver';
 import { Country, Currency } from '../enums';
 import { ObjectId } from 'mongodb';
-import { IContext } from 'nuudel-main';
+import type { IContext } from 'nuudel-main';
 import { Min } from 'class-validator';
 
 @ObjectType()

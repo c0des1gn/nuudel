@@ -26,7 +26,7 @@ import { registerEnumType } from 'type-graphql';
 import { Note, Image, Link } from 'nuudel-main';
 import { ImageObj, ImageInput } from './image.resolver';
 import { ScreenType, Permission } from '../enums';
-import { IContext } from 'nuudel-main';
+import type { IContext } from 'nuudel-main';
 
 @ObjectType()
 export class Page extends CoreType {

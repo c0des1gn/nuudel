@@ -23,7 +23,7 @@ import {
 } from './core.model';
 import { Note } from 'nuudel-main';
 import { ObjectId } from 'mongodb';
-import { IContext } from 'nuudel-main';
+import type { IContext } from 'nuudel-main';
 
 @ObjectType()
 export class Post extends CoreType {

@@ -8,7 +8,7 @@ import {
 import { ObjectId, Binary, Timestamp } from 'mongodb';
 import { Note, Image, Link, Lookup } from 'nuudel-main';
 import { TypegooseMiddleware } from './typegoose-middleware';
-import { IContext } from 'nuudel-main';
+import type { IContext } from 'nuudel-main';
 import { buildSchema, AuthChecker } from 'type-graphql';
 import path from 'path';
 import { PubSub } from 'graphql-subscriptions';

@@ -26,7 +26,7 @@ import { registerEnumType } from 'type-graphql';
 import { Note, Image, Link } from 'nuudel-main';
 import { ImageObj, ImageInput } from './image.resolver';
 import { Country, Currency } from '../enums';
-import { IContext } from 'nuudel-main';
+import type { IContext } from 'nuudel-main';
 import { Counter, CounterInput } from './counter.resolver';
 import { AuthenticationError, ValidationError } from 'apollo-server-fastify';
 import { converter } from 'nuudel-main';

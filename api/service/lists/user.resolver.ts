@@ -48,10 +48,10 @@ import {
 } from '../enums';
 import bcrypt from 'bcryptjs';
 import { AuthenticationError, ValidationError } from 'apollo-server-fastify';
-import { IContext } from 'nuudel-main';
+import type { IContext } from 'nuudel-main';
 import { fbProfile } from 'nuudel-main';
 import { Message, reset, verify } from '../../mailer/';
-import { Send } from 'nuudel-main';
+import { Send, getHash } from 'nuudel-main';
 import { Min, Max, Length } from 'class-validator';
 import { Verify } from './verify.resolver';
 import { t } from '../../loc/I18n';
@@ -754,11 +754,14 @@ export class UserResolver extends UserBaseResolver {
     @Arg('token', type => String, { nullable: false }) token: string,
     @Ctx() { app }: IContext,
   ): Promise<boolean> {
-    const decoded: any = app.jwt.verify(token);
-    if (decoded) {
-      email = email.toLowerCase();
+    if (!email || !token) {
+      return false;
+    }
+
+    if (token === getHash()) {
+      email = email.trim().toLowerCase();
       const _user = await this.Model.findOne({
-        $or: [{ email: email }, { _verifiedEmail: email }],
+        $or: [{email: email}, {_verifiedEmail: email}],
       }).select('-password');
       return !_user;
     }
@@ -771,10 +774,13 @@ export class UserResolver extends UserBaseResolver {
     @Arg('token', type => String, { nullable: false }) token: string,
     @Ctx() { app }: IContext,
   ): Promise<boolean> {
-    const decoded: any = app.jwt.verify(token);
-    if (decoded) {
+    if (!username || !token) {
+      return false;
+    }
+
+    if (token === getHash()) {
       const _user = await this.Model.findOne({
-        username: username.toLowerCase(),
+        username: username.trim().toLowerCase(),
       }).select('-password');
       return !_user;
     }

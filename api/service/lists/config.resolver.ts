@@ -25,7 +25,7 @@ import { ObjectId } from 'mongodb';
 import { Image, Link } from 'nuudel-main';
 import { ImageObj, ImageInput } from './image.resolver';
 import { AuthenticationError } from 'apollo-server-fastify';
-import { IContext } from 'nuudel-main';
+import type { IContext } from 'nuudel-main';
 import fs from 'fs';
 import path from 'path';
 

@@ -32,6 +32,7 @@ import {
 } from '@apollo/react-hooks';
 import { USER_TOKEN } from '../../config';
 import { UI } from 'nuudel-core';
+import { getHash } from 'nuudel-utils';
 import { t } from '@Translate';
 import { Message, TOGGLE_SNACKBAR_MUTATION } from 'nuudel-core';
 import { onError } from 'nuudel-core';
@@ -131,7 +132,7 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
           query: USERNAME_AVAILABLE,
           variables: {
             username: username.trim().toLowerCase(),
-            token: UI.getItem(USER_TOKEN),
+            token: getHash(),
           },
         })
         .then(r => {
@@ -153,7 +154,7 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
           query: EMAIL_AVAILABLE,
           variables: {
             email: email.trim().toLowerCase(),
-            token: UI.getItem(USER_TOKEN),
+            token: getHash(),
           },
         })
         .then(r => {
