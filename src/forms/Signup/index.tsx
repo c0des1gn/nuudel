@@ -65,7 +65,6 @@ const ADD_USER = gql`
       firstname
       lastname
       email
-      type
       phone
       mobile
       avatar

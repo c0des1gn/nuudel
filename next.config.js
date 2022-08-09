@@ -28,7 +28,7 @@ module.exports = withTM({
     dirs: ['src/pages', 'src/components', 'src/widgets'], // Only run ESLint on the 'pages' and 'utils' directories during production builds (next build)
     ignoreDuringBuilds: true,
   },
-  //reactStrictMode: true,
+  //reactStrictMode: false,
   env: {
     ENV: process.env.NODE_ENV,
     HOST: process.env.HOST,
