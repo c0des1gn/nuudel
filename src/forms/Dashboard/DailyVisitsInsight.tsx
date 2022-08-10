@@ -1,16 +1,5 @@
 import React from 'react';
-import dynamic from 'next/dynamic';
-//import Loadable from 'react-loadable';
-//import Spinner from '../Spinner';
-
-const Chart = dynamic<any>(() => import('react-apexcharts'), {
-  ssr: false,
-});
-
-//const Chart = Loadable({
-//  loader: () => import('react-apexcharts'),
-//  loading: Spinner,
-//});
+import { Chart } from './Chart';
 
 import {
   Box,

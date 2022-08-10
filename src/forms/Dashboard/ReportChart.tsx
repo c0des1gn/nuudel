@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import Loadable from 'react-loadable';
-import { Spinner } from 'nuudel-core';
 import { t } from '@Translate';
+import { Chart } from './Chart';
 
-const Chart = Loadable({
-  loader: () => import('react-apexcharts'),
-  loading: Spinner,
-});
 
 import {
   Box,
