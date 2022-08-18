@@ -231,6 +231,16 @@ export function BaseResolver<T, P>(
       return dat;
     }
 
+    protected sortParse(sort: any): any {
+      let _sort = {};
+      if (sort) {
+        try {
+          _sort = JSON.parse(sort);
+        } catch {}
+      }
+      return _sort;
+    }
+
     @Authorized()
     @Query(returns => [objType], { name: `getAll${objType.name}` })
     async getAll(
@@ -249,7 +259,7 @@ export function BaseResolver<T, P>(
         !filter ? {} : this.JSONparse(filter),
         user,
       );
-      sort = sort ? JSON.parse(sort) : {};
+      sort = this.sortParse(sort);
 
       const result = await this.Model.find(_filter)
         .sort(sort)
@@ -284,7 +294,7 @@ export function BaseResolver<T, P>(
         !pr.filter ? {} : this.JSONparse(pr.filter),
         user,
       );
-      const sort = !pr.sort ? {} : JSON.parse(pr.sort);
+      const sort = this.sortParse(pr.sort);
       const total: number =
         pr.total === 0 || pr.skip == 0
           ? await this.Model.find(filter).countDocuments()
