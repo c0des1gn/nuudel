@@ -209,6 +209,7 @@ export default function HeaderUserbox() {
             <ListItem className="">
               <Button
                 onClick={() => {
+                  handleClose();
                   logout();
                 }}
                 fullWidth={true}

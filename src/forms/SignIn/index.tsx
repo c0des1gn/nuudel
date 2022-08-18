@@ -72,6 +72,8 @@ const SignInForm: FunctionComponent<IProps> = (props: IProps) => {
             name={fieldName}
             margin="normal"
             autoComplete="username"
+            autoCorrect="off"
+            inputProps=\{{ autoCapitalize: 'none' }}
             fullWidth
             error={error && !!error.message}
           />
@@ -96,6 +98,8 @@ const SignInForm: FunctionComponent<IProps> = (props: IProps) => {
             onBlur={onBlur}
             name={fieldName}
             autoComplete="current-password"
+            autoCorrect="off"
+            inputProps=\{{ autoCapitalize: 'none' }}
             margin="normal"
             fullWidth
             error={error && !!error.message}
