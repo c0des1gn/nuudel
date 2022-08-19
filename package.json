@@ -30,7 +30,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@apollo/react-hooks": "^4.0.0",
     "@devexpress/dx-react-core": "^2.7.5",
     "@devexpress/dx-react-grid": "^2.7.5",
     "@devexpress/dx-react-grid-material-ui": "^2.7.5",
@@ -49,7 +48,6 @@
     "fastify-cron": "^1.1.2",
     "fastify-jwt": "^3.2.1",
     "fastify-multipart": "^5.1.0",
-    "graphql": "^15.7.2",
     "i18next": "^21.2.6",
     "lodash.debounce": "^4.0.8",
     "lodash.memoize": "^4.1.2",
