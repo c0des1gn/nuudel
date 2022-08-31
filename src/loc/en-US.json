@@ -440,5 +440,9 @@
   "min": "min",
   "max": "max",
   "avg": "avg",
+  "Post": "Post",
+  "Posts": "Posts",
+  "Add post": "Add post",
+  "Add page": "Add page",
   "From": "From"
 }
