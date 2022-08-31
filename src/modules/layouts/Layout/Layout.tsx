@@ -203,6 +203,10 @@ const heading = (path: string, query: any) => {
     return match;
   });
   let line4 = line3.split('/');
+    // page path fix on blog
+    if (query?.post_type === 'page' && line4[line4.length - 1] === 'post') {
+      line4[line4.length - 1] = 'page';
+    }
   line4 = line4.map(p => t(capitalizeFirstLetter(p), { defaultValue: p }));
   return line4.join(' > '); //slash with >
 };
