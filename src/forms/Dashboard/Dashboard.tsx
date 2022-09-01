@@ -5,7 +5,7 @@ import Delivered from './Delivered';
 import NotDelivered from './NotDelivered';
 import TotalProfit from './TotalProfit';
 import ReportChart from './ReportChart';
-import { t } from 'api/loc/I18n';
+import { t } from '@Translate';
 
 const useStyles = makeStyles(theme => ({
   root: {
