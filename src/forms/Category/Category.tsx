@@ -295,7 +295,7 @@ const Category: React.FC = () => {
   } else {
     return (
       <div>
-        Loading <Spinner overflowHide />
+        <Spinner overflowHide />{' ' + t('loading')}
       </div>
     );
   }
