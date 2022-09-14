@@ -51,7 +51,7 @@ import { AuthenticationError, ValidationError } from 'apollo-server-fastify';
 import type { IContext } from 'nuudel-main';
 import { fbProfile } from 'nuudel-main';
 import { Message, reset, verify } from '../../mailer/';
-import { Send, getHash } from 'nuudel-main';
+import { Send, checkHash } from 'nuudel-main';
 import { Min, Max, Length } from 'class-validator';
 import { Verify } from './verify.resolver';
 import { t } from '../../loc/I18n';
@@ -758,7 +758,7 @@ export class UserResolver extends UserBaseResolver {
       return false;
     }
 
-    if (token === getHash()) {
+    if (checkHash(token)) {
       email = email.trim().toLowerCase();
       const _user = await this.Model.findOne({
         $or: [{email: email}, {_verifiedEmail: email}],
@@ -778,7 +778,7 @@ export class UserResolver extends UserBaseResolver {
       return false;
     }
 
-    if (token === getHash()) {
+    if (checkHash(token)) {
       const _user = await this.Model.findOne({
         username: username.trim().toLowerCase(),
       }).select('-password');

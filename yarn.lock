@@ -5485,7 +5485,7 @@ graphql@*:
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.3.0.tgz#a91e24d10babf9e60c706919bb182b53ccdffc05"
   integrity sha512-xm+ANmA16BzCT5pLjuXySbQVFwH3oJctUVdy81w1sV0vBU0KgDdBGtxQOUd5zqOBk/JayAFeG8Dlmeq74rjm/A==
 
-graphql@15.7.2, graphql@^15.7.2:
+graphql@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.7.2.tgz#85ab0eeb83722977151b3feb4d631b5f2ab287ef"
   integrity sha512-AnnKk7hFQFmU/2I9YSQf3xw44ctnSFCfp3zE0N6W174gqe9fWG/2rKaKxROK7CcI3XtERpjEKFqts8o319Kf7A==
@@ -7770,22 +7770,22 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
 
-nuudel-core@^0.1.121:
-  version "0.1.121"
-  resolved "https://registry.yarnpkg.com/nuudel-core/-/nuudel-core-0.1.121.tgz#d3601dcf1032ec8f68bb3a7ed99c83334559386e"
-  integrity sha512-XCamlaSMmOoLu2UKX6mOi9K3sDwhvhDpeGoPROtp15MXUSzTv6+uWrO1GRnorgrTaKVniR0xAg2SNV2p4dd2RA==
+nuudel-core@^0.1.129:
+  version "0.1.129"
+  resolved "https://registry.yarnpkg.com/nuudel-core/-/nuudel-core-0.1.129.tgz#5c46fdd111a3a1f0f8b63e90ec2835738b2bc45f"
+  integrity sha512-k9go2KuJDeXTQUhtfNpp7UJeYHv4pJdPFnKjFKFSyb4f9fEu2MzkvUMGeFIiA6tt89eTq1UIJSGcLinIYJkR/Q==
   dependencies:
     "@apollo/client" "3.5.10"
     "@apollo/react-hooks" "^4.0.0"
     "@ckeditor/ckeditor5-build-classic" "^34.1.0"
     "@ckeditor/ckeditor5-react" "^5.0.2"
     "@ckeditor/ckeditor5-source-editing" "^34.1.0"
-    graphql "15.7.2"
+    graphql "^15.7.2"
     graphql-2-json-schema "0.2.0"
     i18next "^21.6.6"
     material-ui-chip-input "^1.1.0"
     next-with-apollo "^5.2.1"
-    nuudel-utils "^0.1.54"
+    nuudel-utils "^0.1.56"
     pica "^9.0.1"
     react-device-detect "^2.1.2"
     react-dropzone "^11.5.1"
@@ -7796,10 +7796,10 @@ nuudel-core@^0.1.121:
     redux "^4.1.2"
     schema-dts "^0.8.3"
 
-nuudel-main@^1.0.44:
-  version "1.0.44"
-  resolved "https://registry.yarnpkg.com/nuudel-main/-/nuudel-main-1.0.44.tgz#41ed3c6f9ab59892cd3169c86aab55ac626d7dae"
-  integrity sha512-H340uycN2NMANduyNF2r68jyJ8cIuCaZVxaosnwHs3G/XqGNrtemeitdwMyo09JEpnPB3XPtJkKg+rqPMD2/Pg==
+nuudel-main@^1.0.45:
+  version "1.0.45"
+  resolved "https://registry.yarnpkg.com/nuudel-main/-/nuudel-main-1.0.45.tgz#af0d7e31c7f3f9a845e631fd3928dae402116c73"
+  integrity sha512-siaVqm6p2Qv0z5/oerAn8C0ViaZ45BqWeHZP6NiNNwwhSsTs4N/9bKPBK6gIsRzOh9XNIe6XE+TeEWutGZQRSQ==
   dependencies:
     "@aws-sdk/client-ses" "^3.53.0"
     apn "^2.2.0"
@@ -7814,10 +7814,10 @@ nuudel-main@^1.0.44:
     sharp "^0.29.3"
     uuid "^8.3.1"
 
-nuudel-utils@^0.1.54:
-  version "0.1.54"
-  resolved "https://registry.yarnpkg.com/nuudel-utils/-/nuudel-utils-0.1.54.tgz#ae276072d249ab7ca61cbe3e93a2686664ef069f"
-  integrity sha512-BITp1GW/Av6NXz79FTSr4n48irK0HTPRV1afZsLVnEIkIUBhOmykA9kpRwT4VUYThHRjoep9RExli3B+hssXPg==
+nuudel-utils@^0.1.56:
+  version "0.1.56"
+  resolved "https://registry.yarnpkg.com/nuudel-utils/-/nuudel-utils-0.1.56.tgz#a3b70af31e566c7c067037c25cdfd21f4d0f527d"
+  integrity sha512-64AcEA9DOhS1PRMB8Jh86umWiv8fTa9Ib7vnbP2WSm+RBzSbKuVhNHg7uRt5I4fXBiLS9Xs0kS4G81Q9trEtMQ==
   dependencies:
     axios "0.24.0"
     crypto-js "3.1.9-1"

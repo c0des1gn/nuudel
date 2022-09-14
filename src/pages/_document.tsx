@@ -57,10 +57,6 @@ class MyDocument extends Document {
             href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500&display=swap"
             rel="stylesheet"
           />
-          <meta
-            name="viewport"
-            content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
-          />
         </Head>
         <body>
           <script src="/noflash.js" />

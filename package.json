@@ -1,6 +1,6 @@
 {
   "name": "{{name}}",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "{{description}}",
   "author": "{{author}}",
   "license": "{{license}}",
@@ -54,8 +54,8 @@
     "mailgen": "^2.0.15",
     "next": "^12.1.0",
     "next-transpile-modules": "^9.0.0",
-    "nuudel-core": "^0.1.116",
-    "nuudel-main": "^1.0.44",
+    "nuudel-core": "^0.1.129",
+    "nuudel-main": "^1.0.45",
     "react": "^17.0.2",
     "react-apexcharts": "^1.3.9",
     "react-dom": "^17.0.2",
