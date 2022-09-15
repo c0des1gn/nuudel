@@ -49,15 +49,9 @@ const App = ({
     }
   }
 
-  let data: any = { currentUser: undefined };
-
-  if (!unauthenticatedPathnames.includes(pathname) && !isServer) {
-    try {
-      data = useQuery(currentUserQuery).data;
-    } catch {
-      console.log(pathname, 'user:', data?.currentUser?.username);
-    }
-  }
+  const { data } = useQuery(currentUserQuery, {
+    skip: unauthenticatedPathnames.includes(pathname) || isServer || !userId,
+  });
 
   const isAnUnauthenticatedPage =
     pathname !== undefined && unauthenticatedPathnames.includes(pathname);
@@ -89,15 +83,15 @@ const App = ({
       query={query}
       IsDlg
       pathname={pathname}
-      user={data.currentUser}
+      user={data?.currentUser}
       {...props}
     />
   ) : (
-    <Layout user={data.currentUser}>
+    <Layout user={data?.currentUser}>
       <Component
         query={query}
         pathname={pathname}
-        user={data.currentUser}
+        user={data?.currentUser}
         {...props}
       />
     </Layout>
