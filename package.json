@@ -54,7 +54,7 @@
     "mailgen": "^2.0.15",
     "next": "^12.1.0",
     "next-transpile-modules": "^9.0.0",
-    "nuudel-core": "^0.1.129",
+    "nuudel-core": "^0.1.131",
     "nuudel-main": "^1.0.45",
     "react": "^17.0.2",
     "react-apexcharts": "^1.3.9",

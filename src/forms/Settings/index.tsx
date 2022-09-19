@@ -15,6 +15,7 @@ import {
   Upload,
   Grid,
   TagsInput,
+  ColorPicker,
 } from 'nuudel-core';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -333,6 +334,16 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
                   error={!!errors.phone}
                   helperText={errors?.phone?.message}
                   onChange={e => setValue('phone', e.target.value)}
+                />
+              </Grid>
+              <Grid item md={6} xs={12} className={classes.switchCont}>
+                <ColorPicker
+                  label={t('color')}
+                  color={watch('color')}
+                  presetColors={[]}
+                  defaultColor={initialValues.color}
+                  showInput={true}
+                  onChange={value => setValue('color', value)}
                 />
               </Grid>
               <Grid item md={6} xs={12} className={classes.switchCont}>

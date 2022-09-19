@@ -7770,10 +7770,10 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
 
-nuudel-core@^0.1.129:
-  version "0.1.129"
-  resolved "https://registry.yarnpkg.com/nuudel-core/-/nuudel-core-0.1.129.tgz#5c46fdd111a3a1f0f8b63e90ec2835738b2bc45f"
-  integrity sha512-k9go2KuJDeXTQUhtfNpp7UJeYHv4pJdPFnKjFKFSyb4f9fEu2MzkvUMGeFIiA6tt89eTq1UIJSGcLinIYJkR/Q==
+nuudel-core@^0.1.131:
+  version "0.1.131"
+  resolved "https://registry.yarnpkg.com/nuudel-core/-/nuudel-core-0.1.131.tgz#02562b7d047e73d16ca57ccf004da39577503067"
+  integrity sha512-AurU1YZL8vgH58iB2g000TdXo5A37p9S8Qqwy2ZnRLSRpfu0gdCNZMsOG+w/R2R6Pbn0zJzcdr/uG4jzIhW1hw==
   dependencies:
     "@apollo/client" "3.5.10"
     "@apollo/react-hooks" "^4.0.0"
@@ -7785,8 +7785,9 @@ nuudel-core@^0.1.129:
     i18next "^21.6.6"
     material-ui-chip-input "^1.1.0"
     next-with-apollo "^5.2.1"
-    nuudel-utils "^0.1.56"
+    nuudel-utils "^0.1.57"
     pica "^9.0.1"
+    react-colorful "^5.6.1"
     react-device-detect "^2.1.2"
     react-dropzone "^11.5.1"
     react-google-recaptcha-v3 "^1.10.0"
@@ -7796,10 +7797,10 @@ nuudel-core@^0.1.129:
     redux "^4.1.2"
     schema-dts "^0.8.3"
 
-nuudel-main@^1.0.45:
-  version "1.0.45"
-  resolved "https://registry.yarnpkg.com/nuudel-main/-/nuudel-main-1.0.45.tgz#af0d7e31c7f3f9a845e631fd3928dae402116c73"
-  integrity sha512-siaVqm6p2Qv0z5/oerAn8C0ViaZ45BqWeHZP6NiNNwwhSsTs4N/9bKPBK6gIsRzOh9XNIe6XE+TeEWutGZQRSQ==
+nuudel-main@^1.0.46:
+  version "1.0.46"
+  resolved "https://registry.yarnpkg.com/nuudel-main/-/nuudel-main-1.0.46.tgz#686d2847c2dd1c2fc6f7e0e3dd1c2d0c737c3f46"
+  integrity sha512-Quo6rDaqqMRozAda0ClxxGIoXFvxQfrU5XB919y9wfqUoPO+AiuN9jEzeYGCGdUMNmGqGKJ7EhxRtFxdUGRy3Q==
   dependencies:
     "@aws-sdk/client-ses" "^3.53.0"
     apn "^2.2.0"
@@ -7814,10 +7815,10 @@ nuudel-main@^1.0.45:
     sharp "^0.29.3"
     uuid "^8.3.1"
 
-nuudel-utils@^0.1.56:
-  version "0.1.56"
-  resolved "https://registry.yarnpkg.com/nuudel-utils/-/nuudel-utils-0.1.56.tgz#a3b70af31e566c7c067037c25cdfd21f4d0f527d"
-  integrity sha512-64AcEA9DOhS1PRMB8Jh86umWiv8fTa9Ib7vnbP2WSm+RBzSbKuVhNHg7uRt5I4fXBiLS9Xs0kS4G81Q9trEtMQ==
+nuudel-utils@^0.1.57:
+  version "0.1.57"
+  resolved "https://registry.yarnpkg.com/nuudel-utils/-/nuudel-utils-0.1.57.tgz#28a65e3192d58a2c73be6deceb422184da846273"
+  integrity sha512-4JraE/gKA+Yo6iOVA5j8Q85g1lvFoB5LGS1YKPIEuSc22ONfWPyBqKkgCQA5rvoTdims7oOmnS5FRi7Oo+rfGg==
   dependencies:
     axios "0.24.0"
     crypto-js "3.1.9-1"
@@ -8515,6 +8516,11 @@ react-apexcharts@^1.3.9:
   integrity sha512-KPonT5uQPHOHSVgTNEzpB0HhCkZtoicQYGjR9P+3DRDSgTsC+DM2vDUfo/B2Fn1m+wdgVeDXWL0VJYDc6JD/tw==
   dependencies:
     prop-types "^15.5.7"
+
+react-colorful@^5.6.1:
+  version "5.6.1"
+  resolved "https://registry.yarnpkg.com/react-colorful/-/react-colorful-5.6.1.tgz#7dc2aed2d7c72fac89694e834d179e32f3da563b"
+  integrity sha512-1exovf0uGTGyq5mXQT0zgQ80uvj2PCwvF8zY1RN9/vbJVSjSo3fsB/4L3ObbF7u70NduSiK4xu4Y6q1MHoUGEw==
 
 react-device-detect@^2.1.2:
   version "2.1.2"
