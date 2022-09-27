@@ -57,7 +57,7 @@ const app: FastifyInstance<
 const HOST = '0.0.0.0'; // replace with own server IP
 
 const bootstrap = async () => {
-  ConnectDB(async dbURL => {
+  ConnectDB(async (dbURL) => {
     app.log.info(`Mongoose Connected at ${dbURL}`);
     try {
       const schema = await makeSchema();
@@ -84,8 +84,10 @@ const bootstrap = async () => {
 
       const server = new ApolloServer({
         schema,
-        context: ctx => makeContext(app, ctx),
+        context: (ctx) => makeContext(app, ctx),
         introspection: true,
+        //csrfPrevention: process.env.NODE_ENV !== 'development',
+        //cache: 'bounded',
         /*
         formatResponse(response, { context }: any) {
           if (!context.deviceId) {
@@ -275,10 +277,10 @@ app.addHook('onRequest', async (request, reply) => {
   }
 });
 
-process.on('uncaughtException', error => {
+process.on('uncaughtException', (error) => {
   console.error(error);
 });
-process.on('unhandledRejection', error => {
+process.on('unhandledRejection', (error) => {
   console.error(error);
 });
 
