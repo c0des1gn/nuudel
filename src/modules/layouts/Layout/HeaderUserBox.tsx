@@ -82,9 +82,11 @@ export default function HeaderUserbox() {
     logoutMutation,
     {
       onCompleted: () => {
+        try {
+          client.cache.reset();
+          //client.resetStore(); //To reset the cache without refetching active queries, use client.clearStore() instead of
+        } catch {}
         client.clearStore();
-        //client.cache.reset()
-        //client.resetStore(); //To reset the cache without refetching active queries, use client.clearStore() instead of
         signOut(router); // redirect user to login page
       },
     },

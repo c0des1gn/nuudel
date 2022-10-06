@@ -70,7 +70,10 @@ const App = ({
   //  return <Spinner color="primary" size={20} />;
   //}
 
-  if (!isAnUnauthenticatedPage && !data?.currentUser) {
+  if (
+    !isAnUnauthenticatedPage &&
+    (!data?.currentUser || userId !== data?.currentUser._id)
+  ) {
     return null;
   }
 
