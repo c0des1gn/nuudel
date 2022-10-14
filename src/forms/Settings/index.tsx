@@ -30,7 +30,8 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     switchCont: {
       display: 'flex',
-      justifyContent: 'flex-end',
+      justifyContent: 'space-between',
+      alignItems: 'center',
     },
     submitButton: {
       marginTop: theme.spacing(2),
@@ -82,9 +83,7 @@ const settingsSchema: Yup.SchemaOf<EditSettingsForm> = Yup.object().shape({
   site_title: Yup.string().required('Please enter web title'),
   site_description: Yup.string(),
   site_keywords: Yup.array(), //Yup.string().matches( /^[0-9a-zA-Z\s\,]+$/, t('OnlyLatinCharacters')),
-  posts_per_page: Yup.number()
-    .min(1)
-    .max(200),
+  posts_per_page: Yup.number().min(1).max(200),
   logo: Yup.object().shape({ uri: Yup.string() }),
   phone: Yup.string(),
   location: Yup.string(),
@@ -147,7 +146,6 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
   const [updateSettings] = useMutation<any, any>(UPDATE_SETTINGS_MUTATION, {
     onCompleted: data => {
       router.push('/admin/settings');
-      //console.log('Data ' + JSON.stringify(data));
     },
   });
 
@@ -165,7 +163,6 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
         },
       })
         .then(data => {
-          console.log('then of editSettings');
           messageMutation({
             variables: { msg: 'Settings added successfully', type: 'success' },
           });
@@ -345,11 +342,9 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
                   showInput={true}
                   onChange={value => setValue('color', value)}
                 />
-              </Grid>
-              <Grid item md={6} xs={12} className={classes.switchCont}>
                 <Switch
                   {...register('active')}
-                  checked={watch('active') === true}
+                  value={watch('active')}
                   label={t('setting.active')}
                   defaultChecked={initialValues.active}
                   onChange={e => setValue('active', e.target.checked)}

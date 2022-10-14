@@ -72,7 +72,7 @@ const App = ({
 
   if (
     !isAnUnauthenticatedPage &&
-    (!data?.currentUser || userId !== data?.currentUser._id)
+    (!data?.currentUser || userId !== data?.currentUser?._id)
   ) {
     return null;
   }
