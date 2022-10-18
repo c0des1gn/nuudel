@@ -802,22 +802,27 @@ export class UserResolver extends UserBaseResolver {
     return true;
   }
 
+  @Authorized()
   @Query(returns => Token)
   async refresh(
     @Arg('refresh_token', { nullable: false }) refresh_token: string,
     @Ctx() ctx: IContext,
   ) {
     let decoded: any = ctx.app.jwt.verify(refresh_token);
-    if (decoded) {
+    if (decoded && decoded._id === ctx.user?._id) {
       delete decoded.iat;
       delete decoded.exp;
+      const { user } = ctx;
       return {
-        _id: new ObjectId(decoded._id),
+        _id: new ObjectId(user._id),
         currency: Currency.MNT,
         locale: Language.Mongolian,
         token: await ctx.app.jwt.sign(decoded, { expiresIn: '60d' }),
-        type: decoded.type,
-        status: decoded.status,
+        type: user.type,
+        status: user.status,
+        username: user.username,
+        email: user.email,
+        roles: user.roles,
       };
     } else {
       throw new AuthenticationError('Invalid refresh token');
