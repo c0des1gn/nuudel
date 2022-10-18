@@ -122,44 +122,44 @@ export class User extends CoreType {
   @Property({ required: false })
   _verifiedEmail: string;
 
-  @Field((type) => Date, { defaultValue: new Date('1970-01-01 12:00:00') })
+  @Field(type => Date, { defaultValue: new Date('1970-01-01 12:00:00') })
   @Property({ required: false })
   birthday: Date;
 
-  @Field((type) => Sex, { nullable: true, defaultValue: null })
+  @Field(type => Sex, { nullable: true, defaultValue: null })
   @Property({ required: false })
   gender: Sex;
 
-  @Field((type) => String, { nullable: true, defaultValue: '' })
+  @Field(type => String, { nullable: true, defaultValue: '' })
   @Property({ required: false })
   _fbId: string;
 
-  @Field((type) => String, { nullable: true, defaultValue: '' })
+  @Field(type => String, { nullable: true, defaultValue: '' })
   @Property({ required: false })
   _appleId: string;
 
-  @Field((type) => Note, { nullable: true, defaultValue: '' })
+  @Field(type => Note, { nullable: true, defaultValue: '' })
   @Property({ required: false })
   about: string;
 
-  @Field((type) => Image, { nullable: true })
+  @Field(type => Image, { nullable: true })
   @Property({ required: false })
   avatar: object;
 
-  @Field((type) => Link, { nullable: true })
+  @Field(type => Link, { nullable: true })
   @Property({ required: false })
   web: string;
 
   @Authorized()
-  @Field((type) => UserType, { defaultValue: UserType.User })
+  @Field(type => UserType, { defaultValue: UserType.User })
   @Property({ required: false })
   type: UserType;
 
-  @Field((type) => UserStatus, { defaultValue: UserStatus.Active })
+  @Field(type => UserStatus, { defaultValue: UserStatus.Active })
   @Property({ required: false })
   _status: UserStatus;
 
-  @Field((type) => Settings, {
+  @Field(type => Settings, {
     defaultValue: {
       notification: true,
       currency: Currency.MNT,
@@ -200,35 +200,35 @@ export class UserInput implements Partial<User> {
   @Field()
   email: string;
 
-  @Field((type) => Date)
+  @Field(type => Date)
   birthday: Date;
 
-  @Field((type) => Sex, { nullable: true, defaultValue: null })
+  @Field(type => Sex, { nullable: true, defaultValue: null })
   gender: Sex;
 
-  @Field((type) => String, { nullable: true, defaultValue: '' })
+  @Field(type => String, { nullable: true, defaultValue: '' })
   _fbId: string;
 
-  @Field((type) => String, { nullable: true, defaultValue: '' })
+  @Field(type => String, { nullable: true, defaultValue: '' })
   _appleId: string;
 
-  @Field((type) => Note, { nullable: true, defaultValue: '' })
+  @Field(type => Note, { nullable: true, defaultValue: '' })
   about?: string;
 
-  @Field((type) => ImageInput, { nullable: true })
+  @Field(type => ImageInput, { nullable: true })
   avatar: object;
 
-  @Field((type) => Link, { nullable: true })
+  @Field(type => Link, { nullable: true })
   web: string;
 
   @Authorized('Admin')
-  @Field((type) => UserType, { nullable: true, defaultValue: UserType.User })
+  @Field(type => UserType, { nullable: true, defaultValue: UserType.User })
   type: UserType;
 
-  @Field((type) => UserStatus, { defaultValue: UserStatus.Active })
+  @Field(type => UserStatus, { defaultValue: UserStatus.Active })
   _status: UserStatus;
 
-  @Field((type) => SettingsInput, {
+  @Field(type => SettingsInput, {
     defaultValue: {
       notification: true,
       currency: Currency.MNT,
@@ -253,32 +253,32 @@ export class UserArg {
   @Field()
   mobile?: string;
 
-  @Field((type) => Date)
+  @Field(type => Date)
   birthday: Date;
 
-  @Field((type) => Sex, { nullable: true, defaultValue: null })
+  @Field(type => Sex, { nullable: true, defaultValue: null })
   gender: Sex;
 
-  @Field((type) => String, { nullable: true, defaultValue: '' })
+  @Field(type => String, { nullable: true, defaultValue: '' })
   _fbId: string;
 
-  @Field((type) => String, { nullable: true, defaultValue: '' })
+  @Field(type => String, { nullable: true, defaultValue: '' })
   _appleId: string;
 
-  @Field((type) => Note, { nullable: true, defaultValue: '' })
+  @Field(type => Note, { nullable: true, defaultValue: '' })
   about?: string;
 
-  @Field((type) => ImageInput, { nullable: true })
+  @Field(type => ImageInput, { nullable: true })
   avatar: object;
 
-  @Field((type) => Link, { nullable: true })
+  @Field(type => Link, { nullable: true })
   web: string;
 
   @Authorized('Admin')
-  @Field((type) => UserType, { nullable: true, defaultValue: UserType.User })
+  @Field(type => UserType, { nullable: true, defaultValue: UserType.User })
   type: UserType;
 
-  @Field((type) => SettingsInput, {
+  @Field(type => SettingsInput, {
     defaultValue: {
       notification: true,
       currency: Currency.MNT,
@@ -295,14 +295,14 @@ export class IPermission {
   @Property()
   listname: string;
 
-  @Field((type) => Permission, { defaultValue: Permission.Read })
+  @Field(type => Permission, { defaultValue: Permission.Read })
   @Property()
   permission: Permission;
 }
 
 @ObjectType()
 export class CurrentUser {
-  @Field((type) => ObjectId, { nullable: true })
+  @Field(type => ObjectId, { nullable: true })
   @Property()
   readonly _id: ObjectId;
 
@@ -326,15 +326,15 @@ export class CurrentUser {
   @Property()
   _verifiedEmail: string;
 
-  @Field((type) => Image, { nullable: true })
+  @Field(type => Image, { nullable: true })
   @Property()
   avatar: object;
 
-  @Field((type) => UserType, { defaultValue: UserType.User })
+  @Field(type => UserType, { defaultValue: UserType.User })
   @Property()
   type: UserType;
 
-  @Field((type) => [IPermission], { defaultValue: [] })
+  @Field(type => [IPermission], { defaultValue: [] })
   @Property()
   permission: object[];
 
@@ -353,7 +353,7 @@ export class Token extends CoreType {
   @Property()
   token: string;
 
-  @Field((type) => String, { nullable: true, defaultValue: null })
+  @Field(type => String, { nullable: true, defaultValue: null })
   @Property()
   refreshToken?: string;
 
@@ -361,15 +361,15 @@ export class Token extends CoreType {
   @Property()
   type: UserType;
 
-  @Field((type) => Currency)
+  @Field(type => Currency)
   @Property()
   currency: Currency;
 
-  @Field((type) => Language)
+  @Field(type => Language)
   @Property()
   locale: Language;
 
-  @Field((type) => UserStatus)
+  @Field(type => UserStatus)
   @Property()
   status: UserStatus;
 }
@@ -406,11 +406,11 @@ export class ResetArg {
 
 @ObjectType()
 export class Courier {
-  @Field((type) => ObjectId, { nullable: true })
+  @Field(type => ObjectId, { nullable: true })
   @Property({ required: false })
   _id: ObjectId;
 
-  @Field((type) => String, { nullable: true })
+  @Field(type => String, { nullable: true })
   @Property({ required: false })
   username: string;
 
@@ -434,10 +434,10 @@ export class Courier {
 @InputType()
 @ArgsType()
 export class CourierInput implements Partial<Courier> {
-  @Field((type) => ObjectId, { nullable: true })
+  @Field(type => ObjectId, { nullable: true })
   _id: ObjectId;
 
-  @Field((type) => String, { nullable: true })
+  @Field(type => String, { nullable: true })
   username: string;
 
   @Field()
@@ -463,7 +463,7 @@ export class CourierResponse extends PaginatedResponse(Courier) {}
 
 const UserBaseResolver = BaseResolver<User, UserResponse>(User, UserResponse);
 
-@Resolver((of) => User)
+@Resolver(of => User)
 export class UserResolver extends UserBaseResolver {
   protected _verify: any;
   constructor() {
@@ -472,9 +472,9 @@ export class UserResolver extends UserBaseResolver {
   }
 
   @Authorized()
-  @Mutation((returns) => User, { name: `update${User.name}` })
+  @Mutation(returns => User, { name: `update${User.name}` })
   async updateItem(
-    @Arg('_id', (type) => ObjectId) _id: string,
+    @Arg('_id', type => ObjectId) _id: string,
     @Args() obj: UserArg,
     @Ctx() ctx: IContext,
   ): Promise<User> {
@@ -505,7 +505,7 @@ export class UserResolver extends UserBaseResolver {
       );
   }
 
-  @Mutation((returns) => User, { name: `add${User.name}` })
+  @Mutation(returns => User, { name: `add${User.name}` })
   async addItem(
     @Arg(`input${User.name}`, { nullable: true }) data: UserInput,
     @Ctx() ctx: IContext,
@@ -536,7 +536,7 @@ export class UserResolver extends UserBaseResolver {
   }
 
   @Authorized()
-  @Mutation((returns) => User)
+  @Mutation(returns => User)
   async changePassword(
     @Args() { oldpass, password, newpass }: ResetArg,
     @Ctx() { user }: IContext,
@@ -575,10 +575,10 @@ export class UserResolver extends UserBaseResolver {
   }
 
   @Authorized()
-  @Mutation((returns) => Boolean, { name: `updateEmail${User.name}` })
+  @Mutation(returns => Boolean, { name: `updateEmail${User.name}` })
   async updateEmail(
-    @Arg('email', (type) => String) email: string,
-    @Arg('pass', (type) => String) pass: string,
+    @Arg('email', type => String) email: string,
+    @Arg('pass', type => String) pass: string,
     @Ctx() { user }: IContext,
   ): Promise<boolean> {
     if (typeof user === 'undefined' || user._id.toString() === GUEST_USER_ID) {
@@ -609,9 +609,9 @@ export class UserResolver extends UserBaseResolver {
     return true;
   }
 
-  @Mutation((returns) => Boolean)
+  @Mutation(returns => Boolean)
   async requestPassword(
-    @Arg('email', (type) => String) email: string,
+    @Arg('email', type => String) email: string,
     @Ctx() { app }: IContext,
   ): Promise<boolean> {
     email = email.toLowerCase();
@@ -636,14 +636,14 @@ export class UserResolver extends UserBaseResolver {
     return false;
   }
 
-  @Mutation((returns) => Boolean)
+  @Mutation(returns => Boolean)
   async resetPassword(
     @Ctx() ctx: IContext,
-    @Arg('token', (type) => String, { nullable: false }) token: string,
-    @Arg('password', (type) => String) password: string,
-    @Arg('confirmPassword', (type) => String, { nullable: true })
+    @Arg('token', type => String, { nullable: false }) token: string,
+    @Arg('password', type => String) password: string,
+    @Arg('confirmPassword', type => String, { nullable: true })
     confirmPassword?: string,
-    @Arg('oldPassword', (type) => String, { nullable: true })
+    @Arg('oldPassword', type => String, { nullable: true })
     oldPassword?: string,
   ): Promise<boolean> {
     let r: any = undefined;
@@ -689,13 +689,14 @@ export class UserResolver extends UserBaseResolver {
     return !!r;
   }
 
-  @Mutation((returns) => Boolean)
+  @Authorized('Admin')
+  @Mutation(returns => Boolean)
   async passwordResetByAdmin(
     @Ctx() { user }: IContext,
-    @Arg('password', (type) => String) password: string,
-    @Arg('id', (type) => ObjectId, { nullable: true })
+    @Arg('password', type => String) password: string,
+    @Arg('id', type => ObjectId, { nullable: true })
     id?: string,
-    @Arg('email', (type) => String, { nullable: true }) email?: string,
+    @Arg('email', type => String, { nullable: true }) email?: string,
   ): Promise<boolean> {
     if (user?.type !== 'Admin') {
       return false;
@@ -726,10 +727,10 @@ export class UserResolver extends UserBaseResolver {
     return !!r;
   }
 
-  @Mutation((returns) => Boolean)
+  @Mutation(returns => Boolean)
   async resend(
-    @Arg('email', (type) => String) email: string,
-    @Arg('token', (type) => String, { nullable: false }) token: string,
+    @Arg('email', type => String) email: string,
+    @Arg('token', type => String, { nullable: false }) token: string,
     @Ctx() { app }: IContext,
   ): Promise<boolean> {
     const decoded: any = app.jwt.verify(token);
@@ -748,10 +749,10 @@ export class UserResolver extends UserBaseResolver {
     return false;
   }
 
-  @Query((returns) => Boolean)
+  @Query(returns => Boolean)
   async available(
-    @Arg('email', (type) => String) email: string,
-    @Arg('token', (type) => String, { nullable: false }) token: string,
+    @Arg('email', type => String) email: string,
+    @Arg('token', type => String, { nullable: false }) token: string,
     @Ctx() { app }: IContext,
   ): Promise<boolean> {
     if (!email || !token) {
@@ -768,10 +769,10 @@ export class UserResolver extends UserBaseResolver {
     return false;
   }
 
-  @Query((returns) => Boolean)
+  @Query(returns => Boolean)
   async possible(
-    @Arg('username', (type) => String) username: string,
-    @Arg('token', (type) => String, { nullable: false }) token: string,
+    @Arg('username', type => String) username: string,
+    @Arg('token', type => String, { nullable: false }) token: string,
     @Ctx() { app }: IContext,
   ): Promise<boolean> {
     if (!username || !token) {
@@ -787,12 +788,12 @@ export class UserResolver extends UserBaseResolver {
     return false;
   }
 
-  @Mutation((returns) => Boolean)
+  @Mutation(returns => Boolean)
   async logout(@Ctx() { app }: IContext) {
     return true;
   }
 
-  @Query((returns) => Boolean)
+  @Query(returns => Boolean)
   async signout(
     @Arg('token', { nullable: false }) token: string,
     @Ctx() ctx: IContext,
@@ -801,7 +802,7 @@ export class UserResolver extends UserBaseResolver {
     return true;
   }
 
-  @Query((returns) => Token)
+  @Query(returns => Token)
   async refresh(
     @Arg('refresh_token', { nullable: false }) refresh_token: string,
     @Ctx() ctx: IContext,
@@ -823,7 +824,7 @@ export class UserResolver extends UserBaseResolver {
     }
   }
 
-  @Query((returns) => Token)
+  @Query(returns => Token)
   async auth(@Args() { password, email }: LoginArg, @Ctx() ctx: IContext) {
     email = email.toLowerCase();
     const user = await this.Model.findOne({
@@ -864,7 +865,7 @@ export class UserResolver extends UserBaseResolver {
     };
   }
 
-  @Query((returns) => Token)
+  @Query(returns => Token)
   async oauth(
     @Args() { provider, accessToken }: OauthArg,
     @Ctx() ctx: IContext,
@@ -989,7 +990,7 @@ export class UserResolver extends UserBaseResolver {
     };
   }
 
-  @Query((returns) => CurrentUser, { name: `currentUser` })
+  @Query(returns => CurrentUser, { name: `currentUser` })
   async currentUser(@Ctx() ctx: IContext): Promise<CurrentUser> {
     if (!!ctx?.user?._id && ctx.user._id !== GUEST_USER_ID) {
       let r: any = await this.Model.findById(ctx.user._id).select('-password');
