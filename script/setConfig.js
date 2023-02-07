@@ -39,6 +39,12 @@ const main = async () => {
       //'Content-Type': 'application/json'
     },
   });
+  if (
+    data?.data?.readConfig?.base_url !== process?.env?.WEB &&
+    !data?.data?.readConfig?.base_url?.insludes('localhost')
+  ) {
+    throw new Error('Wrong domain');
+  }
   if (data && data.data) {
     console.log(data);
     fs.writeFileSync(filePath, JSON.stringify(data.data.readConfig, null, 2));
@@ -47,6 +53,4 @@ const main = async () => {
   }
 };
 
-main()
-  .then(() => console.log('Done.'))
-  .catch(ex => console.log(ex));
+main().then(() => console.log('Done.'));
