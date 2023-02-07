@@ -39,12 +39,6 @@ const main = async () => {
       //'Content-Type': 'application/json'
     },
   });
-  if (
-    data?.data?.readConfig?.base_url !== process?.env?.WEB &&
-    !data?.data?.readConfig?.base_url?.insludes('localhost')
-  ) {
-    throw new Error('Wrong domain');
-  }
   if (data && data.data) {
     console.log(data);
     fs.writeFileSync(filePath, JSON.stringify(data.data.readConfig, null, 2));
@@ -53,4 +47,25 @@ const main = async () => {
   }
 };
 
-main().then(() => console.log('Done.'));
+main()
+  .then(() => console.log('Done.'))
+  .catch(ex => {
+    let exit = false;
+    try {
+      const cnf = fs.readFileSync(filePath, { encoding: 'utf8' });
+      let json = JSON.parse(cnf);
+      if (
+        json?.base_url !== process?.env?.WEB &&
+        !json?.base_url.insludes('localhost')
+      ) {
+        exit = true;
+      }
+    } catch {
+      exit = true;
+    }
+
+    if (exit) {
+      throw new Error(ex.message);
+    }
+    console.log(ex.message);
+  });
