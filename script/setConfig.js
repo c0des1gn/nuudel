@@ -65,7 +65,7 @@ main()
     }
 
     if (exit) {
-      throw new Error(ex.message);
+      throw new Error('Wrong config');
     }
     console.log(ex.message);
   });
