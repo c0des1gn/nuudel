@@ -8454,10 +8454,10 @@ nuudel-core@^0.1.165:
     redux "^4.1.2"
     schema-dts "^0.8.3"
 
-nuudel-main@^1.0.68:
-  version "1.0.68"
-  resolved "https://registry.yarnpkg.com/nuudel-main/-/nuudel-main-1.0.68.tgz#bb29d781e02670f529b7d88a137fb99c9a76dc06"
-  integrity sha512-6TJLcZmSM8Ro0H+eOIzG0AZInerVaNmk5ymqS+rF9sg4C/PfkR2A26VZqToNEWd5ydsJuRRiMSZsrbi32L9gTA==
+nuudel-main@^1.0.69:
+  version "1.0.69"
+  resolved "https://registry.yarnpkg.com/nuudel-main/-/nuudel-main-1.0.69.tgz#456fc93971b960aa49e92a687b5c3124d5561372"
+  integrity sha512-XeRv6Pu0fWMvFKpdFG8OyFUtNnA0+dU2hptPLfuiG8N94Yv0Csgb9kjipuwnZjgZXdOa8pccv5BAOzG1rC2hkQ==
   dependencies:
     "@aws-sdk/client-ses" "^3.53.0"
     apn "^2.2.0"
