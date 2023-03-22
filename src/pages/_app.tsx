@@ -50,9 +50,10 @@ const MyApp: React.FC = ({ Component, pageProps, router }: any) => {
     }
   }
 
-  const theme = React.useMemo(() => thememode(darkMode?.value), [
-    darkMode.value,
-  ]);
+  const theme = React.useMemo(
+    () => thememode(darkMode?.value),
+    [darkMode.value],
+  );
 
   pageProps.pathname = router?.pathname;
   pageProps.query = router?.query;
@@ -81,7 +82,7 @@ const MyApp: React.FC = ({ Component, pageProps, router }: any) => {
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('globals', '${NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}');
+gtag('config', '${NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}');
 `,
   };
   return (

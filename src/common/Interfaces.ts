@@ -17,7 +17,3 @@ export interface IAppProps {
   user?: ICurrentUser;
   IsDlg?: boolean;
 }
-
-export interface IPartner {
-  custom: boolean;
-}
