@@ -1,17 +1,16 @@
-import I8 from 'i18next';
+import I8, { ReactOptions } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { USER_LANG } from '../config';
 import { UI } from 'nuudel-core';
 import memoize from 'lodash.memoize';
-
-const { NODE_ENV } = process.env;
+import Router from 'next/router';
 
 const translationGetters = {
   // lazy requires (metro bundler does not support symlinks)
   'en-US': () => require('../loc/en-US.json'),
   'mn-MN': () => require('../loc/mn-MN.json'),
 };
-const defaultLocale = 'mn-MN';
+const defaultLocale = UI.getItem(USER_LANG) || 'mn-MN';
 
 const translate = memoize(
   (key, config) => I8.t(key, config),
@@ -27,6 +26,7 @@ const changeLanguage = (
   UI.setItem(USER_LANG, languageTag);
   I8.changeLanguage(languageTag).then(t => {
     if (refresh) {
+      Router.reload();
     }
   });
 };
@@ -49,10 +49,11 @@ if (!I8.isInitialized) {
     },
     //updateMissing: false,
     //missingKeyNoValueFallbackToKey: true,
-    parseMissingKeyHandler: function(key) {
+    parseMissingKeyHandler: function (key) {
       return !key || typeof key !== 'string'
         ? ''
-        : key.split('.').pop() + (NODE_ENV === 'development' ? '!' : '');
+        : key.split('.').pop() +
+            (process?.env?.NODE_ENV === 'development' ? '!' : '');
     },
     react: {
       wait: true,

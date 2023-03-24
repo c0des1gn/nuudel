@@ -345,6 +345,18 @@ export class CurrentUser {
   @Field()
   @Property({ required: false })
   mobile: string;
+
+  @Field(type => Settings, {
+    defaultValue: {
+      notification: true,
+      currency: Currency.MNT,
+      locale: Language.Mongolian,
+      _devices: [],
+    },
+    nullable: true,
+  })
+  @Property({ required: false })
+  settings?: object;
 }
 
 @ObjectType()
@@ -995,6 +1007,27 @@ export class UserResolver extends UserBaseResolver {
     };
   }
 
+  @Authorized()
+  @Mutation(returns => Language, { name: `changeLanguage`, nullable: true })
+  async changeLanguage(
+    @Ctx() { user }: IContext,
+    @Arg('locale', type => Language, { nullable: false }) locale?: string,
+  ): Promise<Language> {
+    let r: any = undefined;
+    if (!!user?._id && user?._id !== GUEST_USER_ID && locale) {
+      r = await this.Model.findByIdAndUpdate(
+        user._id,
+        {
+          $set: {
+            'settings.locale': locale,
+          },
+        },
+        { new: true },
+      );
+    }
+    return r?.settings?.locale;
+  }
+
   @Query(returns => CurrentUser, { name: `currentUser` })
   async currentUser(@Ctx() ctx: IContext): Promise<CurrentUser> {
     if (!!ctx?.user?._id && ctx.user._id !== GUEST_USER_ID) {
@@ -1012,6 +1045,7 @@ export class UserResolver extends UserBaseResolver {
           permission: this.getPermission(ctx.user.type),
           phone: r.phone,
           mobile: r.mobile,
+          settings: r.settings,
         };
       }
     }

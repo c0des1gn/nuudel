@@ -8427,10 +8427,10 @@ nth-check@^2.0.0:
   dependencies:
     boolbase "^1.0.0"
 
-nuudel-core@^0.1.165:
-  version "0.1.165"
-  resolved "https://registry.yarnpkg.com/nuudel-core/-/nuudel-core-0.1.165.tgz#03832afaa33c96ae8521c30f4959848223b10dd8"
-  integrity sha512-SVch6+N1b5ACAgdugENgL66PuN42ZFrrfaeJ3A4nBuzbPTegI4jhDuJm4j8UNCWJ6qdqI84yzYUVXPVm/P0tVA==
+nuudel-core@^0.1.166:
+  version "0.1.166"
+  resolved "https://registry.yarnpkg.com/nuudel-core/-/nuudel-core-0.1.166.tgz#928c7ccf80464a50225e20f91e4b752381e06fe5"
+  integrity sha512-wKMM/VVtYlZXxaslreWcEMY/e406BWz62ZQi0k32Q8bFc0lsiHxGbTzUfQjW0WzDfkQTqbR355NCA7kOu8f1tw==
   dependencies:
     "@apollo/client" "3.5.10"
     "@apollo/react-hooks" "^4.0.0"
@@ -8442,7 +8442,7 @@ nuudel-core@^0.1.165:
     i18next "^21.6.6"
     material-ui-chip-input "^1.1.0"
     next-with-apollo "^5.2.1"
-    nuudel-utils "^0.1.65"
+    nuudel-utils "^0.1.67"
     pica "^9.0.1"
     react-colorful "^5.6.1"
     react-device-detect "^2.1.2"
@@ -8472,10 +8472,10 @@ nuudel-main@^1.0.70:
     sharp "^0.31.3"
     uuid "^8.3.1"
 
-nuudel-utils@^0.1.65:
-  version "0.1.65"
-  resolved "https://registry.yarnpkg.com/nuudel-utils/-/nuudel-utils-0.1.65.tgz#7570709244071dda264f3f72e260430a56f4ba8f"
-  integrity sha512-v6SC54qMKstDD4doTDNPDGCEnM977ibqf5sDI6SdBOkTE3iO4fb9N1fmljLrVt5w/Z8k8LXPjvKclhRjnSb4zA==
+nuudel-utils@^0.1.67:
+  version "0.1.67"
+  resolved "https://registry.yarnpkg.com/nuudel-utils/-/nuudel-utils-0.1.67.tgz#32686598ce6ef81d0a4a627fb059c36fab264a68"
+  integrity sha512-8bR65NL+UuN9VYEZpHWVg1KZsTVKKIlvbm3ZOGeIZIEZ8ondrSCv+JpRev5Yuid798ukIoJqr6Bcf/+Tr1uNSg==
   dependencies:
     axios "0.27.2"
     crypto-js "3.1.9-1"

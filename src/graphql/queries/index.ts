@@ -17,6 +17,12 @@ export const currentUserQuery = gql`
       }
       phone
       mobile
+      settings {
+        notification
+        currency
+        locale
+        _devices
+      }
     }
   }
 `;
