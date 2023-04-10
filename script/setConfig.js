@@ -56,7 +56,7 @@ main()
       let json = JSON.parse(cnf);
       if (
         json?.base_url !== process?.env?.WEB &&
-        !json?.base_url.insludes('localhost')
+        !json?.base_url?.includes('localhost')
       ) {
         exit = true;
       }
