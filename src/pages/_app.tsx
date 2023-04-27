@@ -5,7 +5,7 @@ import i18n from '@Translate';
 import Head from 'next/head';
 import { I18nextProvider } from 'react-i18next';
 import { ThemeProvider, CssBaseline } from '@material-ui/core';
-import { CONF } from '../config';
+import { CONF, DARKMODE } from '../config';
 import { UI } from 'nuudel-core';
 import { isServer } from 'nuudel-utils';
 import useDarkMode from 'use-dark-mode';
@@ -32,13 +32,13 @@ export type PageProps = {
 const MyApp: React.FC = ({ Component, pageProps, router }: any) => {
   // i opt out of localStorage and the built in onChange handler because I want all theming to be based on the user's OS preferences
   const darkMode = useDarkMode(false, {
-    storageKey: 'darkMode',
+    storageKey: DARKMODE,
     onChange: null,
   });
 
   if (!isServer) {
-    UI.setItem('DARKMODE', 'light');
-    let mode: boolean = UI.getItem('DARKMODE') === 'dark';
+    UI.setItem(DARKMODE, 'false');
+    let mode: boolean = 'true' === UI.getItem(DARKMODE);
     try {
       if (mode && !darkMode.value) {
         darkMode.enable();
@@ -77,14 +77,12 @@ const MyApp: React.FC = ({ Component, pageProps, router }: any) => {
     //  jssStyles.parentElement.removeChild(jssStyles);
     //}
   }, []);
-  const GA = {
-    __html: `
+  const GA = `
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', '${NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}');
-`,
-  };
+`;
   return (
     <I18nextProvider i18n={i18n}>
       <ThemeProvider theme={theme}>
@@ -105,7 +103,11 @@ gtag('config', '${NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}');
             ></script>
           )}
           {NEXT_PUBLIC_GOOGLE_ANALYTICS_ID && (
-            <script dangerouslySetInnerHTML={GA}></script>
+            <script
+              dangerouslySetInnerHTML={{
+                __html: GA,
+              }}
+            ></script>
           )}
         </Head>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}

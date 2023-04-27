@@ -35,3 +35,4 @@ if (!CONF || CONF.minVersion === '1.0.0') {
 }
 
 export const GUEST_USER_ID = '1234567890abcd0987654321';
+export const DARKMODE = 'darkMode';
