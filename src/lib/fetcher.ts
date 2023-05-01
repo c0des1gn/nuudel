@@ -1,9 +1,9 @@
 import axios from 'axios';
-import {UI} from 'nuudel-core';
-import {isServer} from 'nuudel-utils';
-import type { SWRConfiguration } from 'swr'
+import { UI } from 'nuudel-core';
+import { isServer } from 'nuudel-utils';
+import type { SWRConfiguration } from 'swr';
 
-const {WEB = ''} = process.env;
+const { WEB = '' } = process?.env;
 const pathname: string = 'api/graphql';
 
 export const fetcher = async (
@@ -18,7 +18,7 @@ export const fetcher = async (
       query: query,
       variables: variables,
     },
-    headers: {...(await UI.headers()), ...headers},
+    headers: { ...(await UI.headers()), ...headers },
   }).then(res => res.data);
 
 export const swrOptions: SWRConfiguration = {

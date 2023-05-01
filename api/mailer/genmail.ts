@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import { getModelForClass } from '@typegoose/typegoose';
 import { Verify } from '../service/lists/verify.resolver';
 import { t } from '../loc/I18n';
-const { DOMAIN, WEB } = process.env;
+const { DOMAIN, WEB } = process?.env;
 
 const host = 'https://' + DOMAIN;
 
@@ -21,7 +21,7 @@ const mailGenerator = new Mailgen({
 });
 
 // Prepare email contents
-export const reset = function(name: string, email: string, userId: string) {
+export const reset = function (name: string, email: string, userId: string) {
   const code = bcrypt.encodeBase64(crypto.pseudoRandomBytes(32), 32);
   const model = getModelForClass(Verify);
   const Form = new model({
@@ -50,7 +50,7 @@ export const reset = function(name: string, email: string, userId: string) {
   };
 };
 
-export const info = function(name: string, intro: string, outro: string) {
+export const info = function (name: string, intro: string, outro: string) {
   return {
     body: {
       name: name,
@@ -61,7 +61,7 @@ export const info = function(name: string, intro: string, outro: string) {
 };
 
 // Prepare email contents
-export const verify = function(
+export const verify = function (
   name: string,
   email: string,
   userId: string = '',
@@ -94,7 +94,7 @@ export const verify = function(
   };
 };
 
-export const receipt = function(name: string, data: any) {
+export const receipt = function (name: string, data: any) {
   const address: any = data.address;
   return {
     body: {
@@ -144,13 +144,13 @@ const getAdress = (address: any) => {
     address.city,
     address.country,
   ]
-    .filter(function(e) {
+    .filter(function (e) {
       return e;
     })
     .join(', ');
 };
 
-export const receiptCargo = function(name: string, data: any) {
+export const receiptCargo = function (name: string, data: any) {
   const product: any = data;
   return {
     body: {
@@ -184,7 +184,7 @@ export const receiptCargo = function(name: string, data: any) {
   };
 };
 
-export const Message = function(toMail, title, template) {
+export const Message = function (toMail, title, template) {
   // Message object
   const message = {
     // Comma separated list of recipients

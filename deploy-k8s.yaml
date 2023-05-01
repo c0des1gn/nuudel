@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: do-nyc3-k8s-nuudel
+  namespace: default
+  labels:
+    app.kubernetes.io/name: nuudel
+    run: do-nyc3-k8s-nuudel
+    app: do-nyc3-k8s-nuudel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: do-nyc3-k8s-nuudel
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: do-nyc3-k8s-nuudel
+    spec:
+      containers:
+        - name: nuudel-server
+          imagePullPolicy: Always
+          image: registry.digitalocean.com/registry-container/nuudel-server:latest
+          ports:
+            - containerPort: 8080
+              name: http-web-svc
+              protocol: TCP
+      imagePullSecrets:
+        - name: registry-registry-container
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: default
+  labels:
+    run: nginx-service
+spec:
+  selector:
+    run: do-nyc3-k8s-nuudel
+    app.kubernetes.io/name: proxy
+  ports:
+    - name: http-svc-port
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-k8s-nuudel
+  namespace: default
+  labels:
+    app: nuudel-nginx
+    app.kubernetes.io/name: ingress-nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  defaultBackend:
+    service:
+      name: nginx-service
+      port:
+        number: 80
+  ingressClassName: nginx

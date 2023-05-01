@@ -56,7 +56,7 @@ import { Min, Max, Length } from 'class-validator';
 import { Verify } from './verify.resolver';
 import { t } from '../../loc/I18n';
 
-//const { REFRESH_TOKEN_SECRET } = process.env;
+//const { REFRESH_TOKEN_SECRET } = process?.env;
 
 export const SALT_WORK_FACTOR = 10;
 export const GUEST_USER_ID = '1234567890abcd0987654321';

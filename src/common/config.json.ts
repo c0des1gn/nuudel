@@ -40,7 +40,7 @@ const CONFIG_QUERY = `
   }
 `;
 
-const { WEB = '' } = process.env;
+const { WEB = '' } = process?.env;
 const pathname: string = 'api/graphql';
 
 export async function getConfig(): Promise<Config> {

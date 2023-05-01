@@ -19,10 +19,10 @@ yarn next
 
 # docker
 
-yarn build:prod
-docker build --build-arg BRAND= -t nuudel_server .
-docker tag nuudel_server registry.digitalocean.com/your-container-register/nuudel_server
-docker push registry.digitalocean.com/your-container-register/nuudel_server:latest
+yarn script
+docker build --build-arg BRAND= -t nuudel-server .
+docker tag nuudel-server registry.digitalocean.com/your-container-register/nuudel-server
+docker push registry.digitalocean.com/your-container-register/nuudel-server:latest
 
 # typed-scss-modules
 

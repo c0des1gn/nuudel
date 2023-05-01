@@ -7,9 +7,8 @@ const path = require('path');
 const withTM = require('next-transpile-modules')(['nuudel-core']);
 
 module.exports = withTM({
-  experimental: {
-    outputStandalone: true,
-  },
+  reactStrictMode: true,
+  swcMinify: true,
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
   },
@@ -18,17 +17,16 @@ module.exports = withTM({
   trailingSlash: false,
   rewrites: () => [{ source: '/list', destination: '/lists' }], //  /api/:path*
   images: {
-    domains: ['nuudel.io'],
+    domains: ['yourdomain.com'],
     minimumCacheTTL: 60,
     //loader: 'imgix',
     //deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     //imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   eslint: {
-    dirs: ['src/pages', 'src/components', 'src/widgets'], // Only run ESLint on the 'pages' and 'utils' directories during production builds (next build)
+    dirs: ['src/pages', 'src/components', 'src/forms'], // Only run ESLint on the 'pages' and 'utils' directories during production builds (next build)
     ignoreDuringBuilds: true,
   },
-  //reactStrictMode: false,
   env: {
     ENV: process.env.NODE_ENV,
     HOST: process.env.HOST,

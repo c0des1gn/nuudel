@@ -56,7 +56,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { IWarehouse } from 'nuudel-core';
 import { LIST_WAREHOUSE_QUERY } from '../User/UserQuery';
 
-const { WEB } = process.env;
+const { WEB } = process?.env;
 
 const ADD_USER = gql`
   mutation AddUser($data: UserInput!) {
