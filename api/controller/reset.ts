@@ -35,9 +35,7 @@ export const Reset = async (request, reply) => {
     }
     const user = await userModel.findById(reset.userId).select('-password');
     if (user) {
-      let password = Math.random()
-        .toString(36)
-        .substring(2);
+      let password = Math.random().toString(36).substring(2);
       const salt = bcrypt.genSaltSync(SALT_WORK_FACTOR);
       const reset_password = bcrypt.hashSync(password, salt);
       const update = await userModel.findByIdAndUpdate(
@@ -68,6 +66,7 @@ export const Reset = async (request, reply) => {
         }
         await model.deleteMany({
           $or: [
+            { _id: reset._id },
             { mail: email, userId: { $ne: '' } },
             { expire: { $lt: new Date(new Date().getTime() - 86400000) } },
           ],

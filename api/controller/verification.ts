@@ -18,7 +18,7 @@ export const Verification = async (request, reply) => {
     {
       $and: [
         { code: code.replace(/[^\w\s\/\=\+\.]/gi, '') },
-        { mail: email.replace(/[^\w\s\.\_\@\-]/gi, '') },
+        { mail: email.replace(/[^\w\.\_\@\-]/gi, '') },
       ],
     },
     null,

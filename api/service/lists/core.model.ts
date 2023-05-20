@@ -67,7 +67,7 @@ export interface ICore {
   _modifiedby: string;
 }
 
-@pre<CoreType>('save', function(next) {
+@pre<CoreType>('save', function (next) {
   if (this.isNew && typeof this._createdby === 'undefined') {
     this._createdby = 'system';
     this._modifiedby = 'system';
@@ -314,7 +314,7 @@ export function BaseResolver<T, P>(
     }
 
     @Authorized()
-    @Mutation(returns => Int, { name: `count${objType.name}` })
+    @Query(returns => Int, { name: `count${objType.name}` })
     async count(): Promise<number> {
       return await this.Model.estimatedDocumentCount();
     }

@@ -17,7 +17,8 @@ FROM base AS builder
 WORKDIR /app
 
 RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN adduser --system --uid 1001 nextjs nodejs
+RUN chown -R nextjs:nodejs ./
 
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 #COPY --chown=nextjs:nodejs . .
@@ -38,10 +39,8 @@ COPY --chown=nextjs:nodejs .env${BRAND} ./.env
 RUN env
 ENV NODE_ENV production
 
-RUN yarn build:next
-RUN chown -R nextjs:nodejs ./.next
 USER nextjs
-
+RUN yarn build:next
 
 
 EXPOSE 8080
