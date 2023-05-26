@@ -55,6 +55,7 @@ import { Send, checkHash } from 'nuudel-main';
 import { Min, Max, Length } from 'class-validator';
 import { Verify } from './verify.resolver';
 import { t } from '../../loc/I18n';
+import { converter } from 'nuudel-main';
 
 //const { REFRESH_TOKEN_SECRET } = process?.env;
 
@@ -958,12 +959,13 @@ export class UserResolver extends UserBaseResolver {
       }
 
       if (!user) {
-        let username = social_user.email.split('@')[0].toLowerCase();
-        social_user['username'] = await this.generateUsername(
-          social_user.username || username,
-          social_user.firstname || social_user.lastname,
+        social_user['username'] = await this.generateUsername([
+          social_user.username,
+          social_user.email?.split('@')[0],
+          social_user.firstname,
+          social_user.lastname,
           provider.substring(0, 1) + social_user[column],
-        );
+        ]);
 
         const defaultValue = {
           password: Math.random().toString(36).substring(2),
@@ -1059,26 +1061,26 @@ export class UserResolver extends UserBaseResolver {
     return r;
   }
 
-  protected async generateUsername(
-    user: string,
-    fullname: string,
-    id?: string,
-  ) {
+  protected async generateUsername(names: string[]) {
     let username: string = '',
+      user: string = '',
       n: number = 0;
-    user = user.match(/[0-9a-zA-Z\-\.\_]+/g).join('');
-    if (!user) {
-      user = fullname.match(/[0-9a-zA-Z\-\.\_]+/g).join('');
+    for (let i = 0; i < names.length; i++) {
+      user = converter(names[i])
+        ?.match(/[0-9a-zA-Z\-\.\_]+/g)
+        .join('');
+      if (user?.length >= 6) {
+        break;
+      }
     }
-    if (!user && id && id.length <= 17) {
-      user = id.match(/[0-9a-zA-Z\-\.\_]+/g).join('');
-    }
-    if (!user) {
+    if (!user || user?.length < 6) {
       user = this.randomString(8);
+    } else if (user.length > 60) {
+      user = user.substring(0, 59);
     }
-
+    user = user?.toLowerCase();
     while (!username && n < 1000) {
-      let name: string = user.toLowerCase() + (n > 0 ? n.toString() : '');
+      let name: string = user + (n > 0 ? n.toString() : '');
       const _user = await this.Model.findOne({
         username: name,
       }).select('-password');
@@ -1087,7 +1089,7 @@ export class UserResolver extends UserBaseResolver {
       }
       n++;
     }
-    return username.toLowerCase();
+    return username;
   }
 
   protected sendmail(obj: any) {

@@ -31,7 +31,7 @@ import { Permission } from '../enums';
 import { _permissions } from '../../permissions';
 //import { Min, Max, Length } from 'class-validator';
 
-type IPermission = 'Read' | 'Add' | 'Edit' | 'Delete';
+type IPermission = 'Read' | 'List' | 'Add' | 'Edit' | 'Delete';
 
 //@InterfaceType()
 @ArgsType()
@@ -252,7 +252,7 @@ export function BaseResolver<T, P>(
       @Arg('limit', type => Int, { nullable: true, defaultValue: 0 })
       limit?: number,
     ): Promise<T[]> {
-      if (!this.permissionCheck(user, objType.name, 'Read')) {
+      if (!this.permissionCheck(user, objType.name, 'List')) {
         throw new ValidationError("Don't have permission to read an items");
       }
       const _filter = this.fitlerByUserId(
@@ -287,7 +287,7 @@ export function BaseResolver<T, P>(
       }s`,
     })
     async getItems(@Args() pr: CoreArgs, @Ctx() { user }: IContext) {
-      if (!this.permissionCheck(user, objType.name, 'Read')) {
+      if (!this.permissionCheck(user, objType.name, 'List')) {
         throw new ValidationError("Don't have permission to read an items");
       }
       const filter = this.fitlerByUserId(
@@ -401,7 +401,7 @@ export function BaseResolver<T, P>(
       return false;
     }
 
-    protected getPermission(usertype: string = 'Viewer') {
+    protected getPermission(usertype: string = 'Guest') {
       if (usertype === 'Admin') {
         return [
           {
@@ -414,6 +414,7 @@ export function BaseResolver<T, P>(
       switch (usertype) {
         case 'Manager':
         case 'User':
+        case 'Guest':
         case 'Viewer':
           break;
         default:
@@ -433,6 +434,8 @@ export function BaseResolver<T, P>(
           ? Permission.Edit
           : p[usertype].Add
           ? Permission.Add
+          : p[usertype].List
+          ? Permission.List
           : Permission.Read,
       }));
     }
