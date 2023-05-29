@@ -31,7 +31,7 @@ import { Permission } from '../enums';
 import { _permissions } from '../../permissions';
 //import { Min, Max, Length } from 'class-validator';
 
-type IPermission = 'Read' | 'List' | 'Add' | 'Edit' | 'Delete';
+type IPermission = 'Read' | 'List' | 'Add' | 'Edit' | 'Delete' | 'All';
 
 //@InterfaceType()
 @ArgsType()
@@ -164,42 +164,33 @@ export function BaseResolver<T, P>(
       return userId;
     }
 
-    protected fitlerByUserId(filter: any, user: any) {
-      let userId: ObjectId | null = this.getOid(user._id);
-      let keys: string[] = !filter ? [] : Object.keys(filter);
-      let newFilter = undefined;
+    protected filterByUserId(filter: string, user: any) {
+      let _filter: any = !filter ? {} : this.JSONparse(filter);
       // check is prop exist in Model
       if (
-        //!( user.type === 'Admin' && ['Order', 'Invoice'].includes(objType.name) ) &&
-        //!['Featured', 'Payment'].includes(objType.name) &&
+        !this.permissionCheck(user, objType.name, 'All') &&
         'undefined' !== typeof this.Model.schema.path('_userId')
       ) {
-        if (keys.length === 0) {
-          filter = { _userId: userId };
-        } else if (
-          objType.name === 'Notification' &&
-          (filter._userId === null ||
-            JSON.stringify(filter).includes('{"_userId":null}'))
+        let userId: ObjectId | null = this.getOid(user?._id);
+        let keys: string[] = !_filter ? [] : Object.keys(_filter);
+        let criteria: any = { _userId: userId };
+        if (
+          _filter._userId === null ||
+          filter?.replace(/\s/g, '')?.includes('{"_userId":null}')
         ) {
-        } else if (keys.indexOf('_userId') >= 0) {
-          filter = { ...filter, _userId: userId };
-        } else {
-          filter = {
-            $and: [filter, { _userId: userId }],
-          };
+          criteria = { $or: [{ _userId: null }, { _userId: userId }] };
         }
-      }
-
-      if (!!newFilter) {
         if (keys.length === 0) {
-          filter = newFilter;
+          _filter = criteria;
+        } else if (keys.includes('_userId')) {
+          _filter = { ..._filter, ...criteria };
         } else {
-          filter = {
-            $and: [filter, newFilter],
+          _filter = {
+            $and: [_filter, criteria],
           };
         }
       }
-      return filter;
+      return _filter;
     }
 
     filterReviver(key: string, value: any) {
@@ -255,10 +246,7 @@ export function BaseResolver<T, P>(
       if (!this.permissionCheck(user, objType.name, 'List')) {
         throw new ValidationError("Don't have permission to read an items");
       }
-      const _filter = this.fitlerByUserId(
-        !filter ? {} : this.JSONparse(filter),
-        user,
-      );
+      const _filter = this.filterByUserId(filter, user);
       sort = this.sortParse(sort);
 
       const result = await this.Model.find(_filter)
@@ -290,10 +278,7 @@ export function BaseResolver<T, P>(
       if (!this.permissionCheck(user, objType.name, 'List')) {
         throw new ValidationError("Don't have permission to read an items");
       }
-      const filter = this.fitlerByUserId(
-        !pr.filter ? {} : this.JSONparse(pr.filter),
-        user,
-      );
+      const filter = this.filterByUserId(pr?.filter, user);
       const sort = this.sortParse(pr.sort);
       const total: number =
         pr.total === 0 || pr.skip == 0
@@ -364,38 +349,50 @@ export function BaseResolver<T, P>(
     }
 
     protected permissionCheck(
-      user: any,
+      user: any = { _id: '', type: 'Guest' },
       listname: string,
       permission: IPermission = 'Read',
       userId?: string,
     ): boolean {
-      if (!user) {
-        if (listname === 'User' && permission === 'Add') {
-          //signup
-          return true;
-        }
-        return false;
+      if (!user?.type) {
+        user['type'] = 'Guest';
       }
       if (
         user?.type === 'Admin' ||
-        ((permission === 'Edit' || permission === 'Read') &&
-          userId === user?._id)
+        (!!userId &&
+          userId === user?._id &&
+          ['Edit', 'Read', 'List'].includes(permission))
       ) {
         return true;
       }
 
-      let index: number = _permissions.findIndex(p => p.listname === listname);
-
-      if (
-        index < 0 &&
-        _permissions.length > 0 &&
-        _permissions[0].listname === 'Default'
-      ) {
-        index = 0;
+      let disallow: boolean =
+        permission === 'Delete' &&
+        !!userId &&
+        userId !== user?._id &&
+        !['Manager', 'Admin'].includes(user?.type);
+      let defaultIndex: number = _permissions.findIndex(
+          p => p.listname === 'Default',
+        ),
+        index: number = _permissions.findIndex(p => p.listname === listname);
+      if (index < 0) {
+        index = defaultIndex;
       }
 
-      if (index >= 0 && _permissions[index][user.type]) {
-        return _permissions[index][user.type][permission];
+      if (index >= 0 && !!_permissions[index]) {
+        if (_permissions[index][user.type]) {
+          return (
+            !disallow && true === _permissions[index][user.type][permission]
+          );
+        } else if (
+          index !== defaultIndex &&
+          _permissions[defaultIndex][user.type]
+        ) {
+          return (
+            !disallow &&
+            true === _permissions[defaultIndex][user.type][permission]
+          );
+        }
       }
 
       return false;
@@ -414,8 +411,8 @@ export function BaseResolver<T, P>(
       switch (usertype) {
         case 'Manager':
         case 'User':
+        case 'Seller':
         case 'Guest':
-        case 'Viewer':
           break;
         default:
           return [
@@ -426,18 +423,22 @@ export function BaseResolver<T, P>(
           ];
       }
 
-      return _permissions.map(p => ({
-        listname: p.listname,
-        permission: p[usertype].Delete
-          ? Permission.Remove
-          : p[usertype].Edit
-          ? Permission.Edit
-          : p[usertype].Add
-          ? Permission.Add
-          : p[usertype].List
-          ? Permission.List
-          : Permission.Read,
-      }));
+      return _permissions
+        .map(p => ({
+          listname: p.listname,
+          permission: !p[usertype]
+            ? undefined
+            : p[usertype].Delete
+            ? Permission.Remove
+            : p[usertype].Edit
+            ? Permission.Edit
+            : p[usertype].Add
+            ? Permission.Add
+            : p[usertype].Read
+            ? Permission.Read
+            : undefined,
+        }))
+        .filter(p => !!p.permission);
     }
 
     //public abstract removeAfter?(_id: string): Promise<void>;

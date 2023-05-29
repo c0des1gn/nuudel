@@ -1,6 +1,6 @@
 {
   "name": "{{name}}",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "{{description}}",
   "author": "{{author}}",
   "license": "{{license}}",
@@ -54,8 +54,8 @@
     "lodash.memoize": "^4.1.2",
     "mailgen": "^2.0.15",
     "next": "^12.3.4",
-    "nuudel-core": "^0.1.182",
-    "nuudel-main": "^1.0.78",
+    "nuudel-core": "0.1.197",
+    "nuudel-main": "^1.0.94",
     "react": "^17.0.2",
     "react-apexcharts": "^1.3.9",
     "react-dom": "^17.0.2",

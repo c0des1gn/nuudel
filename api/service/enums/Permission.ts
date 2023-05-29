@@ -7,4 +7,5 @@ export enum Permission {
   Add = 2,
   Edit = 3,
   Remove = 4,
+  All = 5,
 }

@@ -39,6 +39,7 @@ import {
   PushnotificationInput,
 } from './pushnotification.resolver';
 import { AuthenticationError } from 'apollo-server-fastify';
+import { CacheControl } from '../../controller/cache-control';
 
 @ObjectType()
 export class Notification extends CoreType {
@@ -295,5 +296,23 @@ export class NotificationResolver extends NotificationBaseResolver {
       });
     }
     return count;
+  }
+
+  @Authorized()
+  @CacheControl({ maxAge: 60 })
+  @Query(returns => Number, {
+    name: `getCount${Notification.name}`,
+  })
+  async getCount(
+    @Ctx() { user }: IContext,
+    @Arg('filter', type => String, { nullable: true, defaultValue: '' })
+    filter?: string,
+  ) {
+    if (!this.permissionCheck(user, Notification.name, 'List')) {
+      throw new Error("Don't have permission to read an items");
+    }
+    const _filter = this.filterByUserId(filter, user);
+    const total: number = await this.Model.find(_filter).countDocuments();
+    return total;
   }
 }
