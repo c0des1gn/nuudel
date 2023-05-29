@@ -1,3 +1,11 @@
+/*
+Read - get one item
+List - get many items
+Add - add new item
+Edit - update item
+Delete - remove item
+All - get all items without _userId limit
+*/
 export const _permissions = [
   {
     listname: 'Default',
@@ -71,21 +79,21 @@ export const _permissions = [
     listname: 'Post',
     Manager: { Read: true, List: true, Add: true, Edit: true, Delete: true },
     User: { Read: true, List: true, Add: false, Edit: false, Delete: false },
-    Partner: { Read: true, List: true, Add: false, Edit: false, Delete: false },
+    Viewer: { Read: true, List: true, Add: false, Edit: false, Delete: false },
     Guest: { Read: true, List: true, Add: false, Edit: false, Delete: false },
   },
   {
     listname: 'Page',
     Manager: { Read: true, List: true, Add: true, Edit: true, Delete: true },
     User: { Read: true, List: true, Add: false, Edit: false, Delete: false },
-    Partner: { Read: true, List: true, Add: false, Edit: false, Delete: false },
+    Viewer: { Read: true, List: true, Add: false, Edit: false, Delete: false },
     Guest: { Read: true, List: true, Add: false, Edit: false, Delete: false },
   },
   {
     listname: 'Tag',
     Manager: { Read: true, List: true, Add: true, Edit: true, Delete: true },
     User: { Read: true, List: true, Add: false, Edit: false, Delete: false },
-    Partner: { Read: true, List: true, Add: false, Edit: false, Delete: false },
+    Viewer: { Read: true, List: true, Add: false, Edit: false, Delete: false },
     Guest: { Read: true, List: true, Add: false, Edit: false, Delete: false },
-  },// */
+  }, // */
 ];
