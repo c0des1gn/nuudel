@@ -349,16 +349,14 @@ export function BaseResolver<T, P>(
     }
 
     protected permissionCheck(
-      user: any = { _id: '', type: 'Guest' },
+      user: any,
       listname: string,
       permission: IPermission = 'Read',
       userId?: string,
     ): boolean {
-      if (!user?.type) {
-        user['type'] = 'Guest';
-      }
+      const { type: userType = 'Guest' } = user || {};
       if (
-        user?.type === 'Admin' ||
+        userType === 'Admin' ||
         (!!userId &&
           userId === user?._id &&
           ['Edit', 'Read', 'List'].includes(permission))
@@ -370,7 +368,7 @@ export function BaseResolver<T, P>(
         permission === 'Delete' &&
         !!userId &&
         userId !== user?._id &&
-        !['Manager', 'Admin'].includes(user?.type);
+        !['Manager', 'Admin'].includes(userType);
       let defaultIndex: number = _permissions.findIndex(
           p => p.listname === 'Default',
         ),
@@ -380,17 +378,17 @@ export function BaseResolver<T, P>(
       }
 
       if (index >= 0 && !!_permissions[index]) {
-        if (_permissions[index][user.type]) {
+        if (_permissions[index][userType]) {
           return (
-            !disallow && true === _permissions[index][user.type][permission]
+            !disallow && true === _permissions[index][userType][permission]
           );
         } else if (
           index !== defaultIndex &&
-          _permissions[defaultIndex][user.type]
+          _permissions[defaultIndex][userType]
         ) {
           return (
             !disallow &&
-            true === _permissions[defaultIndex][user.type][permission]
+            true === _permissions[defaultIndex][userType][permission]
           );
         }
       }
