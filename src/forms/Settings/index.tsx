@@ -259,6 +259,11 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
                   value={watch('posts_per_page')}
                   label={t('setting.posts_per_page')}
                   placeholder={t('TextFormFieldPlaceholder')}
+                  inputProps={{
+                    pattern: '[1-9]{1}[0-9]{0,}',
+                    inputMode: 'numeric',
+                    min: 1,
+                  }}
                   type="number"
                   fullWidth
                   variant="outlined"
@@ -324,13 +329,24 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
                   value={watch('phone')}
                   label={t('setting.phone')}
                   placeholder={t('TextFormFieldPlaceholder')}
-                  type="number"
+                  inputProps={{
+                    pattern: `[0-9\+\-\,\s]*`,
+                    inputMode: 'tel',
+                    maxLength: 12,
+                  }}
+                  type="tel"
                   fullWidth
                   variant="outlined"
                   margin="normal"
                   error={!!errors.phone}
                   helperText={errors?.phone?.message}
-                  onChange={e => setValue('phone', e.target.value)}
+                  onChange={e => {
+                    if (
+                      /^(?:(?:\+)?([0-9\-\s\,]{0,})+)?$/.test(e.target?.value)
+                    ) {
+                      setValue('phone', e.target?.value);
+                    }
+                  }}
                 />
               </Grid>
               <Grid item md={6} xs={12} className={classes.switchCont}>
