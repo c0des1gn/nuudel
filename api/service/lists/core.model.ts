@@ -356,7 +356,7 @@ export function BaseResolver<T, P>(
     ): boolean {
       const { type: userType = 'Guest' } = user || {};
       if (
-        userType === 'Admin' ||
+        (userType === 'Admin' && 'All' !== permission) ||
         (!!userId &&
           userId === user?._id &&
           ['Edit', 'Read', 'List'].includes(permission))
@@ -382,6 +382,8 @@ export function BaseResolver<T, P>(
           return (
             !disallow && true === _permissions[index][userType][permission]
           );
+        } else if (userType === 'Admin') {
+          return true;
         } else if (
           index !== defaultIndex &&
           _permissions[defaultIndex][userType]

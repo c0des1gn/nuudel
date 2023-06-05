@@ -35,6 +35,14 @@ export const _permissions = [
     Guest: { Read: false, List: false, Add: false, Edit: false, Delete: false },
   },
   {
+    listname: 'Notification',
+    Admin: { All: false },
+    Manager: { Read: true, List: true, Add: true, Edit: true, Delete: true },
+    User: { Read: true, List: true, Add: true, Edit: false, Delete: true },
+    Viewer: { Read: true, List: true, Add: true, Edit: false, Delete: true },
+    Guest: { Read: true, List: true },
+  },
+  {
     listname: 'Verify',
     Manager: {
       Read: false,
