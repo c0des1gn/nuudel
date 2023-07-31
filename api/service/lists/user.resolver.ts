@@ -966,6 +966,8 @@ export class UserResolver extends UserBaseResolver {
           social_user.lastname,
           provider.substring(0, 1) + social_user[column],
         ]);
+        social_user['firstname'] =
+          social_user.firstname || social_user.username;
 
         const defaultValue = {
           password: Math.random().toString(36).substring(2),
@@ -1068,7 +1070,7 @@ export class UserResolver extends UserBaseResolver {
     for (let i = 0; i < names.length; i++) {
       user = converter(names[i])
         ?.match(/[0-9a-zA-Z\-\.\_]+/g)
-        .join('');
+        ?.join('');
       if (user?.length >= 6) {
         break;
       }

@@ -23,6 +23,8 @@ export const UPDATE_CATEGORY_MUTATION = gql`
     $parent_id: String = null
     $slug: String!
     $img: ImageInput = null
+    $hasChild: Boolean
+    $ancestors: [String!]
   ) {
     editCategory(
       id: $id
@@ -30,6 +32,8 @@ export const UPDATE_CATEGORY_MUTATION = gql`
       name: $name
       slug: $slug
       parent_id: $parent_id
+      hasChild: $hasChild
+      ancestors: $ancestors
     ) {
       _id
       name

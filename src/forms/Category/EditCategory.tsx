@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Grid, Theme, createStyles, makeStyles } from '@material-ui/core';
-import { Button, TextField } from 'nuudel-core';
+import { Button, IImage, TextField } from 'nuudel-core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -39,18 +39,22 @@ interface EditCategoryForm {
   name: string;
   slug: string;
   parent_id: string;
+  img?: IImage;
+  hasChild?: boolean;
 }
 
 export const initialValues = {
   name: '',
   slug: '',
-  parent_id: '',
+  parent_id: null,
 };
 
 const categorySchema: Yup.SchemaOf<EditCategoryForm> = Yup.object().shape({
   name: Yup.string().required('Please enter category name'),
   slug: Yup.string(),
   parent_id: Yup.string().nullable(),
+  hasChild: Yup.boolean().notRequired(),
+  img: Yup.object().shape({ uri: Yup.string() }).notRequired().nullable(),
 });
 
 interface IProps extends IParentProps {
@@ -61,7 +65,6 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
   const classes = useStyles();
 
   const {
-    control,
     handleSubmit,
     reset,
     register,
@@ -84,7 +87,7 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
 
   const [getCategories] = useLazyQuery<any, any>(GET_CATEGORIES, {
     onCompleted: data => {
-      setListCat(data.getCategories.itemSummaries);
+      setListCat(data?.getCategories?.itemSummaries || []);
     },
   });
 
@@ -101,7 +104,7 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
     getCategories({
       variables: {
         skip: 0,
-        take: 200,
+        take: 300,
         filter: '',
         sort: '',
         total: 0,
@@ -132,13 +135,13 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
         variables: { ...data, id: id },
       })
         .then(data => {
-          console.log('then of editCategory');
+          //console.log('then of editCategory');
           messageMutation({
             variables: { msg: 'Category added successfully', type: 'success' },
           });
         })
         .catch(err => {
-          console.log('error of editCategory');
+          //console.log('error of editCategory');
           messageMutation({
             variables: { msg: err.message, type: 'error' },
           });
@@ -168,7 +171,7 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
               placeholder={t('category.name')}
               type="text"
               maxLength={255}
-              inputProps=\{{ pattern: '^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _-]+)?$' }}
+              inputProps=\{{ pattern: `^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _,.\\-+&'\\/]+)?$` }}
               fullWidth
               variant="outlined"
               margin="normal"
@@ -192,8 +195,8 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
               label={t('category.slug')}
               placeholder={t('category.slug')}
               type="text"
-              maxLength={255}
-              inputProps=\{{ pattern: '^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _-]+)?$' }}
+              maxLength={250}
+              inputProps=\{{ pattern: `^([0-9a-zA-Z _\\-]+)?$` }}
               fullWidth
               variant="outlined"
               margin="normal"
@@ -204,7 +207,7 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
           </Grid>
           <Grid
             item
-            style=\{{ paddingTop: 15, paddingBottom: 20 }}
+            style={{ paddingTop: 15, paddingBottom: 20 }}
             lg={10}
             md={10}
             sm={10}
@@ -212,14 +215,13 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
             className={classes.textField}
           >
             <Autocomplete
-              //defaultValue={listCat.find((v, i) => i === 0)}
-              value={listCat.find(v => v.cid === watch('parent_id'))}
+              //{...register('parent_id')}
+              value={listCat.find(v => v?.cid === watch('parent_id')) || null}
               autoHighlight
               options={listCat}
-              getOptionLabel={(option: Option) => option.name}
-              //onSelect={}
-              onChange={(e, options: Option) =>
-                setValue('parent_id', options.cid)
+              getOptionLabel={(option: Option) => option?.name || ''}
+              onChange={(e, op: Option) =>
+                setValue('parent_id', op?.cid ? op.cid : null)
               }
               renderOption={(option: Option) => <>{option.name}</>}
               renderInput={params => (

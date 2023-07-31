@@ -70,7 +70,6 @@ const AddCategory: React.FunctionComponent = () => {
   const classes = useStyles();
 
   const {
-    control,
     handleSubmit,
     reset,
     register,
@@ -91,7 +90,7 @@ const AddCategory: React.FunctionComponent = () => {
 
   const [getCategories] = useLazyQuery<any, any>(GET_CATEGORIES, {
     onCompleted: data => {
-      setListCat(data.getCategories.itemSummaries);
+      setListCat(data?.getCategories?.itemSummaries || []);
     },
   });
 
@@ -100,7 +99,7 @@ const AddCategory: React.FunctionComponent = () => {
     getCategories({
       variables: {
         skip: 0,
-        take: 200,
+        take: 300,
         filter: '',
         sort: '',
         total: 0,
@@ -126,18 +125,15 @@ const AddCategory: React.FunctionComponent = () => {
         variables: { data },
       })
         .then(data => {
-          console.log('then of createCategory');
           messageMutation({
             variables: { msg: 'Category added successfully', type: 'success' },
           });
         })
         .catch(err => {
-          console.log('error of createCategory');
           messageMutation({
             variables: { msg: err.message, type: 'error' },
           });
         });
-      // resetForm({})
     }
   };
 
@@ -162,7 +158,7 @@ const AddCategory: React.FunctionComponent = () => {
                   defaultValue={initialValues.name}
                   type="text"
                   maxLength={255}
-                  inputProps=\{{ pattern: '^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _-]+)?$' }}
+                  inputProps=\{{ pattern: `^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _,.\\-+&'\\/]+)?$` }}
                   fullWidth
                   variant="outlined"
                   margin="normal"
@@ -178,8 +174,8 @@ const AddCategory: React.FunctionComponent = () => {
                   placeholder={t('category.slug')}
                   defaultValue={initialValues.slug}
                   type="text"
-                  maxLength={255}
-                  inputProps=\{{ pattern: '^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _-]+)?$' }}
+                  maxLength={250}
+                  inputProps=\{{ pattern: `^([0-9a-zA-Z _\\-]+)?$` }}
                   fullWidth
                   variant="outlined"
                   margin="normal"
@@ -194,13 +190,10 @@ const AddCategory: React.FunctionComponent = () => {
                   autoHighlight
                   fullWidth
                   options={listCat}
-                  getOptionLabel={(option: Option) => option.name}
+                  getOptionLabel={(option: Option) => option?.name || ''}
                   //onSelect={}
                   onChange={(e, options: Option) =>
-                    setValue(
-                      'parent_id',
-                      options && options.cid ? options.cid : null,
-                    )
+                    setValue('parent_id', options?.cid ? options.cid : null)
                   }
                   renderOption={(option: Option) => <>{option.name}</>}
                   renderInput={params => (
