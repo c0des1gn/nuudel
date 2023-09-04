@@ -509,7 +509,7 @@ export class UserResolver extends UserBaseResolver {
         obj.type &&
         ctx?.user?.type !== 'Admin'
       ) {
-        obj['type'] = UserType.User;
+        obj['type'] = (ctx.user?.type as UserType) || UserType.User;
       }
       return this.editItem(_id, obj, ctx, true);
     } else
