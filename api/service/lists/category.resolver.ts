@@ -31,7 +31,7 @@ import { Counter, CounterInput } from './counter.resolver';
 import { AuthenticationError, ValidationError } from 'apollo-server-fastify';
 import { converter } from 'nuudel-main';
 
-@pre<Category>('save', function(next) {
+@pre<Category>('save', function (next) {
   if (this.isNew || this.isModified('slug')) {
     let str: string = this.slug ? this.slug : this.name;
     str = str.trim().replace(/\s+/g, '_');
@@ -150,7 +150,6 @@ export class CategoryResolver extends CategoryBaseResolver {
     }
   }
 
-  @Authorized()
   @Query(returns => [Category], { name: `getChild${Category.name}` })
   async getChild(
     @Arg('id', type => String, { nullable: true }) id: string | null,
@@ -158,11 +157,19 @@ export class CategoryResolver extends CategoryBaseResolver {
   ) {
     let chilren = [];
     const filter =
-      depth === 1 ? { $or: [{ cid: id }, { parent_id: id }] } : { cid: id };
+      id === null
+        ? { parent_id: null }
+        : depth > 0
+        ? { $or: [{ cid: id }, { parent_id: id }] }
+        : { cid: id };
     const cat = await this.Model.find(filter);
     if (cat && cat.length > 0) {
-      if (depth > 1) {
-        chilren = await this.getChilren([id], depth);
+      depth = id === null ? depth : depth - 1;
+      if (depth >= 1) {
+        chilren = await this.getChilren(
+          cat.filter(c => c.parent_id === id).map(c => c.cid),
+          --depth,
+        );
         chilren.unshift(...cat);
       } else {
         chilren = cat;
@@ -175,7 +182,7 @@ export class CategoryResolver extends CategoryBaseResolver {
     let chilren: Category[] = [];
     let item = await this.Model.find(
       { parent_id: { $in: ids } },
-      { cid: 1, name: 1, slug: 1, parent_id: 1, img: 1 },
+      { cid: 1, name: 1, slug: 1, parent_id: 1, img: 1, hasChild: 1 },
     );
 
     if (item) {
