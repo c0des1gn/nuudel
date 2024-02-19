@@ -9,6 +9,8 @@
 
 ```bash
 npx create-nuudel <name>
+# or
+yarn create nuudel <name>
 ```
 
 # start
