@@ -1,4 +1,4 @@
-import { prop as Property, getModelForClass } from '@typegoose/typegoose';
+import {prop as Property, getModelForClass} from '@typegoose/typegoose';
 import {
   Field,
   ObjectType,
@@ -21,18 +21,17 @@ import {
   BaseResolver,
   PaginatedResponse,
 } from './core.model';
-import { ObjectId } from 'mongodb';
-import type { IContext } from 'nuudel-main';
-import { AuthenticationError } from 'apollo-server-fastify';
+import {ObjectId} from 'mongodb';
+import type {IContext} from 'nuudel-main';
 
 @ObjectType()
 export class Counter extends CoreType {
   @Field(type => String)
-  @Property({ required: true, unique: true })
+  @Property({required: true, unique: true})
   listname: string;
 
-  @Field(type => Float, { defaultValue: 0 })
-  @Property({ required: true })
+  @Field(type => Float, {defaultValue: 0})
+  @Property({required: true})
   sequence: number;
 }
 
@@ -42,7 +41,7 @@ export class CounterInput implements Partial<Counter> {
   @Field(type => String)
   listname: string;
 
-  @Field(type => Float, { defaultValue: 0 })
+  @Field(type => Float, {defaultValue: 0})
   sequence: number;
 }
 
@@ -62,8 +61,8 @@ const CounterBaseResolver = BaseResolver<Counter, CounterResponse>(
 
 @Resolver(of => Counter)
 export class CounterResolver extends CounterBaseResolver {
-  @Authorized('Admin')
-  @Mutation(returns => Counter, { name: `update${Counter.name}` })
+  @Authorized()
+  @Mutation(returns => Counter, {name: `update${Counter.name}`})
   async updateItem(
     @Arg('_id', type => ObjectId) _id: string,
     @Args() obj: CounterArg,
@@ -73,9 +72,9 @@ export class CounterResolver extends CounterBaseResolver {
   }
 
   @Authorized('Admin')
-  @Mutation(returns => Counter, { name: `add${Counter.name}` })
+  @Mutation(returns => Counter, {name: `add${Counter.name}`})
   async addItem(
-    @Arg(`input${Counter.name}`, { nullable: true }) data: CounterInput,
+    @Arg(`input${Counter.name}`, {nullable: true}) data: CounterInput,
     @Ctx() ctx: IContext,
   ) {
     return this.newItem(data as Counter, ctx);

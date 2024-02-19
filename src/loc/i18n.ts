@@ -1,9 +1,10 @@
-import I8, { ReactOptions } from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import { USER_LANG } from '../config';
-import { UI } from 'nuudel-core';
+import I8, {ReactOptions} from 'i18next';
+import {initReactI18next} from 'react-i18next';
+import {USER_LANG} from '../config';
+import {UI} from 'nuudel-core';
 import memoize from 'lodash.memoize';
 import Router from 'next/router';
+import {isServer} from 'nuudel-utils';
 
 const translationGetters = {
   // lazy requires (metro bundler does not support symlinks)
@@ -25,8 +26,10 @@ const changeLanguage = (
   translate.cache.clear();
   UI.setItem(USER_LANG, languageTag);
   I8.changeLanguage(languageTag).then(t => {
-    if (refresh) {
-      Router.reload();
+    if (refresh && !isServer) {
+      try {
+        Router.reload();
+      } catch {}
     }
   });
 };
@@ -40,8 +43,8 @@ if (!I8.isInitialized) {
     ns: ['translations'],
     defaultNS: 'translations',
     resources: {
-      ['mn-MN']: { translations: translationGetters['mn-MN']() },
-      ['en-US']: { translations: translationGetters['en-US']() },
+      ['mn-MN']: {translations: translationGetters['mn-MN']()},
+      ['en-US']: {translations: translationGetters['en-US']()},
     },
     interpolation: {
       escapeValue: false,
@@ -53,7 +56,9 @@ if (!I8.isInitialized) {
       return !key || typeof key !== 'string'
         ? ''
         : key.split('.').pop() +
-            (process?.env?.NODE_ENV === 'development' ? '!' : '');
+            ((process?.env?.NODE_ENV || process?.env?.ENV) === 'development'
+              ? '!'
+              : '');
     },
     react: {
       wait: true,
@@ -61,5 +66,5 @@ if (!I8.isInitialized) {
   });
 }
 
-export { translate as t, defaultLocale, changeLanguage };
+export {translate as t, defaultLocale, changeLanguage};
 export default I8;

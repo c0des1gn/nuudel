@@ -1,5 +1,5 @@
 import config from '../../public/manifest.json';
-import { UI } from 'nuudel-core';
+import {UI} from 'nuudel-core';
 import axios from 'axios';
 
 type Config = {
@@ -32,25 +32,24 @@ const CONFIG_QUERY = `
         posts_per_page
         logo
         phone
-        location
         web
+        location
         color
       }
     }
   }
 `;
 
-const { WEB = '' } = process?.env;
 const pathname: string = 'api/graphql';
 
 export async function getConfig(): Promise<Config> {
   try {
-    const { data } = await axios({
-      url: `${WEB}/${pathname}`,
+    const {data} = await axios({
+      url: `${process?.env?.NEXT_PUBLIC_WEB || ''}/${pathname}`,
       method: 'post',
       data: {
         query: CONFIG_QUERY,
-        variables: { take: 1 },
+        variables: {take: 1},
       },
       headers: {
         ...(await UI.headers()),

@@ -1,13 +1,12 @@
-import { getModelForClass } from '@typegoose/typegoose';
-import { Verify } from '../service/lists/verify.resolver';
-import { User, SALT_WORK_FACTOR } from '../service/lists/user.resolver';
+import {getModelForClass} from '@typegoose/typegoose';
+import {Verify} from '../service/lists/verify.resolver';
+import {User, SALT_WORK_FACTOR} from '../service/lists/user.resolver';
 import bcrypt from 'bcryptjs';
-import { Message, info } from '../mailer/';
-import { Send } from 'nuudel-main';
-import { t } from '../loc/I18n';
+import {Send, Message, info} from '../mailer/';
+import {t} from '../loc/I18n';
 
 export const Reset = async (request, reply) => {
-  const { code } = request.query;
+  const {code} = request.query;
   if (!code) {
     reply.send(t('Code does not exist'));
     return;
@@ -19,12 +18,12 @@ export const Reset = async (request, reply) => {
   const reset: any = await model.findOne(
     {
       $and: [
-        { code: code.replace(/[^\w\s\/\=\+\.]/gi, '') },
-        { userId: { $ne: '' } },
+        {code: code.replace(/[^\w\s\/\=\+\.]/gi, '')},
+        {userId: {$ne: ''}},
       ],
     },
     null,
-    { sort: { expire: -1 } },
+    {sort: {expire: -1}},
   );
 
   if (reset) {
@@ -40,7 +39,7 @@ export const Reset = async (request, reply) => {
       const reset_password = bcrypt.hashSync(password, salt);
       const update = await userModel.findByIdAndUpdate(
         user._id,
-        { $set: { password: reset_password } },
+        {$set: {password: reset_password}},
         {
           new: true,
         },
@@ -56,19 +55,18 @@ export const Reset = async (request, reply) => {
               info(
                 user.firstname || user.lastname,
                 t('Your password has been successfully reset'),
-                t('Your new password', { password }),
+                t('Your new password', {password}),
               ),
             ),
           );
           reply.send(t('Auto generated password sent to your email'));
         } else {
-          reply.send(t('generated password', { password }));
+          reply.send(t('generated password', {password}));
         }
         await model.deleteMany({
           $or: [
-            { _id: reset._id },
-            { mail: email, userId: { $ne: '' } },
-            { expire: { $lt: new Date(new Date().getTime() - 86400000) } },
+            {mail: email, userId: {$ne: ''}},
+            {expire: {$lt: new Date(new Date().getTime() - 86400000)}},
           ],
         });
       } else {

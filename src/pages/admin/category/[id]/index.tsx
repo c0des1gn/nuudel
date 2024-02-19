@@ -1,13 +1,13 @@
 import React from 'react';
-import { useRouter } from 'next/router';
+import {useParams} from 'next/navigation';
 import EditCategory from '../../../../forms/Category/EditCategory';
-import { ControlMode } from 'nuudel-utils';
+import {ControlMode} from 'nuudel-utils';
 
 type Props = {};
 
-export const updateCategory: React.FC<Props> = () => {
-  const router = useRouter();
-  const { id } = router.query;
+export const UpdateCategory: React.FC<Props> = () => {
+  const query = useParams();
+  const {id} = query || {};
   return !id ? (
     <></>
   ) : (
@@ -18,4 +18,4 @@ export const updateCategory: React.FC<Props> = () => {
   );
 };
 
-export default updateCategory;
+export default UpdateCategory;

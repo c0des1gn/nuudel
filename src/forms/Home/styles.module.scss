@@ -1,0 +1,53 @@
+@use 'sass:map';
+@import '../../theme/variables/colors';
+@import '../../theme/variables/sizes';
+
+.root {
+  position: relative;
+  display: flex;
+  align-content: flex-end;
+}
+.image {
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.2;
+  z-index: 1;
+  @media screen and (max-width: get-breakpoint('sm')) {
+    background-image: url(/images/delivery.jpg);
+  }
+  @media screen and (max-width: get-breakpoint('sm')) {
+    background-image: url(/images/delivery_s.jpg);
+    background-size: contain;
+  }
+}
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100vh;
+  background: -webkit-linear-gradient(
+    rgba(29, 38, 113, 0.8),
+    rgba(195, 55, 100, 0.8)
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.logo {
+  display: inline-block;
+}
+.contact {
+  display: flex;
+  align-items: center;
+}
+.detailTitle {
+  font-weight: 500;
+  padding-bottom: $padding-half;
+  text-transform: uppercase;
+}

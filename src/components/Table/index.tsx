@@ -1,21 +1,24 @@
-import React, { FC, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import React, {FC, useEffect, useState} from 'react';
+import {useRouter, useParams} from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { IDataGridProps } from '../../forms/dataGrid/IDataGridProps';
-import { t } from '@Translate';
-import { capitalizeFirstLetter, dateToISOString } from 'nuudel-utils';
+import {IDataGridProps} from '../../forms/dataGrid/IDataGridProps';
+import {t} from '@Translate';
+import {capitalizeFirstLetter, dateToISOString} from 'nuudel-utils';
+import {Spinner} from 'nuudel-core';
+import {Box, FormControl} from '@mui/material';
 
-const DynamicComponent = dynamic(
+const DynamicComponent: any = dynamic(
   () => import('../../forms/dataGrid/DataGrid'),
   {
     ssr: false,
+    loading: () => <Spinner />,
   },
 );
 
-export const Table: FC<IDataGridProps> = ({ ...props }) => {
-  const { user } = props;
-  const router = useRouter();
-  let { listname, tab = '0' } = router.query;
+export const Table: FC<IDataGridProps> = ({...props}) => {
+  const {user} = props;
+  const query = useParams();
+  let {listname} = query || {};
   listname = capitalizeFirstLetter(
     listname instanceof Array ? listname[0] : listname,
   );
@@ -41,6 +44,7 @@ export const Table: FC<IDataGridProps> = ({ ...props }) => {
       {!!user && (
         <DynamicComponent
           {...props}
+          IsColumnChooser={user?.type && user.type !== 'User'}
           showDateFilter={showDateFilter}
           hiddenColumns={hiddenColumns}
           filter={filter}

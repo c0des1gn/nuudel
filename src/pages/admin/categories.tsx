@@ -1,11 +1,14 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
-import { Spinner } from 'nuudel-core';
+import {Spinner} from 'nuudel-core';
 
-const DynamicCategory = dynamic(() => import('../../forms/Category/Category'), {
-  ssr: false,
-  loading: () => <Spinner />,
-});
+const DynamicCategory: any = dynamic(
+  () => import('../../forms/Category/Category'),
+  {
+    ssr: false,
+    loading: () => <Spinner />,
+  },
+);
 
 type Props = {};
 

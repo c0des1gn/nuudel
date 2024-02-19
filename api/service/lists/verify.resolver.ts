@@ -1,4 +1,4 @@
-import { prop as Property, getModelForClass } from '@typegoose/typegoose';
+import {prop as Property, getModelForClass} from '@typegoose/typegoose';
 import {
   Field,
   ObjectType,
@@ -21,33 +21,33 @@ import {
   BaseResolver,
   PaginatedResponse,
 } from './core.model';
-import { ObjectId } from 'mongodb';
-import type { IContext } from 'nuudel-main';
-import { AuthenticationError } from 'apollo-server-fastify';
+import {ObjectId} from 'mongodb';
+import type {IContext} from 'nuudel-main';
+import {AuthenticationError} from './errors';
 
 @ObjectType()
 export class Verify extends CoreType {
-  @Field(type => String, { defaultValue: '' })
-  @Property({ required: false })
+  @Field(type => String, {defaultValue: ''})
+  @Property({required: false})
   userId: string;
 
   @Field(type => String)
-  @Property({ required: true })
+  @Property({required: true})
   mail: string;
 
   @Field(type => String)
-  @Property({ required: true })
+  @Property({required: true})
   code: string;
 
   @Field(type => Date)
-  @Property({ required: true, index: true, expires: 86400 })
+  @Property({required: true, index: true}) //, expires: 86400
   expire: Date;
 }
 
 @InputType()
 @ArgsType()
 export class VerifyInput implements Partial<Verify> {
-  @Field(type => String, { defaultValue: '' })
+  @Field(type => String, {defaultValue: ''})
   userId: string;
 
   @Field(type => String)
@@ -77,7 +77,7 @@ const VerifyBaseResolver = BaseResolver<Verify, VerifyResponse>(
 @Resolver(of => Verify)
 export class VerifyResolver extends VerifyBaseResolver {
   @Authorized('Admin')
-  @Mutation(returns => Verify, { name: `update${Verify.name}` })
+  @Mutation(returns => Verify, {name: `update${Verify.name}`})
   async updateItem(
     @Arg('_id', type => ObjectId) _id: string,
     @Args() obj: VerifyArg,
@@ -90,9 +90,9 @@ export class VerifyResolver extends VerifyBaseResolver {
   }
 
   @Authorized('Admin')
-  @Mutation(returns => Verify, { name: `add${Verify.name}` })
+  @Mutation(returns => Verify, {name: `add${Verify.name}`})
   async addItem(
-    @Arg(`input${Verify.name}`, { nullable: true }) data: VerifyInput,
+    @Arg(`input${Verify.name}`, {nullable: true}) data: VerifyInput,
     @Ctx() ctx: IContext,
   ) {
     if (ctx?.user?.type !== 'Admin') {

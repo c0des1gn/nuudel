@@ -1,4 +1,4 @@
-import { prop as Property, pre, getModelForClass } from '@typegoose/typegoose';
+import {prop as Property, pre, getModelForClass} from '@typegoose/typegoose';
 import {
   Field,
   ObjectType,
@@ -21,52 +21,51 @@ import {
   BaseResolver,
   PaginatedResponse,
 } from './core.model';
-import { ObjectId } from 'mongodb';
-import { registerEnumType } from 'type-graphql';
-import { Note, Image, Link } from 'nuudel-main';
-import { ImageObj, ImageInput } from './image.resolver';
-import { Country, Currency } from '../enums';
-import type { IContext } from 'nuudel-main';
-import { Counter, CounterInput } from './counter.resolver';
-import { AuthenticationError, ValidationError } from 'apollo-server-fastify';
-import { converter } from 'nuudel-main';
+import {ObjectId} from 'mongodb';
+import {registerEnumType} from 'type-graphql';
+import {Note, Image, Link} from 'nuudel-main';
+import {ImageObj, ImageInput} from './image.resolver';
+import {Country, Currency} from '../enums';
+import type {IContext} from 'nuudel-main';
+import {Counter, CounterInput} from './counter.resolver';
+import {AuthenticationError, ValidationError} from './errors';
+import {converter, sanitize_slug} from 'nuudel-main';
 
 @pre<Category>('save', function (next) {
   if (this.isNew || this.isModified('slug')) {
     let str: string = this.slug ? this.slug : this.name;
-    str = str.trim().replace(/\s+/g, '_');
-    this.slug = converter(str);
+    this.slug = sanitize_slug(converter(str));
   }
   next();
 })
 @ObjectType()
 export class Category extends CoreType {
-  @Field({ description: 'name of category' })
-  @Property({ required: true })
+  @Field(type => String)
+  @Property({required: true})
   name: string;
 
   @Field()
-  @Property({ required: false, unique: true })
+  @Property({required: false, unique: true})
   slug?: string;
 
-  @Field(type => [String], { nullable: true, defaultValue: [] })
-  @Property({ required: false })
+  @Field(type => [String], {nullable: true, defaultValue: []})
+  @Property({required: false})
   ancestors?: string[];
 
   @Field(type => String)
-  @Property({ required: false, unique: true })
+  @Property({required: false, unique: true})
   cid: string;
 
-  @Field(type => String, { nullable: true, defaultValue: null })
-  @Property({ required: false })
+  @Field(type => String, {nullable: true, defaultValue: null})
+  @Property({required: false})
   parent_id?: string;
 
-  @Field(type => Image, { nullable: true })
-  @Property({ required: false })
+  @Field(type => Image, {nullable: true})
+  @Property({required: false})
   img: object;
 
-  @Field(type => Boolean, { nullable: true, defaultValue: false })
-  @Property({ required: false })
+  @Field(type => Boolean, {nullable: true, defaultValue: false})
+  @Property({required: false})
   hasChild?: boolean;
 }
 
@@ -79,19 +78,19 @@ export class CategoryInput implements Partial<Category> {
   @Field()
   slug?: string;
 
-  @Field(type => [String], { nullable: true, defaultValue: [] })
+  @Field(type => [String], {nullable: true, defaultValue: []})
   ancestors?: string[];
 
-  @Field(type => String, { nullable: true })
+  @Field(type => String, {nullable: true})
   cid?: string;
 
-  @Field(type => String, { nullable: true, defaultValue: null })
+  @Field(type => String, {nullable: true, defaultValue: null})
   parent_id?: string;
 
-  @Field(type => ImageInput, { nullable: true })
+  @Field(type => ImageInput, {nullable: true})
   img?: object;
 
-  @Field(type => Boolean, { nullable: true, defaultValue: false })
+  @Field(type => Boolean, {nullable: true, defaultValue: false})
   hasChild?: boolean;
 }
 
@@ -116,9 +115,28 @@ export class CategoryResolver extends CategoryBaseResolver {
     super();
     this.Counter = getModelForClass(Counter);
   }
+
+  @Query(returns => [Category], {name: `getBreadcrumb`})
+  protected async getBreadcrumb(
+    @Arg('id', type => String, {nullable: true}) id: string,
+  ) {
+    if (!id) {
+      return [];
+    }
+    let parent: Category[] = [];
+    let cat = await this.Model.findOne({cid: id});
+    if (cat) {
+      parent.push(cat);
+      if (cat.parent_id !== null) {
+        parent.push(...(await this.getBreadcrumb(cat.parent_id)));
+      }
+    }
+    return parent;
+  }
+
   protected async getAncestors(id: string) {
     let parent: string[] = [];
-    let cat = await this.Model.findOne({ cid: id });
+    let cat = await this.Model.findOne({cid: id});
     if (cat) {
       parent.push(cat.name);
       if (cat.parent_id !== null) {
@@ -129,7 +147,7 @@ export class CategoryResolver extends CategoryBaseResolver {
   }
 
   protected async setAncestors(id: string, name: string, ancestors: string[]) {
-    let filter = { parent_id: id };
+    let filter = {parent_id: id};
     if (!!name) {
       ancestors.push(name);
     }
@@ -140,7 +158,7 @@ export class CategoryResolver extends CategoryBaseResolver {
           ancestors: ancestors,
         },
       },
-      { new: true },
+      {new: true},
     );
     if (update.nModified > 0) {
       let cats = await this.Model.find(filter);
@@ -150,18 +168,19 @@ export class CategoryResolver extends CategoryBaseResolver {
     }
   }
 
-  @Query(returns => [Category], { name: `getChild${Category.name}` })
+  //@Authorized()
+  @Query(returns => [Category], {name: `getChild${Category.name}`})
   async getChild(
-    @Arg('id', type => String, { nullable: true }) id: string | null,
-    @Arg('depth', type => Int, { defaultValue: 1 }) depth: number,
+    @Arg('id', type => String, {nullable: true}) id: string | null,
+    @Arg('depth', type => Int, {defaultValue: 1}) depth: number,
   ) {
     let chilren = [];
     const filter =
       id === null
-        ? { parent_id: null }
+        ? {parent_id: null}
         : depth > 0
-        ? { $or: [{ cid: id }, { parent_id: id }] }
-        : { cid: id };
+        ? {$or: [{cid: id}, {parent_id: id}]}
+        : {cid: id};
     const cat = await this.Model.find(filter);
     if (cat && cat.length > 0) {
       depth = id === null ? depth : depth - 1;
@@ -181,8 +200,8 @@ export class CategoryResolver extends CategoryBaseResolver {
   protected async getChilren(ids: string[], depth: number) {
     let chilren: Category[] = [];
     let item = await this.Model.find(
-      { parent_id: { $in: ids } },
-      { cid: 1, name: 1, slug: 1, parent_id: 1, img: 1, hasChild: 1 },
+      {parent_id: {$in: ids}},
+      {cid: 1, name: 1, slug: 1, parent_id: 1, img: 1, hasChild: 1},
     );
 
     if (item) {
@@ -202,7 +221,7 @@ export class CategoryResolver extends CategoryBaseResolver {
   }
 
   @Authorized('Admin', 'Manager')
-  @Mutation(returns => Category, { name: `edit${Category.name}` })
+  @Mutation(returns => Category, {name: `edit${Category.name}`})
   async modifyItem(
     @Arg('id', type => String) id: string,
     @Args() obj: CategoryArg,
@@ -211,7 +230,7 @@ export class CategoryResolver extends CategoryBaseResolver {
     let cat =
       id.length === 24
         ? await this.Model.findById(id)
-        : await this.Model.findOne({ cid: id });
+        : await this.Model.findOne({cid: id});
 
     if (!cat) {
       throw new ValidationError('Category is not exist');
@@ -225,7 +244,7 @@ export class CategoryResolver extends CategoryBaseResolver {
     } else if (cat.parent_id !== obj.parent_id) {
       obj.ancestors = (await this.getAncestors(cat.cid)).reverse();
     }
-    obj.slug = converter(obj.slug.trim().replace(/\s+/g, '_'));
+    obj.slug = sanitize_slug(converter(obj.slug));
     const update = await this.editItem(cat._id.toString(), obj, ctx);
     if (
       update &&
@@ -234,7 +253,7 @@ export class CategoryResolver extends CategoryBaseResolver {
       if (cat.parent_id !== update.parent_id) {
         if (update.parent_id) {
           await this.Model.updateOne(
-            { cid: update.parent_id },
+            {cid: update.parent_id},
             {
               $set: {
                 hasChild: true,
@@ -247,7 +266,7 @@ export class CategoryResolver extends CategoryBaseResolver {
           }).countDocuments();
           if (total === 0) {
             await this.Model.updateOne(
-              { cid: cat.parent_id },
+              {cid: cat.parent_id},
               {
                 $set: {
                   hasChild: false,
@@ -266,26 +285,26 @@ export class CategoryResolver extends CategoryBaseResolver {
   }
 
   @Authorized('Admin', 'Manager')
-  @Mutation(returns => Category, { name: `update${Category.name}` })
+  @Mutation(returns => Category, {name: `update${Category.name}`})
   async updateItem(
     @Arg('_id', type => ObjectId) _id: string,
     @Args() obj: CategoryArg,
     @Ctx() ctx: IContext,
   ): Promise<Category> {
-    obj.slug = converter(obj.slug.trim().replace(/\s+/g, '_'));
+    obj.slug = sanitize_slug(converter(obj.slug));
     return this.editItem(_id, obj, ctx);
   }
 
   @Authorized('Admin', 'Manager')
-  @Mutation(returns => Category, { name: `add${Category.name}` })
+  @Mutation(returns => Category, {name: `add${Category.name}`})
   async addItem(
-    @Arg(`input${Category.name}`, { nullable: true }) data: CategoryInput,
+    @Arg(`input${Category.name}`, {nullable: true}) data: CategoryInput,
     @Ctx() ctx: IContext,
   ) {
     if (!!data.parent_id) {
       data.ancestors = (await this.getAncestors(data.parent_id)).reverse();
       await this.Model.updateOne(
-        { cid: data.parent_id },
+        {cid: data.parent_id},
         {
           $set: {
             hasChild: true,
@@ -301,20 +320,20 @@ export class CategoryResolver extends CategoryBaseResolver {
 
     return this.newItem(data as Category, ctx);
   }
-  //*
+
   @Authorized('Admin')
-  @Mutation(returns => Category, { name: `remove${Category.name}` })
+  @Mutation(returns => Category, {name: `remove${Category.name}`})
   async removeItem(
     @Arg('id', type => String) id: string, // Category ID
-    @Ctx() { user }: IContext,
+    @Ctx() {user}: IContext,
   ) {
     if (!this.permissionCheck(user, Category.name, 'Delete')) {
       throw new AuthenticationError("Don't have permission to remove category");
     }
-    const cat = await this.Model.findOneAndDelete({ cid: id });
+    const cat = await this.Model.findOneAndDelete({cid: id});
     if (cat) {
       const update = await this.Model.updateMany(
-        { parent_id: id },
+        {parent_id: id},
         {
           $set: {
             parent_id: cat.parent_id,
@@ -331,7 +350,7 @@ export class CategoryResolver extends CategoryBaseResolver {
         }).countDocuments();
         if (total === 0) {
           await this.Model.updateOne(
-            { cid: cat.parent_id },
+            {cid: cat.parent_id},
             {
               $set: {
                 hasChild: false,
@@ -343,5 +362,9 @@ export class CategoryResolver extends CategoryBaseResolver {
     }
     return cat;
   }
-  // */
+
+  @Query(returns => CategoryResponse, {name: `getCategories`})
+  async readItems(@Args() pr: CoreArgs, @Ctx() {user}: IContext) {
+    return await this.getItems(pr, {user});
+  }
 }

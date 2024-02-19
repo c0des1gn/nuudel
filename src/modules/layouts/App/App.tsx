@@ -1,17 +1,17 @@
-import React, { FC } from 'react';
-import { useRouter } from 'next/router';
-import { NextComponentType, NextPageContext } from 'next';
-import { useQuery } from '@apollo/react-hooks';
-import { PageProps } from '../../../pages/_app';
+import React, {FC} from 'react';
+import {useRouter, useSearchParams} from 'next/navigation';
+import {NextComponentType, NextPageContext} from 'next';
+import {useQuery} from '@apollo/react-hooks';
+import {PageProps} from '../../../pages/_app';
 import Layout from '../Layout/Layout';
 //import {Spinner} from 'nuudel-core';
-import { currentUserQuery } from '../../../graphql/queries';
-import { withApollo } from 'nuudel-core';
-import { isServer } from 'nuudel-utils';
-import { USER_ID } from '../../../config';
-import { UI } from 'nuudel-core';
+import {currentUserQuery} from '../../../graphql/queries';
+import {withApollo} from 'nuudel-core';
+import {isServer, tokenObj} from 'nuudel-utils';
+import {USER_TOKEN, USER_LANG} from '../../../config';
+import {UI} from 'nuudel-core';
 import LoginLayout from '../LoginLayout/LoginLayout';
-import { CONF } from '../../../config';
+import {CONF} from '../../../config';
 
 type Props = {
   component: NextComponentType<any, any, any> | FC<any>;
@@ -37,27 +37,47 @@ const App = ({
   pathname,
   ...props
 }: Props): JSX.Element | null => {
-  const router = useRouter();
-  const { IsDlg = props.IsDlg, success } = router.query;
-  let userId: string = UI.getItem(USER_ID);
+  const router = useRouter(),
+    searchParams = useSearchParams();
+
+  let _query: any = {};
+  searchParams.forEach((value: string, key: string) => {
+    _query[key] = value;
+  });
+
+  const {IsDlg = props.IsDlg} = query || _query;
+  let userId: string = tokenObj(UI.getItem(USER_TOKEN))?._id;
   // redirect
-  if (!userId && !unauthenticatedPathnames.includes(pathname) && !isServer) {
+  if (
+    !userId &&
+    !unauthenticatedPathnames.includes(pathname) &&
+    !isServer &&
+    pathname?.startsWith('/admin')
+  ) {
     try {
       router.push('/admin/login');
     } catch {
       window.location.href = '/admin/login';
     }
+  } else if (
+    userId &&
+    !unauthenticatedPathnames.includes(pathname) &&
+    !isServer &&
+    pathname?.startsWith('/admin') &&
+    tokenObj(UI.getItem(USER_TOKEN)).type === 'User'
+  ) {
+    router.replace('/', {scroll: true});
   }
-
-  const { data } = useQuery(currentUserQuery, {
-    skip: unauthenticatedPathnames.includes(pathname) || isServer || !userId,
-  });
 
   const isAnUnauthenticatedPage =
     pathname !== undefined && unauthenticatedPathnames.includes(pathname);
 
+  const {data, error} = useQuery(currentUserQuery, {
+    skip: isAnUnauthenticatedPage || isServer || !userId,
+  });
+
   /* // HOOK aldaa garaad bsn
-  // Need to wrap calls of `Router.replace` in a use effect to prevent it being called on the server side
+  // Need to wrap calls of `router.replace` in a use effect to prevent it being called on the server side
   // https://github.com/zeit/next.js/issues/6713
   useEffect(() => {
     // Redirect the user to the login page if not authenticated
@@ -69,11 +89,19 @@ const App = ({
   //if (loading && !isServer) {
   //  return <Spinner color="primary" size={20} />;
   //}
-
   if (
     !isAnUnauthenticatedPage &&
     (!data?.currentUser || userId !== data?.currentUser?._id)
   ) {
+    if (error?.message?.includes('not logged')) {
+      const token = UI.getItem(USER_TOKEN);
+      if (token) {
+        const obj = tokenObj(token);
+        if (obj?._id && obj.exp < Math.ceil(Date.now() / 1000)) {
+          router.replace(`/admin/login`, {scroll: true});
+        }
+      }
+    }
     return null;
   }
 
@@ -83,7 +111,7 @@ const App = ({
     </LoginLayout>
   ) : '1' === IsDlg ? (
     <Component
-      query={query}
+      query={query || {}}
       IsDlg
       pathname={pathname}
       user={data?.currentUser}
@@ -92,7 +120,7 @@ const App = ({
   ) : (
     <Layout user={data?.currentUser}>
       <Component
-        query={query}
+        query={query || {}}
         pathname={pathname}
         user={data?.currentUser}
         {...props}

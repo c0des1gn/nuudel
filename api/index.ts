@@ -1,27 +1,40 @@
-import fastify, { FastifyInstance, FastifyLoggerInstance } from 'fastify';
-import { nextPlugin, oauthPlugin, oauth2 } from 'nuudel-main';
-import { Server, IncomingMessage, ServerResponse } from 'http';
-//import { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'http2';
-import { ApolloServer } from 'apollo-server-fastify';
+import Fastify, {FastifyInstance, FastifyBaseLogger} from 'fastify';
+import {oauthPlugin, oauth2} from 'nuudel-main';
+import FastifyNext from '@fastify/nextjs';
+import {Server, IncomingMessage, ServerResponse} from 'http';
+import {ApolloServer, BaseContext} from '@apollo/server';
 import {
   ApolloServerPluginLandingPageLocalDefault,
   ApolloServerPluginLandingPageProductionDefault,
-} from 'apollo-server-core';
-import jwt, { FastifyJWTOptions } from 'fastify-jwt';
+} from '@apollo/server/plugin/landingPage/default';
+import fastifyApollo, {
+  fastifyApolloDrainPlugin,
+  fastifyApolloHandler,
+  ApolloFastifyContextFunction,
+} from '@as-integrations/fastify';
+//import {startServerAndCreateNextHandler} from '@as-integrations/next';
+import jwt, {FastifyJWTOptions} from '@fastify/jwt';
+import fastifyCors, {FastifyCorsOptions} from '@fastify/cors';
 import makeSchema from './makeSchema';
-import { makeContext, ConnectDB } from 'nuudel-main';
+import {makeContext, ConnectDB, IContext} from 'nuudel-main';
 import fastifyCron from 'fastify-cron';
-import { defaultJob } from './service/jobs/rates';
-import { Verification, Reset } from './controller';
-import { ProfileCallback, Upload, Remove, SentNotification } from 'nuudel-main';
-
-import fastifyMultipart from 'fastify-multipart';
-import fastifyCompress from 'fastify-compress';
-import cookie, { FastifyCookieOptions } from 'fastify-cookie';
-import { SubscriptionServer } from 'subscriptions-transport-ws';
-import { execute, subscribe } from 'graphql';
-import { setTranslate } from 'nuudel-main';
-import { t } from './loc/I18n';
+import {defaultJob} from './service/jobs/rates';
+import {Verification, Reset} from './controller';
+import {
+  GoogleCallback,
+  ProfileCallback,
+  Upload,
+  Remove,
+  SentNotification,
+  //Recaptcha,
+} from 'nuudel-main';
+import fastifyMultipart from '@fastify/multipart';
+import fastifyCompress from '@fastify/compress';
+import cookie, {FastifyCookieOptions} from '@fastify/cookie';
+import {SubscriptionServer} from 'subscriptions-transport-ws';
+import {execute, subscribe} from 'graphql';
+import {setTranslate} from 'nuudel-main';
+import {t} from './loc/I18n';
 
 setTranslate(t);
 
@@ -30,28 +43,58 @@ const {
   JWT_SECRET,
   FB_CLIENT_ID,
   FB_CLIENT_SECRET,
+  APPLE_CLIENT_ID,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
   WEB = '',
   NODE_ENV,
   COOKIE_SECRET,
+  DOMAIN,
 } = process?.env;
+const tokenName = 'token'; // 'USER_TOKEN'
+
+const _corsOptions: FastifyCorsOptions = {
+  // This is NOT recommended for production as it enables reflection exploits
+  //origin: new RegExp(`^(https?:\/\/(?:[^\.]+\.){0,255}?${DOMAIN}(?:\:\d{1,5})?)$`), // or '*' or true
+  origin:
+    NODE_ENV !== 'development'
+      ? /^https?:\/\/(?:[^\.]+\.){0,255}?mart\.mn(?:\:\d{1,5})?\/?$/
+      : /^https?:\/\/localhost(?:\:\d{1,5})?$/,
+  allowedHeaders: [
+    'Deviceuniqid',
+    'Access-Control-Allow-Origin',
+    'Access-Control-Allow-Headers',
+    'Access-Control-Allow-Methods',
+    'Accept',
+    'Content-Type',
+    'Content-Length',
+    'Authorization',
+    'Origin',
+    'Host',
+    'X-Requested-With',
+    'X-Auth-Token',
+    'X-Args',
+    'User-Agent',
+    'Allow',
+    'Pragma',
+    'Cache-Control',
+    'Expires',
+    'Referer',
+  ],
+  //exposedHeaders: 'X-Content-Range',
+  credentials: true,
+  methods: ['GET', 'HEAD', 'PUT', 'OPTIONS', 'POST', 'DELETE', 'PATCH'],
+};
 
 const app: FastifyInstance<
   Server,
   IncomingMessage,
   ServerResponse,
-  FastifyLoggerInstance
-> = fastify({
-  logger: {
-    prettyPrint: { translateTime: 'yyyy-mm-dd HH:MM:ss' },
-  },
-  pluginTimeout: 60000,
-  //http2: true,
-  /*
-  https: {
-    allowHTTP1: true, // fallback support for HTTP1
-    //key: fs.readFileSync(path.join(__dirname, '../keys', 'private.key')),
-    //cert: fs.readFileSync(path.join(__dirname, '../keys', 'cert.pem')),
-  }, // */
+  FastifyBaseLogger
+> = Fastify({
+  logger: true,
+  //disableRequestLogging: true,
+  pluginTimeout: 90000,
 });
 
 const HOST = '0.0.0.0'; // replace with own server IP
@@ -64,7 +107,7 @@ const bootstrap = async () => {
       app.log.info('Graphql Schema Generated');
       //listen subscription WebSocket
       const subscriptionServer = SubscriptionServer.create(
-        { schema, execute, subscribe },
+        {schema, execute, subscribe},
         {
           server: app.server,
           path: '/api/graphql',
@@ -82,56 +125,58 @@ const bootstrap = async () => {
         },
       );
 
-      const server = new ApolloServer({
-        schema,
-        context: ctx => makeContext(app, ctx),
-        introspection: true,
-        //csrfPrevention: process.env.NODE_ENV !== 'development',
-        //cache: 'bounded',
-        /*
-        formatResponse(response, { context }: any) {
-          if (!context.deviceId) {
-            return {};
-          }
-          return response;
-        }, // */
-        plugins: [
-          process.env.NODE_ENV !== 'development'
-            ? ApolloServerPluginLandingPageProductionDefault({ footer: false })
-            : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
-          {
-            async serverWillStart() {
-              return {
-                async drainServer() {
-                  subscriptionServer.close();
-                },
-              };
+      const server: ApolloServer<any | BaseContext> =
+        new ApolloServer<IContext>({
+          schema,
+          introspection: true,
+          csrfPrevention: process.env.NODE_ENV !== 'development',
+          ...{cors: _corsOptions},
+          cache: 'bounded',
+          plugins: [
+            //fastifyApolloDrainPlugin(app),
+            process.env.NODE_ENV !== 'development'
+              ? ApolloServerPluginLandingPageProductionDefault({
+                  //graphRef: 'my-graph-id@my-graph-variant',
+                  footer: false,
+                })
+              : ApolloServerPluginLandingPageLocalDefault({footer: false}),
+            {
+              async serverWillStart() {
+                return {
+                  async drainServer() {
+                    subscriptionServer.close();
+                  },
+                };
+              },
             },
-          },
-        ],
-      });
+          ],
+        });
 
       await server.start();
-      app.register(
-        server.createHandler({
-          path: '/api/graphql',
-        }),
-      );
+
+      const myContextFunction: ApolloFastifyContextFunction<IContext> = async (
+        request,
+        reply,
+      ) => makeContext(app, {request, reply});
+
+      app.register(fastifyApollo(server), {
+        path: '/api/graphql',
+        context: myContextFunction,
+      }); // app.post(  '/api/graphql',  fastifyApolloHandler(server, {context: myContextFunction}), );
 
       //*
       app.register(fastifyMultipart, {
-        addToBody: false,
+        //attachFieldsToBody: false,
         sharedSchemaId: 'MultipartFileType',
-        onFile: (fieldName, stream, filename, encoding, mimetype, body) => {
-          stream.resume();
-        },
+        //onFile: async part => { await pump(part.file, fs.createWriteStream(part.filename)) },
         limits: {
-          fieldNameSize: 100, // Max field name size in bytes
-          fieldSize: 1000000, // Max field value size in bytes
+          fieldNameSize: 219, // Max field name size in bytes
+          fieldSize: 20000, // Max field value size in bytes
           fields: 20, // Max number of non-file fields
-          fileSize: 1000000, // 1Mb the max file size
+          fileSize: 1500000, // 1.5Mb the max file size
           files: 1, // Max number of file fields
           //headerPairs: 2000   // Max number of header key=>value pairs
+          //parts: 1000         // For multipart forms, the max number of parts (fields + files)
         },
       }); // */
 
@@ -143,13 +188,20 @@ const bootstrap = async () => {
       });
 
       // dev mode only graphql backend
-      if (NODE_ENV !== 'development') {
-        app.register(nextPlugin);
+      if (process.env?.NODE_ENV !== 'development') {
+        app
+          .register(FastifyNext, {
+            //underPressure: { exposeStatusRoute: true },
+            //dev: true,
+          })
+          .after(() => {
+            app.next('*');
+          });
       }
 
       app.register(oauth2, {
         name: 'facebookOAuth2',
-        scope: ['public_profile', 'email'],
+        scope: ['public_profile', 'email'], //'user_birthday'
         credentials: {
           client: {
             id: FB_CLIENT_ID,
@@ -160,13 +212,104 @@ const bootstrap = async () => {
         startRedirectPath: '/login/facebook',
         callbackUri: `${WEB}/login/facebook/callback`,
       });
+      /*
+      app.register(oauth2, {
+        name: 'appleOAuth2',
+        scope: ['email name'],
+        credentials: {
+          client: {
+            id: APPLE_CLIENT_ID,
+            // See https://github.com/Techofficer/node-apple-signin/blob/master/source/index.js
+            // for how to create the secret.
+            secret: apple.getClientSecret(),
+          },
+          auth: oauthPlugin.APPLE_CONFIGURATION,
+        },
+        startRedirectPath: '/login/apple',
+        callbackUri: `${WEB}/login/apple/callback`,
+      }); // */
+
+      app.register(oauth2, {
+        name: 'googleOAuth2',
+        scope: [
+          'profile', //'https://www.googleapis.com/auth/userinfo.profile',
+          'email', //'https://www.googleapis.com/auth/userinfo.email',
+        ],
+        credentials: {
+          client: {
+            id: GOOGLE_CLIENT_ID,
+            secret: GOOGLE_CLIENT_SECRET,
+          },
+          auth: oauthPlugin.GOOGLE_CONFIGURATION,
+        },
+        startRedirectPath: '/login/google',
+        callbackUri: `${WEB}/login/google/callback`,
+        //callbackUriParams: { access_type: 'online' }, // offline
+      });
+
+      /*
+      app.register(oauth2, {
+        name: 'facebookOAuth2',
+        scope: ['public_profile', 'email'], //'user_birthday'
+        credentials: {
+          client: {
+            id: FB_CLIENT_ID,
+            secret: FB_CLIENT_SECRET,
+          },
+          auth: oauthPlugin.FACEBOOK_CONFIGURATION,
+        },
+        startRedirectPath: '/login/facebook',
+        callbackUri: `${WEB}/login/facebook/callback`,
+      });// */
+
+      /*
+      app.register(oauth2, {
+        name: 'googleOAuth2',
+        scope: [
+          'profile', //'https://www.googleapis.com/auth/userinfo.profile',
+          'email', //'https://www.googleapis.com/auth/userinfo.email',
+        ],
+        credentials: {
+          client: {
+            id: GOOGLE_CLIENT_ID,
+            secret: GOOGLE_CLIENT_SECRET,
+          },
+          auth: oauthPlugin.GOOGLE_CONFIGURATION,
+        },
+        startRedirectPath: '/login/google',
+        callbackUri: `${WEB}/login/google/callback`,
+        //callbackUriParams: { access_type: 'online' }, // offline
+      });// */
+
+      //*
+      app.register(fastifyCors, instance => {
+        return (req, callback) => {
+          let corsOptions = {..._corsOptions}; //console.log('origin===', req.raw?.url, req.headers.origin);
+          // do not include CORS headers for requests
+          if (
+            /^\/provider(\/|\?)?[^\/]*$/i.test(req.raw?.url) &&
+            !new RegExp(`^(https?:\/\/)?(www.)?${DOMAIN}$`, 'i').test(
+              (req.headers?.origin as string) || 'localhost',
+            )
+          ) {
+            //corsOptions.origin = true;
+            //callback(new Error('Not allowed'), corsOptions);
+            //return;
+          }
+          // callback expects two parameters: error and options
+          callback(null, corsOptions);
+        };
+      }); // */
 
       app.register(cookie, {
         secret: COOKIE_SECRET, // for cookies signature
         parseOptions: {}, // options for parsing cookies
       } as FastifyCookieOptions);
 
-      await app.listen(parseInt(PORT, 10), HOST);
+      await app.listen({
+        port: parseInt(PORT, 10),
+        host: HOST,
+      });
     } catch (err) {
       app.log.error(err);
       process.exit(1);
@@ -174,21 +317,9 @@ const bootstrap = async () => {
   });
 };
 
-// ideally this function would do a query against some sort of storage to determine its outcome
-async function validateToken(request, decodedToken) {
-  const denylist = ['token1', 'token2'];
-
-  return !denylist.includes(decodedToken.jti);
-}
-
 app.register(jwt, {
   secret: JWT_SECRET,
-  credentialsRequired: false,
-  //trusted: validateToken,
-  //cookie: {
-  //  cookieName: 'token',
-  //  signed: false,
-  //},
+  credentialsRequired: true,
 } as FastifyJWTOptions);
 
 app.decorate('authenticate', async (request, reply) => {
@@ -199,42 +330,23 @@ app.decorate('authenticate', async (request, reply) => {
   }
 });
 
-//app.post('/recapcha', Recaptcha);
-app.post('/upload', { preValidation: [(app as any).authenticate] }, Upload);
-app.post('/remove', { preValidation: [(app as any).authenticate] }, Remove);
+//app.post('/recaptcha', Recaptcha);
+app.post('/upload', {preValidation: [(app as any).authenticate]}, Upload);
+app.post('/remove', {preValidation: [(app as any).authenticate]}, Remove);
 app.post(
   '/sent',
-  { preValidation: [(app as any).authenticate] },
+  {preValidation: [(app as any).authenticate]},
   SentNotification,
 );
-app.get('/login/facebook/callback', ProfileCallback);
 app.get('/verification', Verification);
 app.get('/reset', Reset);
-/* // test cookie
-app.get('/cookies', async (request, reply) => {
-  const token = await reply.jwtSign({
-    _id: '60c887edacf1713fc77d7f8c',
-    username: 'damii',
-    type: 'User',
-    roles: ['User'],
-    status: 'Active',
-  });
-  reply
-    .setCookie('token', token, {
-      domain: '*',
-      path: '/',
-      secure: true,
-      signed: false,
-      httpOnly: true,
-      sameSite: true,
-    })
-    .code(200)
-    .send('Cookie sent: ' + !!token);
-}); // */
+//app.get('/login/facebook/callback', ProfileCallback);
+//app.get('/login/google/callback', GoogleCallback);
 
 app.register(fastifyCron, {
   jobs: [
     {
+      name: 'getRates',
       // Only these two properties are required,
       // the rest is from the node-cron API:
       // https://github.com/kelektiv/node-cron#api
@@ -244,7 +356,6 @@ app.register(fastifyCron, {
       // as an argument, as opposed to nothing in the node-cron API:
       onTick: async () => {
         await defaultJob();
-        // at 9am
       },
       onComplete: undefined,
       start: true,
@@ -255,18 +366,18 @@ app.register(fastifyCron, {
 
 app.addHook('onRequest', async (request, reply) => {
   if (request.cookies) {
-    const result = reply.unsignCookie(request.cookies.token);
+    const result = reply.unsignCookie(request.cookies[tokenName]);
     if (result.valid && result.renew) {
-      reply.setCookie('token', result.value, {
-        domain: '*',
+      reply.setCookie(tokenName, result.value, {
+        domain: !!DOMAIN && DOMAIN !== 'localhost' ? '.' + DOMAIN : '*',
         path: '/',
+        httpOnly: true,
         secure: true,
         signed: false,
-        httpOnly: true,
         sameSite: true,
       });
     } else {
-      reply.clearCookie('token', { path: '/' });
+      reply.clearCookie(tokenName, {path: '/'});
     }
   }
   try {

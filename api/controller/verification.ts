@@ -1,11 +1,11 @@
-import { getModelForClass } from '@typegoose/typegoose';
-import { Verify } from '../service/lists/verify.resolver';
-import { User } from '../service/lists/user.resolver';
-import { UserStatus } from '../service/enums';
-import { t } from '../loc/I18n';
+import {getModelForClass} from '@typegoose/typegoose';
+import {Verify} from '../service/lists/verify.resolver';
+import {User} from '../service/lists/user.resolver';
+import {UserStatus} from '../service/enums';
+import {t} from '../loc/I18n';
 
 export const Verification = async (request, reply) => {
-  const { code, email } = request.query;
+  const {code, email} = request.query;
   if (!code) {
     reply.send(t('Code does not exist'));
     return;
@@ -17,12 +17,12 @@ export const Verification = async (request, reply) => {
   const verify: any = await model.findOne(
     {
       $and: [
-        { code: code.replace(/[^\w\s\/\=\+\.]/gi, '') },
-        { mail: email.replace(/[^\w\.\_\@\-]/gi, '') },
+        {code: code.replace(/[^\w\s\/\=\+\.]/gi, '')},
+        {mail: email.replace(/[^\w\s\.\_\@\-]/gi, '')},
       ],
     },
     null,
-    { sort: { expire: -1 } },
+    {sort: {expire: -1}},
   );
 
   if (verify) {
@@ -33,7 +33,7 @@ export const Verification = async (request, reply) => {
     }
 
     const user = !verify.userId
-      ? await userModel.findOne({ email: verify.mail })
+      ? await userModel.findOne({email: verify.mail})
       : await userModel.findById(verify.userId).select('-password');
 
     if (user) {
@@ -46,7 +46,7 @@ export const Verification = async (request, reply) => {
           user._id,
           {
             $set: !verify.userId
-              ? { _verifiedEmail: verify.mail, _status: UserStatus.Active }
+              ? {_verifiedEmail: verify.mail, _status: UserStatus.Active}
               : {
                   email: verify.mail,
                   _verifiedEmail: verify.mail,
@@ -61,11 +61,11 @@ export const Verification = async (request, reply) => {
           },
         );
         if (update) {
-          reply.send(t('verify mail', { email: verify.mail }));
+          reply.send(t('verify mail', {email: verify.mail}));
           await model.deleteMany({
             $or: [
-              { userId: verify.userId, mail: verify.mail },
-              { expire: { $lt: new Date(new Date().getTime() - 86400000) } },
+              {userId: verify.userId, mail: verify.mail},
+              {expire: {$lt: new Date(new Date().getTime() - 86400000)}},
             ],
           });
         } else {

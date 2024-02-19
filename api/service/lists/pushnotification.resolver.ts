@@ -1,4 +1,4 @@
-import { prop as Property, getModelForClass } from '@typegoose/typegoose';
+import {prop as Property, getModelForClass} from '@typegoose/typegoose';
 import {
   Field,
   ObjectType,
@@ -21,37 +21,36 @@ import {
   BaseResolver,
   PaginatedResponse,
 } from './core.model';
-import { ObjectId } from 'mongodb';
-import type { IContext } from 'nuudel-main';
-import { AuthenticationError } from 'apollo-server-fastify';
+import {ObjectId} from 'mongodb';
+import type {IContext} from 'nuudel-main';
 
 @ObjectType()
 export class Pushnotification extends CoreType {
-  @Field(type => ObjectId, { nullable: true, defaultValue: null })
-  @Property({ required: true, index: true, expires: 259200 }) //ref: User
+  @Field(type => ObjectId, {nullable: true, defaultValue: null})
+  @Property({required: true, index: true}) //ref: User, expires: 259200
   _userId: ObjectId;
 
   @Field(type => String)
-  @Property({ required: true, unique: true, index: true })
+  @Property({required: true, unique: true, index: true})
   registerToken: string;
 
   @Field(type => String)
-  @Property({ required: false })
+  @Property({required: false})
   fingerprint: string;
 
   @Field(type => Date)
-  @Property({ required: false })
+  @Property({required: false})
   subscribedOn?: Date;
 
-  @Field(type => Detail, { nullable: true })
-  @Property({ required: true })
+  @Field(type => Detail, {nullable: true})
+  @Property({required: true})
   details: object;
 }
 
 @InputType()
 @ArgsType()
 export class PushnotificationInput implements Partial<Pushnotification> {
-  @Field(type => ObjectId, { nullable: true, defaultValue: null })
+  @Field(type => ObjectId, {nullable: true, defaultValue: null})
   _userId: ObjectId;
 
   @Field(type => String)
@@ -63,30 +62,30 @@ export class PushnotificationInput implements Partial<Pushnotification> {
   @Field(type => Date)
   subscribedOn?: Date;
 
-  @Field(type => DetailInput, { nullable: true })
+  @Field(type => DetailInput, {nullable: true})
   details: object;
 }
 
 @ObjectType()
 export class Detail {
   @Field(type => String)
-  @Property({ required: false })
+  @Property({required: false})
   device: string;
 
   @Field(type => String)
-  @Property({ required: false })
+  @Property({required: false})
   brand: string;
 
   @Field(type => String)
-  @Property({ required: false })
+  @Property({required: false})
   os: string;
 
   @Field(type => String)
-  @Property({ required: false })
+  @Property({required: false})
   osVersion: string;
 
-  @Field(type => String, { nullable: true })
-  @Property({ required: false })
+  @Field(type => String, {nullable: true})
+  @Property({required: false})
   browser?: string;
 }
 
@@ -105,7 +104,7 @@ export class DetailInput implements Partial<Detail> {
   @Field(type => String)
   osVersion: string;
 
-  @Field(type => String, { nullable: true })
+  @Field(type => String, {nullable: true})
   browser?: string;
 }
 
@@ -144,16 +143,26 @@ export class PushnotificationResolver extends PushnotificationBaseResolver {
     name: `add${Pushnotification.name}`,
   })
   async addItem(
-    @Arg(`input${Pushnotification.name}`, { nullable: true })
+    @Arg(`input${Pushnotification.name}`, {nullable: true})
     data: PushnotificationInput,
     @Ctx() ctx: IContext,
   ) {
+    const filter = data?.registerToken?.includes(':')
+      ? {
+          registerToken: {$regex: `${data.registerToken.split(':', 2)[0]}:.*`},
+          ...(!data?._userId
+            ? {}
+            : {
+                _userId: this.getOid(data._userId),
+              }),
+        }
+      : {registerToken: data.registerToken};
     const result = await this.Model.findOneAndUpdate(
-      { registerToken: data.registerToken },
+      filter,
       {
-        $set: { ...data, subscribedOn: new Date() },
+        $set: {...data, subscribedOn: new Date()},
       },
-      { new: true },
+      {new: true},
     );
     if (result) {
       return result;

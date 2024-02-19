@@ -1,34 +1,28 @@
 import React from 'react';
 import styles from '../../theme/styles/styles.module.scss';
-import { useTranslation } from 'react-i18next';
-import { Table } from '@Components';
+import {Table} from '@Components';
 import App from '@App';
-import { capitalizeFirstLetter } from 'nuudel-utils';
-import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
-import { useRouter } from 'next/router';
+import {capitalizeFirstLetter, stringify_params} from 'nuudel-utils';
+import {useParams, usePathname, useSearchParams} from 'next/navigation';
 
-export const getStaticProps = async () => {
-  return {
-    props: {},
-  };
-};
+interface IProps {}
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: true,
-  };
-};
+function Lists({...props}: IProps) {
+  const query = useParams(),
+    pathname = usePathname(),
+    searchParams = useSearchParams();
 
-function Lists(props: InferGetStaticPropsType<typeof getStaticProps>) {
-  const router = useRouter();
-  const { listname } = router.query;
+  let param: any = {};
+  searchParams.forEach((value: string, key: string) => {
+    param[key] = value;
+  });
+
+  const {listname} = query || {};
   const _dataGridProps: any = {
     listname: capitalizeFirstLetter(
       listname instanceof Array ? listname[0] : listname,
     ),
   };
-  //const { t, i18n } = useTranslation();
   return (
     <div className={styles.listContainer}>
       {!listname ? (
@@ -37,8 +31,8 @@ function Lists(props: InferGetStaticPropsType<typeof getStaticProps>) {
         <App
           component={Table}
           {..._dataGridProps}
-          pathname={router.pathname}
-          query={router.query}
+          pathname={pathname + stringify_params(param, '?')}
+          query={query}
         />
       )}
     </div>

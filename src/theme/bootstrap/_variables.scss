@@ -30,13 +30,11 @@ $spacers: (
   3: $spacer,
   4: $spacer * 1.5,
   5: $spacer * 3,
-) !default;
+  ) !default;
 
-$negative-spacers: if(
-  $enable-negative-margins,
-  negativify-map($spacers),
-  null
-) !default;
+$negative-spacers: if($enable-negative-margins,
+    negativify-map($spacers),
+    null) !default;
 // scss-docs-end spacer-variables-maps
 
 // Grid breakpoints
@@ -47,15 +45,16 @@ $negative-spacers: if(
 // scss-docs-start grid-breakpoints
 $grid-breakpoints: (
   xs: 0,
-  sm: 576px,
-  md: 768px,
-  lg: 992px,
-  xl: 1200px,
-  xxl: 1400px,
-) !default;
+  sm: 540px,
+  md: 900px,
+  lg: 1200px,
+  xl: 1536px,
+  xxl: 1800px,
+  ) !default;
 // scss-docs-end grid-breakpoints
 
-@include _assert-ascending($grid-breakpoints, '$grid-breakpoints');
+@include _assert-ascending($grid-breakpoints, '$grid-breakpoints'
+);
 @include _assert-starts-at-zero($grid-breakpoints, '$grid-breakpoints');
 
 // Grid containers
@@ -65,14 +64,15 @@ $grid-breakpoints: (
 // scss-docs-start container-max-widths
 $container-max-widths: (
   sm: 540px,
-  md: 720px,
+  md: 768px,
   lg: 960px,
-  xl: 1140px,
-  xxl: 1320px,
-) !default;
+  xl: 1180px,
+  xxl: 1440px,
+  ) !default;
 // scss-docs-end container-max-widths
 
-@include _assert-ascending($container-max-widths, '$container-max-widths');
+@include _assert-ascending($container-max-widths, '$container-max-widths'
+);
 
 // Grid columns
 //

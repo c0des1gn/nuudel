@@ -45,3 +45,14 @@ export const GET_CATEGORY_QUERY = gql`
     }
   }
 `;
+
+export const GET_BREADCRUMB_QUERY = gql`
+  query GetBreadcrumb($_id: String) {
+    getBreadcrumb(id: $_id) {
+      name
+      cid
+      parent_id
+      img
+    }
+  }
+`;

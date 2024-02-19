@@ -1,14 +1,14 @@
-// @material-ui/icons
-import Dashboard from '@material-ui/icons/Dashboard';
-import PeopleOutline from '@material-ui/icons/PeopleOutline';
-import Category from '@material-ui/icons/Category';
-import AddBox from '@material-ui/icons/AddBox';
-import ShoppingBasket from '@material-ui/icons/ShoppingBasket';
-import SettingsIcon from '@material-ui/icons/Settings';
-import MapIcon from '@material-ui/icons/Map';
-import AccountTreeIcon from '@material-ui/icons/AccountTree';
+// @mui/icons-material
+import Dashboard from '@mui/icons-material/Dashboard';
+import PeopleOutline from '@mui/icons-material/PeopleOutline';
+import Category from '@mui/icons-material/Category';
+import SettingsIcon from '@mui/icons-material/Settings';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import AddBox from '@mui/icons-material/AddBox';
+import ShoppingBasket from '@mui/icons-material/ShoppingBasket';
+import MapIcon from '@mui/icons-material/Map';
 
-import { t } from '@Translate';
+import {t} from '@Translate';
 
 const basepath = '/admin';
 const dashboardRoutes = [

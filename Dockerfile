@@ -1,4 +1,4 @@
-FROM node:lts-alpine@sha256:ca5d399560a9d239cbfa28eec00417f1505e5e108f3ec6938d230767eaa81f61 AS base
+FROM node:18-alpine@sha256:b1a0356f7d6b86c958a06949d3db3f7fb27f95f627aa6157cb98bc65c801efa2 AS base
 ARG BRAND
 
 # Install dependencies only when needed
@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-RUN yarn --frozen-lockfile
+RUN yarn --frozen-lockfile --network-timeout 7200000
 
 
 # Rebuild the source code only when needed
@@ -38,13 +38,13 @@ COPY --chown=nextjs:nodejs .env${BRAND} ./.env
 
 RUN env
 ENV NODE_ENV production
+ENV NODE_OPTIONS=--openssl-legacy-provider
 
 USER nextjs
-RUN yarn build:next
+RUN yarn build
 
 
 EXPOSE 8080
-
 ENV PORT 8080
 
 CMD ["yarn", "start"]

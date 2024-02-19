@@ -1,36 +1,25 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, {useState} from 'react';
+import {useForm} from 'react-hook-form';
 import * as Yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useMutation } from '@apollo/react-hooks';
-import { useRouter } from 'next/router';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {useMutation} from '@apollo/react-hooks';
+import {useRouter} from 'next/navigation';
 import {
   passwordValidationSchema,
   oldPasswordvalidateSchema,
+  requestPasswordResetFormSchema,
 } from '../../forms/Signup/types';
 import {
   requestResetPasswordMutation,
   changePasswordMutation,
 } from '../../graphql/mutations';
-import { PageProps } from '../_app';
-import { Paper, Avatar } from '@material-ui/core';
-import {
-  Button,
-  Text,
-  Container,
-  Grid,
-  TextField,
-  Box,
-  Link,
-} from 'nuudel-core';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { t } from '@Translate';
-import { Message, TOGGLE_SNACKBAR_MUTATION } from 'nuudel-core';
+import {PageProps} from '../_app';
+import {Text, Container, Grid, TextField, Button} from 'nuudel-core';
+import {t} from '@Translate';
+import {Message, TOGGLE_SNACKBAR_MUTATION} from 'nuudel-core';
 import styles from '../../forms/SignIn/styles.module.scss';
-import IconButton from '@material-ui/core/IconButton';
-import { InputAdornment } from '@material-ui/core';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import {IconButton} from '@mui/material';
+import {InputAdornment} from '@mui/material';
 
 type ResetPasswordFormSchema = Yup.InferType<typeof passwordValidationSchema>;
 
@@ -39,12 +28,6 @@ const initialResetPasswordFormValues: ResetPasswordFormSchema | any = {
   confirmPassword: '',
   oldPassword: '',
 };
-
-const requestPasswordResetFormSchema = Yup.object().shape({
-  email: Yup.string()
-    .required(t('Email is required'))
-    .email(t('Email is invalid')),
-});
 
 type RequestPasswordResetFormSchema = Yup.InferType<
   typeof requestPasswordResetFormSchema
@@ -58,9 +41,8 @@ const initialRequestPasswordResetFormValues:
 
 type Props = {} & PageProps;
 
-const ResetPassword: React.FC<Props> = ({ query }) => {
+const ResetPassword: React.FC<Props> = ({query}) => {
   const router = useRouter();
-  //const classes = useStyles();
   const code = query && query.code ? query.code : undefined;
   const shouldDisplayResetPassword = query && query.code !== undefined;
   const {
@@ -70,7 +52,7 @@ const ResetPassword: React.FC<Props> = ({ query }) => {
     register,
     clearErrors,
     setValue,
-    formState: { isSubmitting, errors, touchedFields },
+    formState: {isSubmitting, errors, touchedFields},
   } = useForm<any>({
     resolver: yupResolver(
       shouldDisplayResetPassword
@@ -101,7 +83,7 @@ const ResetPassword: React.FC<Props> = ({ query }) => {
 
   const [messageMutation] = useMutation(TOGGLE_SNACKBAR_MUTATION);
 
-  const [requestResetPassword, { loading: loadingRequestResetPassword }] =
+  const [requestResetPassword, {loading: loadingRequestResetPassword}] =
     useMutation(requestResetPasswordMutation, {
       onError: error => {
         messageMutation({
@@ -121,7 +103,7 @@ const ResetPassword: React.FC<Props> = ({ query }) => {
         router.push('/admin/login');
       },
     });
-  const [resetPassword, { loading: loadingResetPassword }] = useMutation(
+  const [resetPassword, {loading: loadingResetPassword}] = useMutation(
     changePasswordMutation,
     {
       onError: error => {
@@ -173,8 +155,8 @@ const ResetPassword: React.FC<Props> = ({ query }) => {
   });
 
   const handleResetPasswordRequest = handleSubmit(async values => {
-    if (values?.email) {
-      await requestResetPassword({
+    if (values?.email?.includes('@')) {
+      const r = await requestResetPassword({
         variables: {
           email: values.email,
         },
@@ -183,32 +165,32 @@ const ResetPassword: React.FC<Props> = ({ query }) => {
   });
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="xs">
       <Message />
       {!shouldDisplayResetPassword ? (
-        <Paper elevation={3} className={styles.paperStyle}>
-          <Grid
-            container
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-            className={styles.paddingBottom}
-          >
-            <Avatar className={styles.avatar + ' ' + styles.inlineBlock}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Text variant="h5" className={styles.inlineBlock}>
-              {t('Forgot password')}
-            </Text>
-          </Grid>
+        <div className={styles.paperStyle + ' ' + styles.border}>
           <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <div className={styles.flexRowCenter}>
+                {/* <Avatar className={styles.marginRight}>
+                <LockOutlinedIcon />
+              </Avatar> */}
+                <Text
+                  sx={theme => ({
+                    fontWeight: 500,
+                    color: theme.palette.text.primary,
+                  })}
+                  variant="h5">
+                  {t('Forgot password')}
+                </Text>
+              </div>
+            </Grid>
             <Grid item xs={12}>
               <form
                 onSubmit={handleResetPasswordRequest}
-                className={styles.container}
-              >
+                className={styles.container}>
                 <div id="request-reset-password">
-                  <Text color="primary" component="div">
+                  <Text variant="subtitle2">
                     {t(
                       'Enter your email in order to receive a link to reset your password',
                     )}
@@ -217,172 +199,209 @@ const ResetPassword: React.FC<Props> = ({ query }) => {
                     {...register('email')}
                     onChange={e => setChange('email', e.target.value)}
                     id="email"
-                    label={t('Email Address')}
+                    placeholder={t('Email Address')}
                     name="email"
                     variant="outlined"
-                    margin="normal"
+                    size="small"
                     required
                     fullWidth
+                    margin="dense"
+                    inputProps=\{{
+                      maxLength: 128,
+                    }}
                     //value={initialRequestPasswordResetFormValues.email}
                     autoComplete="email"
                     autoFocus
                     error={errors.email ? true : false}
                     helperText={
-                      errors.email !== undefined && touchedFields.email
-                        ? errors.email?.message
+                      errors.email !== undefined && touchedFields?.email
+                        ? (errors.email?.message as string)
                         : ''
                     }
                   />
-                  <Box mt={2}>
+                  <div className={styles.marginTop}>
                     <Button
                       type="submit"
-                      fullWidth
                       color="primary"
+                      variant="contained"
+                      fullWidth
+                      disableElevation
+                      style=\{{borderRadius: '20px'}}
                       //className={styles.marginTopBig}
-                      disabled={loadingRequestResetPassword}
-                    >
+                      disabled={isSubmitting || loadingRequestResetPassword}>
                       {loadingRequestResetPassword ? (
-                        <span>{t('loading')}</span>
+                        <Text variant="subtitle2">{t('loading')}</Text>
                       ) : (
-                        <span>{t('Reset password')}</span>
+                        <Text variant="subtitle2">{t('Reset password')}</Text>
                       )}
                     </Button>
-                  </Box>
+                  </div>
                 </div>
               </form>
             </Grid>
             <Grid item xs={12}>
-              <Link href="/admin/login" passHref>
-                {'⬅ ' + t('Go back to Login')}
-              </Link>
+              <Button
+                disableElevation
+                variant="outlined"
+                color="primary"
+                fullWidth
+                style=\{{borderRadius: '20px'}}
+                onClick={() => router.push('/admin/login')}>
+                <Text variant="subtitle2">{t('Go back to Login')}</Text>
+              </Button>
             </Grid>
           </Grid>
-        </Paper>
+        </div>
       ) : (
-        <div className={styles.paperStyle}>
+        <div className={styles.paperStyle + ' ' + styles.border}>
           <Grid container direction="column" spacing={3}>
-            <Grid
-              container
-              direction="row"
-              justifyContent="center"
-              alignItems="center"
-              className={styles.paddingBottom}
-            >
-              <Avatar className={styles.avatar + ' ' + styles.inlineBlock}>
+            <Grid item xs={12}>
+              <div className={styles.flexRowCenter}>
+                {/* <Avatar className={styles.marginRight}>
                 <LockOutlinedIcon />
-              </Avatar>
-              <Text component="h1" variant="h5">
-                {t('Reset password')}
-              </Text>
-              <Text color="primary" component="h1" variant="body1">
-                <p>{t('Set a new password for your account')}</p>
+              </Avatar> */}
+                <Text variant="h5" style=\{{fontWeight: 500}}>
+                  {t('Reset password')}
+                </Text>
+              </div>
+            </Grid>
+            <Grid item xs={12}>
+              <Text color="primary" variant="subtitle2" align="center">
+                {t('Set a new password for your account')}
               </Text>
             </Grid>
             <Grid item xs={12}>
               <form onSubmit={handleResetPassword} className={styles.container}>
-                <Grid container id={'reset-password'}>
+                <div id={'reset-password'}>
                   {code === 'reset' && (
-                    <TextField
-                      {...register('oldPassword')}
-                      margin="normal"
-                      variant="outlined"
-                      required
-                      onChange={e => setChange('oldPassword', e.target.value)}
-                      fullWidth
-                      defaultValue={initialResetPasswordFormValues.oldPassword}
-                      name="oldPassword"
-                      label={t('Old password')}
-                      type="password"
-                      id="oldPassword"
-                      error={!!errors.oldPassword}
-                      autoComplete="current-password"
-                      helperText={errors.oldPassword?.message}
-                    />
+                    <>
+                      <p className={styles.label}>{t('Old password')}</p>
+                      <TextField
+                        {...register('oldPassword')}
+                        variant="outlined"
+                        size="small"
+                        margin="dense"
+                        required
+                        onChange={e => setChange('oldPassword', e.target.value)}
+                        fullWidth
+                        defaultValue={
+                          initialResetPasswordFormValues.oldPassword
+                        }
+                        name="oldPassword"
+                        inputProps=\{{
+                          maxLength: 40,
+                        }}
+                        placeholder={t('Old password')}
+                        type="password"
+                        id="oldPassword"
+                        error={!!errors.oldPassword}
+                        autoComplete="current-password"
+                        helperText={errors.oldPassword?.message as string}
+                      />
+                    </>
                   )}
+                  <p className={styles.label + ' ' + styles.paddingTop}>
+                    {t('Password')}
+                  </p>
                   <TextField
                     {...register('password')}
-                    margin="normal"
                     variant="outlined"
+                    size="small"
+                    margin="dense"
                     required
                     onChange={e => setChange('password', e.target.value)}
                     fullWidth
                     defaultValue={initialResetPasswordFormValues.password}
                     name="password"
-                    label={t('Password')}
-                    type={showPassword ? 'text' : 'password'}
-                    InputProps={{
+                    placeholder={t('Password')}
+                    type={!showPassword ? 'password' : 'text'}
+                    id="password"
+                    InputProps=\{{
+                      inputProps: {
+                        maxLength: 30,
+                      },
                       endAdornment: (
                         <InputAdornment position="end">
                           <IconButton
                             aria-label="toggle password visibility"
                             onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
-                          >
-                            {!showPassword ? <Visibility /> : <VisibilityOff />}
+                            onMouseDown={handleMouseDownPassword}>
+                            {!showPassword ? (
+                              <i className="icon-eye" />
+                            ) : (
+                              <i className="icon-closed-eye" />
+                            )}
                           </IconButton>
                         </InputAdornment>
                       ),
                     }}
                     error={!!errors.password}
                     autoComplete="new-password"
-                    helperText={errors.password?.message}
+                    helperText={errors.password?.message as string}
                   />
+                  <p className={styles.label + ' ' + styles.paddingTop}>
+                    {t('Confirm password')}
+                  </p>
                   <TextField
                     {...register('confirmPassword')}
                     onChange={e => setChange('confirmPassword', e.target.value)}
                     fullWidth
-                    margin="normal"
                     variant="outlined"
+                    size="small"
+                    margin="dense"
                     required
                     defaultValue={
                       initialResetPasswordFormValues.confirmPassword
                     }
                     name="confirmPassword"
                     id="confirmPassword"
-                    label={t('Confirm password')}
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    InputProps={{
+                    placeholder={t('Confirm password')}
+                    type={!showConfirmPassword ? 'password' : 'text'}
+                    InputProps=\{{
+                      inputProps: {
+                        maxLength: 30,
+                      },
                       endAdornment: (
                         <InputAdornment position="end">
                           <IconButton
                             aria-label="toggle password visibility"
                             onClick={handleClickConfirmPassword}
-                            onMouseDown={handleMouseDownPassword}
-                          >
+                            onMouseDown={handleMouseDownPassword}>
                             {!showConfirmPassword ? (
-                              <Visibility />
+                              <i className="icon-eye" />
                             ) : (
-                              <VisibilityOff />
+                              <i className="icon-closed-eye" />
                             )}
                           </IconButton>
                         </InputAdornment>
                       ),
                     }}
                     error={!!errors.confirmPassword}
-                    helperText={errors.confirmPassword?.message}
+                    helperText={errors.confirmPassword?.message as string}
                   />
-                  <Box mt={2}>
+                  <div className={styles.marginTop}>
                     <Button
                       type="submit"
-                      fullWidth
-                      variant="contained"
                       color="primary"
-                      disabled={isSubmitting || loadingResetPassword}
-                    >
+                      variant="contained"
+                      fullWidth
+                      disableElevation
+                      style=\{{borderRadius: '20px', height: 40}}
+                      disabled={isSubmitting || loadingResetPassword}>
                       {loadingRequestResetPassword ? (
-                        <span>{t('loading')}</span>
+                        <Text variant="subtitle2">{t('loading')}</Text>
                       ) : (
-                        <span>{t('Set new password')}</span>
+                        <Text variant="subtitle2">{t('Set new password')}</Text>
                       )}
                     </Button>
-                  </Box>
-                </Grid>
+                  </div>
+                </div>
               </form>
             </Grid>
             <Grid item xs={12}>
-              <Link href="/admin/login" passHref>
-                {'⬅ ' + t('Go back to Login')}
-              </Link>
+              <Button variant="outlined" onClick={() => router.back()}>
+                {t('Go back to Login')}
+              </Button>
             </Grid>
           </Grid>
         </div>

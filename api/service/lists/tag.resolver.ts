@@ -1,4 +1,4 @@
-import { prop as Property, getModelForClass } from '@typegoose/typegoose';
+import {prop as Property, getModelForClass} from '@typegoose/typegoose';
 import {
   Field,
   ObjectType,
@@ -21,27 +21,27 @@ import {
   BaseResolver,
   PaginatedResponse,
 } from './core.model';
-import { ObjectId } from 'mongodb';
-import type { IContext } from 'nuudel-main';
+import {ObjectId} from 'mongodb';
+import type {IContext} from 'nuudel-main';
 
 @ObjectType()
 export class Tag extends CoreType {
-  @Field(type => String)
-  @Property({ required: true, unique: true, index: true })
+  @Field(type => String, {nullable: true})
+  @Property({required: true, unique: true, index: true})
   slug: string;
 
-  @Field(type => String, { defaultValue: '' })
-  @Property({ required: false })
+  @Field(type => String, {nullable: true, defaultValue: ''})
+  @Property({required: false})
   name: string;
 }
 
 @InputType()
 @ArgsType()
 export class TagInput implements Partial<Tag> {
-  @Field(type => String)
+  @Field(type => String, {nullable: true})
   slug: string;
 
-  @Field(type => String, { defaultValue: '' })
+  @Field(type => String, {nullable: true, defaultValue: ''})
   name: string;
 }
 
@@ -59,7 +59,7 @@ const TagBaseResolver = BaseResolver<Tag, TagResponse>(Tag, TagResponse);
 @Resolver(of => Tag)
 export class TagResolver extends TagBaseResolver {
   @Authorized()
-  @Mutation(returns => Tag, { name: `update${Tag.name}` })
+  @Mutation(returns => Tag, {name: `update${Tag.name}`})
   async updateItem(
     @Arg('_id', type => ObjectId) _id: string,
     @Args() obj: TagArg,
@@ -68,18 +68,22 @@ export class TagResolver extends TagBaseResolver {
     return this.editItem(_id, obj, ctx);
   }
 
-  @Authorized()
-  @Mutation(returns => Tag, { name: `add${Tag.name}` })
+  @Authorized('Admin', 'Manager')
+  @Mutation(returns => Tag, {name: `add${Tag.name}`})
   async addItem(
-    @Arg(`input${Tag.name}`, { nullable: true }) data: TagInput,
+    @Arg(`input${Tag.name}`, {nullable: true}) data: TagInput,
     @Ctx() ctx: IContext,
   ) {
     return this.newItem(data as Tag, ctx);
   }
 
-  @Authorized()
-  @Query(returns => Tag, { name: `get${Tag.name}By` })
+  @Query(returns => Tag, {name: `get${Tag.name}By`, nullable: true})
   async getItemBy(@Arg('slug', type => String) slug: string): Promise<Tag> {
-    return await this.Model.findOne({ slug: slug });
+    return await this.Model.findOne({slug: slug});
+  }
+
+  @Query(returns => TagResponse, {name: `get${Tag.name}s`})
+  async readItems(@Args() pr: CoreArgs, @Ctx() {user}: IContext) {
+    return await this.getItems(pr, {user});
   }
 }

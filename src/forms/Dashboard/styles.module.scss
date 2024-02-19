@@ -1,0 +1,42 @@
+@import '../../theme/variables/colors';
+@import '../../theme/variables/sizes';
+
+.firstRow {
+    height: auto;
+}
+
+
+.cardcont {
+    height: 100%;
+}
+
+.differenceValue {
+    color: $danger;
+    margin-right: $padding-half;
+}
+
+.cardHeader {
+    color: $primary;
+    font-weight: 400;
+    text-transform: uppercase;
+}
+
+.amount {
+    font-weight: 300;
+}
+
+.bgCover {
+    background-image:
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%), url(/svg/choices-order.svg);
+    background-attachment: static;
+    background-position: bottom 5px right 10px;
+    background-repeat: no-repeat;
+    background-size: 25%;
+
+    border-left: 5px solid $primary;
+}
+
+.actionBar {
+    background: linear-gradient(90deg, rgba(187, 179, 179, 1) 0%, rgba(255, 255, 255, 1) 100%);
+    border-left: 5px solid $primary;
+}

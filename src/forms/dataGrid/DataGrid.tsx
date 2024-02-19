@@ -1,9 +1,8 @@
 import React from 'react';
 import styles from './DataGrid.module.scss';
-import moment from 'moment';
-import { IDataGridProps, Paging } from './IDataGridProps';
-import { IListFormState } from './iListState';
-import { IColumn } from './IColumn';
+import {IDataGridProps, Paging} from './IDataGridProps';
+import {IListFormState} from './iListState';
+import {IColumn} from './IColumn';
 import {
   PagingState,
   SortingState,
@@ -38,14 +37,14 @@ import {
   Toolbar,
   TableSummaryRow,
 } from '@devexpress/dx-react-grid-material-ui';
+import {Plugin, Template, TemplatePlaceholder} from '@devexpress/dx-react-core';
 import {
-  Plugin,
-  Template,
-  TemplatePlaceholder,
-} from '@devexpress/dx-react-core';
-import { Paper, IconButton, withStyles } from '@material-ui/core';
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
-import IconCloud from '@material-ui/icons/CloudDownload';
+  Paper,
+  IconButton,
+  Dialog,
+  AppBar,
+  Toolbar as MuiToolbar,
+} from '@mui/material';
 import {
   MessageBar,
   MessageBox,
@@ -54,39 +53,24 @@ import {
   Button,
   Link,
   TextField,
-  Dialog,
+  // Dialog,
   IFrame,
   Drawer,
   Menu,
+  Image,
 } from 'nuudel-core';
-import { MessageBarType } from 'nuudel-core';
-import { DataProvider } from 'nuudel-core';
-import { dateToString, getPath, dateToISOString } from 'nuudel-utils';
-import { IDataProvider } from 'nuudel-core';
-import { ListFormService } from 'nuudel-core';
-import { t } from '@Translate';
-import { alpha } from '@material-ui/core/styles';
-import Add from '@material-ui/icons/Add';
-import RefreshIcon from '@material-ui/icons/Cached';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import PrintIcon from '@material-ui/icons/Print';
-import EditIcon from '@material-ui/icons/Edit';
-import { withRouter } from 'next/router';
-import { WithRouterProps } from 'next/dist/client/with-router';
-import { StatusColor } from './StatusColor';
-import { RESET_PASSWORD } from '../User/UserMutation';
+import {MessageBarType} from 'nuudel-core';
+import {DataProvider, IDataProvider, ListFormService} from 'nuudel-core';
+//import {ListFormService} from '../../services/ListFormService';
+import {dateToString, getPath, dateToISOString, getAddress} from 'nuudel-utils';
+import {t} from '@Translate';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
+import {withRouter} from 'next/router';
+import {WithRouterProps} from 'next/dist/client/with-router';
+import {StatusColor, PaidColor} from './StatusColor';
+import {RESET_PASSWORD} from '../User/UserMutation';
 import gql from 'graphql-tag';
-import { ControlMode } from 'nuudel-utils';
 import xlsx from 'xlsx';
-
-const useStyles = theme => ({
-  tableStriped: {
-    '& tbody tr:nth-of-type(odd)': {
-      backgroundColor: alpha(theme.palette.primary.main, 0.1),
-    },
-  },
-});
 
 type dialogOrDrawer =
   | 'assign'
@@ -112,12 +96,38 @@ const DialogCell = (props: any) => (
   </Table.Cell>
 );
 
-const ButtonCell = ({ onClick, ...props }: any) => (
+const StatusCell = (props: any) => (
+  <Table.Cell {...props}>
+    <div
+      style=\{{
+        width: 'fit-content',
+        padding: '3px 10px',
+        borderRadius: 999,
+        ...PaidColor[
+          Object.keys(PaidColor).indexOf(props.value) < 0 ||
+          props.row?._modifiedby !== 'system'
+            ? 'None'
+            : props.value
+        ],
+      }}>
+      {t(props.value, {defaultValue: props.value})}
+    </div>
+  </Table.Cell>
+);
+
+const ButtonCell = ({onClick, ...props}: any) => (
   <Table.Cell {...props}>
     {!props.value || props.value === '--' ? (
-      <div style=\{{ marginTop: '-14px', marginBottom: '-14px' }}>
+      <div style=\{{marginTop: '-14px', marginBottom: '-14px'}}>
         <IconButton onClick={onClick}>
-          <AssignmentIndIcon />
+          <i
+            className="icon-contact"
+            style=\{{
+              lineHeight: 1,
+              fontSize: '18px',
+              margin: '3px 0 3px',
+            }}
+          />
         </IconButton>
       </div>
     ) : (
@@ -126,23 +136,20 @@ const ButtonCell = ({ onClick, ...props }: any) => (
   </Table.Cell>
 );
 
-const Styles = () => ({
-  button: {
-    fontSize: '14px',
-  },
-});
-
-const RefreshGridBase = props => {
-  const { onRefresh, classes } = props;
+const RefreshGrid = ({onRefresh, classes}) => {
   return (
-    <IconButton aria-label="refresh" color="inherit" onClick={onRefresh}>
-      <RefreshIcon />
+    <IconButton
+      aria-label="refresh"
+      color="inherit"
+      onClick={onRefresh}
+      sx=\{{fontSize: '14px'}}>
+      <i
+        className="icon-refresh"
+        style=\{{lineHeight: 1, fontSize: '16px', margin: '3px 0 3px'}}
+      />
     </IconButton>
   );
 };
-const RefreshGrid = withStyles(Styles, { name: 'RefreshGrid' })(
-  RefreshGridBase,
-);
 
 const CustomPanel = props => (
   <Plugin name="CustomPanel">
@@ -151,6 +158,19 @@ const CustomPanel = props => (
       <TemplatePlaceholder />
     </Template>
   </Plugin>
+);
+
+const ImageCell = (props: any) => (
+  <Table.Cell {...props}>
+    <div style=\{{marginTop: '-16px', marginBottom: '-21px'}}>
+      <Image
+        src={props?.value}
+        height={'auto'}
+        width={'auto'}
+        style=\{{maxWidth: 100, maxHeight: 200, objectFit: 'contain'}}
+      />
+    </div>
+  </Table.Cell>
 );
 
 export interface IListBase {
@@ -165,7 +185,7 @@ class DataGrid extends React.Component<
   protected _mounted: boolean = false;
   protected _getRowId = row => row._id;
   protected _exporterRef = React.createRef<any>();
-  private _highLightedRow = 'deliveryStatus';
+  private _highLightedRow = 'Status';
   public static readonly _pageSize: number = 10;
   protected _dataProvider: IDataProvider = undefined;
   protected readonly systemFields: string[] = [
@@ -176,6 +196,14 @@ class DataGrid extends React.Component<
     'latitude',
     'longitude',
     '_id',
+  ];
+
+  protected readonly dialogLists = [
+    'Category',
+    'User',
+    'Post',
+    'Page',
+    'Slide',
   ];
 
   constructor(props: IDataGridProps & WithRouterProps) {
@@ -230,25 +258,27 @@ class DataGrid extends React.Component<
       searchValue: '',
       anchorEl: null,
       next: false,
-      basepath: this.props.basepath || getPath(props.listname),
+      basepath:
+        this.props.basepath || getPath(props.listname, this.dialogLists),
       spining: false,
       linkTitle: 'title',
       exporting: false,
+      duplicating: false,
       dialogPrint: [],
-      totalSummaryItems: [{ columnName: '_id', type: 'count' }],
+      totalSummaryItems: [{columnName: '_id', type: 'count'}],
     };
   }
 
   static defaultProps = {
     pageSize: this._pageSize,
     pagination: Paging.Pagination,
-    sort: [{ columnName: 'createdAt', direction: 'desc' }],
+    sort: [{columnName: 'createdAt', direction: 'desc'}],
     initdata: [],
     title: '',
     description: '',
     filter: '',
     fields: null,
-    context: { host: '' },
+    context: {host: ''},
     dataProvider: null,
     IsGrouping: false,
     IsFiltering: false,
@@ -259,18 +289,16 @@ class DataGrid extends React.Component<
     IsColumnChooser: true,
     IsExport: true,
     hiddenColumns: ['_id'],
-    ColumnExtensions: [
-      { columnName: '_id', wordWrapEnabled: true, width: 200 },
-    ],
+    ColumnExtensions: [{columnName: '_id', wordWrapEnabled: true, width: 200}],
     showDlg: true,
   };
 
   protected changeColumnOrder = newOrder => {
-    this.setState({ columnOrder: newOrder });
+    this.setState({columnOrder: newOrder});
   };
 
   protected hiddenColumnNamesChange = hiddenColumnNames => {
-    this.setState({ hiddenColumnNames });
+    this.setState({hiddenColumnNames});
   };
 
   initListColumns() {
@@ -293,8 +321,9 @@ class DataGrid extends React.Component<
           f.title = typeof trans === 'object' ? f.title : trans;
           return f;
         });
+
         cols.forEach((item, index: number) => {
-          colWidth.push({ columnName: item.name, width: 148 });
+          colWidth.push({columnName: item.name, width: 148});
           if (item.name.startsWith('_')) {
             hiddenCol.push(item.name);
           } else if (
@@ -317,7 +346,7 @@ class DataGrid extends React.Component<
             ],
             columnOrder: [...new Set([...fields, ...this.props.hiddenColumns])],
             totalSummaryItems: [
-              { columnName: linktitle || '_id', type: 'count' },
+              {columnName: linktitle || '_id', type: 'count'},
             ],
           },
           () => this.fetchData(0),
@@ -343,7 +372,7 @@ class DataGrid extends React.Component<
   }
 
   componentDidUpdate(prevProps) {
-    const { filter, sort, listname } = this.props;
+    const {filter, sort, listname} = this.props;
     let pageSize =
       prevProps.pagination === Paging.None ||
       this.props.pagination === Paging.None
@@ -363,7 +392,7 @@ class DataGrid extends React.Component<
           filter: filter ? filter : '',
           sorting: sort ? sort : '',
           pageSize: pageSize,
-          basepath: this.props.basepath || getPath(listname),
+          basepath: this.props.basepath || getPath(listname, this.dialogLists),
           hiddenColumnNames:
             this.props.hiddenColumns && this.props.hiddenColumns.length > 0
               ? [...new Set([...this.props.hiddenColumns, '_id'])]
@@ -382,7 +411,7 @@ class DataGrid extends React.Component<
 
   openLink = (url: string) => {
     if (url.startsWith('/forms/')) {
-      this.setState({ drawer: url, spining: true });
+      this.setState({drawer: url, spining: true});
     } else if (this.props.showDlg) {
       this.setState({
         dialog: url,
@@ -415,16 +444,16 @@ class DataGrid extends React.Component<
         />
       );
     }
+
     return <Table.Cell {...props} />;
   };
 
-  private TableRow = ({ row, tableRow, children, ...restProps }) => {
+  private TableRow = ({row, tableRow, children, ...restProps}) => {
     return (
       <Table.Row
         {...restProps}
         row={row}
         tableRow={tableRow}
-        //className={classes.tableStriped}
         onClick={() => {
           this.openLink(`${this.state.basepath}/${row._id}/display`);
         }}
@@ -435,8 +464,7 @@ class DataGrid extends React.Component<
               ? 'None'
               : row[this._highLightedRow]
           ],
-        }}
-      >
+        }}>
         {children}
       </Table.Row>
     );
@@ -478,7 +506,7 @@ class DataGrid extends React.Component<
   };
 
   protected changeSelection = (selection: (string | number)[]) => {
-    this.setState({ selection });
+    this.setState({selection});
   };
 
   public changeCurrentPage = (currentPage: number) => {
@@ -495,7 +523,7 @@ class DataGrid extends React.Component<
   };
 
   public changePageSize = (pageSize: number) => {
-    const { total, currentPage: stateCurrentPage } = this.state;
+    const {total, currentPage: stateCurrentPage} = this.state;
     const totalPages = Math.ceil(total / pageSize);
     let currentPage = Math.min(stateCurrentPage, totalPages - 1);
     currentPage = currentPage >= 0 ? currentPage : 0;
@@ -568,10 +596,10 @@ class DataGrid extends React.Component<
       }
     }
     return {
-      pageSize: 2000,
+      pageSize: 200,
       total: 0,
       search: search,
-      currentPage: 0,
+      currentPage: 1,
       filter: filter,
       listname: this.props.listname,
       sorting: sorting,
@@ -599,7 +627,7 @@ class DataGrid extends React.Component<
   }
 
   private fetchData(page = this.state.currentPage, fetchPolicy?: string) {
-    let { sorting } = this.state;
+    let {sorting} = this.state;
     sorting = this.sortFormat(sorting);
     let filter: string = this.filterFormat(this.props.filter);
     this._dataProvider
@@ -608,21 +636,21 @@ class DataGrid extends React.Component<
         filter: filter,
         search: !!this.state.searchValue ? this.state.searchValue : '',
         total: page > 0 ? this.state.total : 0,
-        currentPage: page,
+        currentPage: page + 1,
         pageSize: this.state.pageSize,
         sorting: sorting,
         fetchPolicy,
       })
       .then(r => {
         if (this._mounted) {
-          if (r) {
+          if (r?.itemSummaries) {
             //console.log(JSON.stringify(r.itemSummaries));
             this.setState((prevState, props) => ({
               data:
                 props.pagination === Paging.InfiniteScroll &&
                 page > 0 &&
                 !!this.state.next
-                  ? [...prevState.data, ...r.itemSummaries]
+                  ? [...prevState?.data, ...r.itemSummaries]
                   : r.itemSummaries,
               currentPage: page,
               total: r.total,
@@ -642,7 +670,7 @@ class DataGrid extends React.Component<
       })
       .catch(error => {
         if (this._mounted) {
-          this.setState({ loading: false, refreshing: false });
+          this.setState({loading: false, refreshing: false});
         }
       });
   }
@@ -711,9 +739,9 @@ class DataGrid extends React.Component<
     );
     xlsx.writeFile(
       wb,
-      `${this.props.listname +
-        '-' +
-        new Date().toLocaleDateString('en-US')}.xlsx`,
+      `${
+        this.props.listname + '-' + new Date().toLocaleDateString('en-US')
+      }.xlsx`,
     );
   }
 
@@ -757,34 +785,28 @@ class DataGrid extends React.Component<
       return _row;
     });
     this.writeToExcel([Columns.map(col => col.title)].concat(_grid));
-    this.setState({ exporting: false });
+    this.setState({exporting: false});
   }
 
   public onExport = (): void => {
-    this.setState({ exporting: true });
+    this.setState({exporting: true});
     if (this._isConfigurationValid) {
-      if (this.state.selection.length > 0) {
-        this.formatDataExcel(
-          this.state.selection.map(index => this.state.data[index]),
-        );
-      } else {
-        this._dataProvider
-          .readListData(this.searchAssign())
-          .then(
-            //resolve
-            (r: any) => {
-              if (r && r.itemSummaries.length > 0) {
-                this.formatDataExcel(r.itemSummaries);
-              }
-            },
-            //reject
-            (data: any) => {},
-          )
-          .catch(ex => {
-            this.showToast(t('Excel export failed'), 'error');
-            this.setState({ exporting: false });
-          });
-      }
+      this._dataProvider
+        .readListData(this.searchAssign())
+        .then(
+          //resolve
+          (r: any) => {
+            if (r && r.itemSummaries.length > 0) {
+              this.formatDataExcel(r.itemSummaries);
+            }
+          },
+          //reject
+          (data: any) => {},
+        )
+        .catch(ex => {
+          this.showToast(t('Excel export failed'), 'error');
+          this.setState({exporting: false});
+        });
     }
   };
 
@@ -808,13 +830,10 @@ class DataGrid extends React.Component<
   ) => {
     if (text) {
       if (this.state.notifications.length === 0) {
-        this.setState({ notifications: [{ text, type, duration }] });
+        this.setState({notifications: [{text, type, duration}]});
       } else {
         this.setState({
-          notifications: [
-            ...this.state.notifications,
-            { text, type, duration },
-          ],
+          notifications: [...this.state.notifications, {text, type, duration}],
         });
       }
     }
@@ -826,7 +845,7 @@ class DataGrid extends React.Component<
     }
     clearTimeout(this.debounce);
     this.debounce = setTimeout(() => {
-      this.setState({ notifications: [] });
+      this.setState({notifications: []});
     }, this.state.notifications[0].duration || 5000);
     return (
       <div>
@@ -834,8 +853,7 @@ class DataGrid extends React.Component<
           <MessageBar
             key={idx}
             messageBarType={item.type || 'info'}
-            onClose={e => this.clearNotification(idx)}
-          >
+            onClose={e => this.clearNotification(idx)}>
             {item.text}
           </MessageBar>
         ))}
@@ -876,15 +894,15 @@ class DataGrid extends React.Component<
   };
 
   public handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    this.setState({ anchorEl: e.currentTarget });
+    this.setState({anchorEl: e.currentTarget});
   };
 
   protected handleClose = () => {
-    this.setState({ anchorEl: null });
+    this.setState({anchorEl: null});
   };
 
   protected removeItem = () => {
-    this.setState({ alert: false });
+    this.setState({alert: false});
     //this.setState({ loading: true });
     if (this.state.selection.length === 1) {
       const row = this.state.data[this.state.selection[0]];
@@ -907,7 +925,7 @@ class DataGrid extends React.Component<
               let index: number = Number(this.state.selection[0]);
               if (index < rows.length && id === rows[index]._id) {
                 rows.splice(index, 1);
-                this.setState({ data: rows, selection: [] });
+                this.setState({data: rows, selection: []});
               }
             }
             this.showToast(t('Item deleted successfully'), 'success');
@@ -926,19 +944,19 @@ class DataGrid extends React.Component<
 
   protected closeDialogOrDrawer = (name: dialogOrDrawer = 'all') => {
     if (name === 'assign') {
-      this.setState({ assign: '', spining: false });
+      this.setState({assign: '', spining: false});
     } else if (name.startsWith('drawer')) {
-      this.setState({ drawer: '', spining: false });
+      this.setState({drawer: '', spining: false});
       if (name === 'drawer_refresh') {
         this.doRefresh();
       }
     } else if (name.startsWith('dialog')) {
-      this.setState({ dialog: '', spining: false });
+      this.setState({dialog: '', spining: false});
       if (name === 'dialog_refresh') {
         this.doRefresh();
       }
     } else {
-      this.setState({ dialog: '', drawer: '', assign: '', spining: false });
+      this.setState({dialog: '', drawer: '', assign: '', spining: false});
     }
   };
 
@@ -946,9 +964,7 @@ class DataGrid extends React.Component<
     //this.setState({ loading: true });
     if (this.state.selection.length === 1) {
       const row = this.state.data[this.state.selection[0]];
-      const pass: string = Math.random()
-        .toString(36)
-        .substring(2, 10);
+      const pass: string = Math.random().toString(36).substring(2, 10);
       if (row && row._id) {
         this._dataProvider.lfs.client
           .mutate({
@@ -992,16 +1008,16 @@ class DataGrid extends React.Component<
 
   printLabels = (selected: (string | number)[]) => {
     const deliveries = selected.map((s, i) => this.state.data[i]);
-    this.setState({ dialogPrint: deliveries });
+    this.setState({dialogPrint: deliveries});
   };
 
   printShelf = (selected: (string | number)[]) => {
     const shelf = selected.map((s, i) => this.state.data[i]);
-    this.setState({ dialogPrint: shelf });
+    this.setState({dialogPrint: shelf});
   };
 
   public render(): React.ReactElement<IDataGridProps> {
-    const { columnOrder, pageSizes, total } = this.state;
+    const {columnOrder, pageSizes, total} = this.state;
 
     if (!this._isConfigurationValid) {
       return (
@@ -1029,8 +1045,28 @@ class DataGrid extends React.Component<
                     defaultValue: this.props.listname,
                   })}
                   open={!!this.state.dialog}
-                  onClose={() => this.closeDialogOrDrawer('dialog')}
-                >
+                  onClose={() => this.closeDialogOrDrawer('dialog')}>
+                  <AppBar position="static">
+                    <MuiToolbar style=\{{justifyContent: 'space-between'}}>
+                      <Text variant="h6">
+                        {t(this.props.listname, {
+                          defaultValue: this.props.listname,
+                        })}
+                      </Text>
+                      <IconButton
+                        color="inherit"
+                        onClick={() => this.closeDialogOrDrawer('dialog')}>
+                        <i
+                          className="icon-close"
+                          style=\{{
+                            lineHeight: 1,
+                            fontSize: '18px',
+                            margin: '3px 0 3px',
+                          }}
+                        />
+                      </IconButton>
+                    </MuiToolbar>
+                  </AppBar>
                   {this.state.spining && <Spinner />}
                   {!!this.state.dialog && (
                     <IFrame
@@ -1055,10 +1091,9 @@ class DataGrid extends React.Component<
                 // close all dialog second solution
                 <Link
                   noLinkStyle
-                  style=\{{ display: 'none' }}
+                  style=\{{display: 'none'}}
                   onClick={() => this.closeDialogOrDrawer()}
-                  id="closealldialogordrawer"
-                >
+                  id="closealldialogordrawer">
                   {'Close'}
                 </Link>
               }
@@ -1074,8 +1109,8 @@ class DataGrid extends React.Component<
                         : 'drawer_refresh',
                     )
                   }
-                  onOpen={() => {}}
-                >
+                  onOpen={() => {}}>
+                  <MuiToolbar></MuiToolbar>
                   {this.state.spining && <Spinner />}
                   {!!this.state.drawer && (
                     <IFrame
@@ -1106,26 +1141,38 @@ class DataGrid extends React.Component<
                 show={this.state.alert}
                 onSubmit={this.removeItem}
                 onClose={() => {
-                  this.setState({ alert: false });
+                  this.setState({alert: false});
                   this.handleClose();
                 }}
               />
-              <Button
-                className={styles.button}
-                color="primary"
-                startIcon={<Add />}
-                onClick={() => this.openLink(this.state.basepath)}
-              >
-                {t('New')}
-              </Button>
+              {!['Order', 'Invoice', 'Cart', 'Featured', 'Recentview'].includes(
+                this.props.listname,
+              ) && (
+                <Button
+                  className={styles.button}
+                  color="primary"
+                  startIcon={
+                    <i
+                      className="icon-plus-symbol"
+                      style=\{{lineHeight: 1, fontSize: '16px'}}
+                    />
+                  }
+                  onClick={() => this.openLink(this.state.basepath)}>
+                  {t('New')}
+                </Button>
+              )}
               <>
                 <Button
                   className={styles.button}
                   aria-controls="action-menu"
                   aria-haspopup="true"
                   onClick={this.handleClick}
-                  startIcon={<MoreVertIcon />}
-                >
+                  startIcon={
+                    <i
+                      className="icon-options"
+                      style=\{{lineHeight: 1, transform: 'rotate(90deg)'}}
+                    />
+                  }>
                   {t('Action')}
                 </Button>
                 <Menu
@@ -1133,9 +1180,9 @@ class DataGrid extends React.Component<
                     {
                       label: t('Edit'),
                       icon: (
-                        <EditIcon
-                          fontSize="small"
-                          className={styles.fixiconmenu}
+                        <i
+                          className="icon-pencil"
+                          style=\{{lineHeight: 1, fontSize: '16px'}}
                         />
                       ),
                       onClick: () => {
@@ -1162,14 +1209,14 @@ class DataGrid extends React.Component<
                     {
                       label: t('Delete'),
                       icon: (
-                        <DeleteForeverIcon
-                          fontSize="small"
-                          className={styles.fixiconmenu}
+                        <i
+                          className="icon-trash"
+                          style=\{{lineHeight: 1, fontSize: '16px'}}
                         />
                       ),
                       onClick: () => {
                         if (this.state.selection.length === 1) {
-                          this.setState({ alert: true });
+                          this.setState({alert: true});
                         } else {
                           this.showToast(
                             t('Check only one checkbox at a time'),
@@ -1178,12 +1225,36 @@ class DataGrid extends React.Component<
                         }
                       },
                     },
+                    this.props.listname === 'Order' &&
+                      ['Admin', 'Manager'].includes(this.props.user?.type) && {
+                        label: t('Duplicate'),
+                        icon: (
+                          <FileCopyIcon
+                            fontSize="small"
+                            className={styles.fixiconmenu}
+                          />
+                        ),
+                        onClick: () => {
+                          if (this.state.selection.length === 1) {
+                            const row =
+                              this.state.data[this.state.selection[0]];
+                            if (row?._id) {
+                              this.handleClose();
+                            }
+                          } else {
+                            this.showToast(
+                              t('Check only one checkbox at a time'),
+                              'warning',
+                            );
+                          }
+                        },
+                      },
                     {
                       label: t('Excel Export'),
                       icon: (
-                        <IconCloud
-                          fontSize="small"
-                          className={styles.fixiconmenu}
+                        <i
+                          className="icon-cloud"
+                          style=\{{lineHeight: 1, fontSize: '16px'}}
                         />
                       ),
                       disabled: !this.props.IsExport || this.state.exporting,
@@ -1196,9 +1267,9 @@ class DataGrid extends React.Component<
                       this.props.user?.type === 'Admin' && {
                         label: t('Reset password'),
                         icon: (
-                          <RefreshIcon
-                            fontSize="small"
-                            className={styles.fixiconmenu}
+                          <i
+                            className="icon-back"
+                            style=\{{lineHeight: 1, fontSize: '16px'}}
                           />
                         ),
                         onClick: () => {
@@ -1217,48 +1288,8 @@ class DataGrid extends React.Component<
                   anchorEl={this.state.anchorEl}
                   keepMounted={true}
                   open={Boolean(this.state.anchorEl)}
-                  onClose={this.handleClose}
-                ></Menu>
+                  onClose={this.handleClose}></Menu>
               </>
-
-              {this.props.listname === 'Delivery' && this.props.showDateFilter && (
-                <>
-                  <TextField
-                    label={t('Start date')}
-                    className={styles.datetime}
-                    value={dateToString(this.state.startDate)}
-                    id="startdate"
-                    variant="outlined"
-                    type="datetime-local"
-                    size="small"
-                    InputProps=\{{
-                      inputProps: {
-                        min: '2022-01-01T00:00',
-                        max: dateToString(this.state.endDate),
-                      },
-                    }}
-                    onChange={this.onchangeDate}
-                  />
-                  <TextField
-                    label={t('End date')}
-                    className={styles.datetime}
-                    value={dateToString(this.state.endDate)}
-                    id="startdate"
-                    variant="outlined"
-                    type="datetime-local"
-                    size="small"
-                    InputProps=\{{
-                      inputProps: {
-                        min: dateToString(this.state.startDate),
-                        max: dateToString(
-                          dateToISOString(new Date().setHours(23, 59, 59, 999)),
-                        ),
-                      },
-                    }}
-                    onChange={this.onchangeFilter}
-                  />
-                </>
-              )}
               <div className={styles.title}>{this.props.title}</div>
               {this.props.description && (
                 <div className={styles.description}>
@@ -1385,9 +1416,7 @@ class DataGrid extends React.Component<
                   <CustomPanel onRefresh={this.doRefresh} />
                   {this.props.IsColumnChooser && <ColumnChooser />}
                   {this.props.IsSearching && (
-                    <SearchPanel
-                      messages=\{{ searchPlaceholder: t('Search') }}
-                    />
+                    <SearchPanel messages=\{{searchPlaceholder: t('Search')}} />
                   )}
                   {this.props.IsGrouping && (
                     <GroupingPanel showSortingControls={this.props.IsSorting} />

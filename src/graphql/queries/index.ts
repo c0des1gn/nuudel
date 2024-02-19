@@ -27,6 +27,27 @@ export const currentUserQuery = gql`
   }
 `;
 
+export const userInfoQuery = gql`
+  query UserInfo($_id: ObjectId!) {
+    userInfo(_id: $_id) {
+      _id
+      email
+      username
+      firstname
+      lastname
+      type
+      _verifiedEmail
+      avatar
+      permission {
+        listname
+        permission
+      }
+      phone
+      mobile
+    }
+  }
+`;
+
 export const SNACKBAR_STATE_QUERY = gql`
   query snackbar {
     snackBarOpen @client

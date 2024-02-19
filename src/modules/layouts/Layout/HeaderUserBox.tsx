@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react';
-import { useMutation, useApolloClient, useQuery } from '@apollo/react-hooks';
+import React, {Fragment} from 'react';
+import {useMutation, useApolloClient, useQuery} from '@apollo/react-hooks';
 import {
   Avatar,
   Box,
@@ -8,89 +8,32 @@ import {
   List,
   ListItem,
   Divider,
-} from '@material-ui/core';
-import { Text } from 'nuudel-core';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import { t } from '@Translate';
-import { currentUserQuery } from '../../../graphql/queries/index';
-import { logoutMutation } from '../../../graphql/mutations';
-import { signOut } from 'nuudel-core';
-import { useRouter } from 'next/router';
-import IconButton from '@material-ui/core/IconButton';
-import MoreIcon from '@material-ui/icons/MoreVert';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    drawerOpen: {
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-    },
-    inline: {
-      display: 'inline',
-    },
-    mt2: {
-      marginTop: '20px',
-    },
-    px2: {
-      paddingLeft: '10px',
-      paddingRight: '10px',
-    },
-    pt2: {
-      paddingTop: '20px',
-    },
-    w100: {
-      fontWeight: 'lighter',
-    },
-    w500: {
-      fontWeight: 'bold',
-    },
-    textCenter: {
-      textAlign: 'center',
-    },
-    lineHeight1: {
-      lineHeight: 1,
-    },
-    userRole: {
-      color: theme.palette.grey[300],
-    },
-    sectionMobile: {
-      display: 'flex',
-      [theme.breakpoints.up('md')]: {
-        display: 'none',
-      },
-    },
-    sectionDesktop: {
-      paddingTop: 0,
-      paddingBottom: 0,
-      display: 'none',
-      [theme.breakpoints.up('md')]: {
-        display: 'flex',
-        alignItems: 'center',
-      },
-    },
-  }),
-);
+} from '@mui/material';
+import {Text} from 'nuudel-core';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import {t} from '@Translate';
+import {currentUserQuery} from '../../../graphql/queries/index';
+import {logoutMutation} from '../../../graphql/mutations';
+import {signOut, UI} from 'nuudel-core';
+import {useRouter} from 'next/navigation';
+import IconButton from '@mui/material/IconButton';
+import {tokenObj, USER_LANG, USER_TOKEN} from 'nuudel-utils';
+import styles from './styles.module.scss';
 
 export default function HeaderUserbox() {
   const client = useApolloClient();
   const router = useRouter();
-  const [logout, { loading: logoutLoading }] = useMutation<any>(
-    logoutMutation,
-    {
-      onCompleted: () => {
-        try {
-          client.cache.reset();
-          //client.resetStore(); //To reset the cache without refetching active queries, use client.clearStore() instead of
-        } catch {}
-        client.clearStore();
-        signOut(router); // redirect user to login page
-      },
+  const [logout, {loading: logoutLoading}] = useMutation<any>(logoutMutation, {
+    onCompleted: () => {
+      try {
+        client.cache.reset();
+        //client.resetStore(); //To reset the cache without refetching active queries, use client.clearStore() instead of
+      } catch {}
+      client.clearStore();
+      signOut(router); // redirect user to login page
     },
-  );
+  });
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -99,63 +42,69 @@ export default function HeaderUserbox() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const classes = useStyles();
 
-  const { data, error, loading } = useQuery(currentUserQuery);
+  const {data, error, loading} = useQuery(currentUserQuery);
+  if (loading || logoutLoading || error || !data) {
+    if (error?.message?.includes('not logged')) {
+      const token = UI.getItem(USER_TOKEN);
+      if (token) {
+        const obj = tokenObj(token);
+        if (obj?._id && obj.exp < Math.ceil(Date.now() / 1000)) {
+          router.replace(`/admin/login`, {scroll: true});
+        }
+      }
+    }
+    return <></>;
+  }
 
-  if (logoutLoading) return <></>;
-  if (loading) return <></>;
-  if (error) return <></>;
-  const { currentUser } = data;
+  const {currentUser} = data;
 
   return (
     <Fragment>
       <Button
         color="inherit"
         onClick={handleClick}
-        className={classes.sectionDesktop}
-      >
-        <ListItem alignItems="flex-start" style=\{{ padding: '0 10px' }}>
+        className={styles.sectionDesktop}>
+        <ListItem alignItems="flex-start" style=\{{padding: '0 10px'}}>
           <ListItemAvatar>
             <Avatar
-              alt={currentUser.firstname || currentUser.username}
-              src={currentUser.avatar && currentUser.avatar.uri}
+              alt={currentUser?.firstname || currentUser?.username}
+              src={currentUser?.avatar && currentUser?.avatar.uri}
             />
           </ListItemAvatar>
           <ListItemText
-            style=\{{ textTransform: 'capitalize' }}
-            primary={currentUser.firstname}
+            style=\{{textTransform: 'capitalize'}}
+            primary={currentUser?.firstname}
             secondary={
-              <React.Fragment>
-                <Text
-                  component="span"
-                  variant="body2"
-                  className={`${classes.inline} ${classes.userRole}`}
-                >
-                  {t(currentUser.type) || ''}
-                </Text>
-              </React.Fragment>
+              <Text
+                component="span"
+                variant="body2"
+                className={`${styles.inline} ${styles.userRole}`}>
+                {t(currentUser?.type) || ''}
+              </Text>
             }
           />
         </ListItem>
         <span className="pl-1 pl-xl-3">
-          <i className="icon-download-arrow-1" style=\{{ fontSize: '20px' }} />
+          <i className="icon-download-arrow-1" style=\{{fontSize: '20px'}} />
         </span>
       </Button>
-      <div className={classes.sectionMobile}>
+      <div className={styles.sectionMobile}>
         <IconButton
           aria-label="show more"
           aria-haspopup="true"
           onClick={handleClick}
-          color="inherit"
-        >
-          <MoreIcon />
+          color="inherit">
+          <i
+            className="icon-options"
+            style=\{{lineHeight: 1, transform: 'rotate(90deg)'}}
+          />
         </IconButton>
       </div>
       <Menu
         anchorEl={anchorEl}
         keepMounted
-        getContentAnchorEl={null}
+        //getContentAnchorEl={null}
         open={Boolean(anchorEl)}
         anchorOrigin=\{{
           vertical: 'center',
@@ -165,45 +114,35 @@ export default function HeaderUserbox() {
           vertical: 'center',
           horizontal: 'center',
         }}
-        onClose={handleClose}
-      >
-        <div className={classes.px2}>
+        onClose={handleClose}>
+        <div className={styles.px2}>
           <List>
-            <Box
-              component="div"
-              color="text.primary"
-              className={classes.textCenter}
-            >
+            <Box color="text.primary" className={styles.textCenter}>
               <Avatar
                 sizes="44"
-                alt={currentUser.firstname || currentUser.username}
-                src={currentUser.avatar && currentUser.avatar.uri}
-                style=\{{ margin: '0 auto' }}
+                alt={currentUser?.firstname || currentUser?.username}
+                src={currentUser?.avatar && currentUser?.avatar.uri}
+                style=\{{margin: '0 auto'}}
               />
             </Box>
             <div className="pl-3  pr-3">
               <div
-                className={`${classes.w500} ${classes.pt2} ${classes.textCenter} ${classes.lineHeight1}`}
-              >
-                {currentUser.username}
+                className={`${styles.w500} ${styles.pt2} ${styles.textCenter} ${styles.lineHeight1}`}>
+                {currentUser?.username}
               </div>
-              <div className={classes.textCenter}>
-                {t(currentUser.type) || ''}
+              <div className={styles.textCenter}>
+                {t(currentUser?.type) || ''}
               </div>
             </div>
-            <Divider className={`${classes.mt2} ${classes.w100}`} />
+            <Divider className={`${styles.mt2} ${styles.w100}`} />
 
-            <ListItem
-              button
-              component="a"
-              href="/admin/reset-password?code=reset"
-            >
+            <ListItem component="a" href="/admin/reset-password?code=reset">
               {t('Change password')}
             </ListItem>
 
             <Divider className="w-100" />
 
-            <ListItem button component="a" href="/admin/profile">
+            <ListItem component="a" href="/admin/profile">
               {t('Profile settings')}
             </ListItem>
 
@@ -216,10 +155,9 @@ export default function HeaderUserbox() {
                 }}
                 fullWidth={true}
                 startIcon={
-                  <i className="icon-exit" style=\{{ fontSize: '12px' }} />
+                  <i className="icon-exit" style=\{{fontSize: '12px'}} />
                 }
-                color="secondary"
-              >
+                color="secondary">
                 {t('Logout')}
               </Button>
             </ListItem>

@@ -1,8 +1,12 @@
 # compiled output
 /dist
 /node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
 package-lock.json
 .env
+.env.prod
 .env*.local
 
 # Logs
@@ -47,7 +51,8 @@ out/
 
 # cert
 private.key
-*.p8
+#*.p8
+*.crt
 
 # VSCodeCounter
 .VSCodeCounter
@@ -63,3 +68,7 @@ docker-config.json
 
 # GraphQl
 /api/schema.gql
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

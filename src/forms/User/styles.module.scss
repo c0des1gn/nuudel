@@ -1,0 +1,29 @@
+@import '../../theme/variables/colors';
+@import '../../theme/variables/sizes';
+
+.flexRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.alignCenter {
+    align-items: center;
+}
+
+.paddingRight {
+    padding-right: $padding;
+}
+
+.marginBtm3 {
+    margin-bottom: $padding-half;
+}
+
+
+.subtitle {
+    font-size: $font !important;
+    color: $text-light;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

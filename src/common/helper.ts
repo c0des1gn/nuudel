@@ -28,5 +28,5 @@ export const getSteps = (status: string, step = 'Created') => {
     default:
       break;
   }
-  return { values, activeStep };
+  return {values, activeStep};
 };

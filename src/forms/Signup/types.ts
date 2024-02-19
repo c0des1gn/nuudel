@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
-import { t } from '@Translate';
-import { ICurrentUser } from '@Interfaces';
+import {t} from '@Translate';
+import {ICurrentUser} from 'nuudel-core';
 
 export interface ISignUpFormValues {
   username: string;
@@ -19,8 +19,13 @@ export interface ISignUpFormValues {
   birthday: Date;
 }
 
-export const userType: string[] = ['Admin', 'User', 'Viewer', 'Manager'];
-export const Vehicle: string[] = ['None', 'Car', 'Scooter', 'Bicycle'];
+export const userType: string[] = [
+  'Admin',
+  'User',
+  'Seller',
+  'Manager',
+  //'Guest',
+];
 export const Gender: string[] = ['Male', 'Female'];
 
 export interface IProps {
@@ -39,15 +44,22 @@ export const initialValues: ISignUpFormValues = {
   phone: '',
   mobile: '',
   gender: 'Male',
-  avatar: { uri: '' },
+  avatar: {uri: ''},
   type: 'User',
   web: '',
   about: '',
-  birthday: new Date('1970-01-01 12:00:00'),
+  birthday: new Date('1970-01-01T12:00:00'),
 };
 const required: string = 'Заавал';
 const min: string = t('min length') || 'Хамгийн багадаа:';
 const max: string = t('max length') || 'Хамгийн ихдээ:';
+
+export const requestPasswordResetFormSchema = Yup.object().shape({
+  email: Yup.string()
+    .email(t('Email is invalid'))
+    .required(t('Email is required'))
+    .max(128, max + ' 128'),
+});
 
 const signupPasswordValidationSchema = Yup.object().shape({
   password: Yup.string()
@@ -67,22 +79,18 @@ const signupPasswordValidationSchema = Yup.object().shape({
 export const oldPasswordvalidateSchema = Yup.object().shape({
   oldPassword: Yup.string()
     .required(t('required') || required)
-    .min(6, min + '6')
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z0-9\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\;\:\<\>\,\.\/\?])(?!.*\s)(?=.{6,30})/,
-      t('allowedCharacters') || 'Том үсэг эсвэл тоо заавал орно',
-    )
+    .min(4, min + '4')
     .matches(
       /^[0-9a-zA-Z\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\;\:\<\>\,\.\/\?]+$/,
       t('OnlyLatinCharacters') || 'Зөвхөн латин үсэг',
     )
-    .max(30, max + '30'),
+    .max(40, max + ' 40'),
 });
 
 export const passwordValidationSchema = Yup.object().shape({
   password: Yup.string()
     .required(t('required') || required)
-    .min(6, min + '6')
+    .min(6, min + ' 6')
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z0-9\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\;\:\<\>\,\.\/\?])(?!.*\s)(?=.{6,30})/,
       t('allowedCharacters') || 'Том үсэг эсвэл тоо заавал орно',
@@ -91,7 +99,7 @@ export const passwordValidationSchema = Yup.object().shape({
       /^[0-9a-zA-Z\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\;\:\<\>\,\.\/\?]+$/,
       t('OnlyLatinCharacters') || 'Зөвхөн латин үсэг',
     )
-    .max(30, max + '30'),
+    .max(30, max + ' 30'),
   confirmPassword: Yup.string()
     .required(t('required') || required)
     .min(6, min + '6')
@@ -103,7 +111,7 @@ export const passwordValidationSchema = Yup.object().shape({
       /^[0-9a-zA-Z\~\!\@\#\$\%\^\&\*\(\)\-\_\+\=\|\;\:\<\>\,\.\/\?]+$/,
       t('OnlyLatinCharacters') || 'Зөвхөн латин үсэг',
     )
-    .max(30, max + '30')
+    .max(30, max + ' 30')
     .oneOf(
       [Yup.ref('password'), null],
       t('passwordMustMatch') || 'Нууц үг хоорондоо таарсангүй',
@@ -116,8 +124,8 @@ export const validateSchema = Yup.object()
       .trim()
       .required(t('required') || required)
       //.lowercase()
-      .min(5, min + '5')
-      .max(35, max + '35')
+      .min(5, min + ' 5')
+      .max(35, max + ' 35')
       .matches(
         /^[0-9a-zA-Z\-\_\.]+$/,
         t('LatinCharactersOnly') || 'Зөвхөн латин үсэг',
@@ -126,7 +134,7 @@ export const validateSchema = Yup.object()
       .trim()
       .required(t('required') || required)
       .email(t('must be a valid email') || 'Имэйл хаяг буруу')
-      .max(100, max + '100'),
+      .max(100, max + ' 100'),
     mail: Yup.string()
       .trim()
       .email(t('must be a valid email') || 'Имэйл хаяг буруу')
@@ -138,11 +146,11 @@ export const validateSchema = Yup.object()
     firstname: Yup.string()
       .trim()
       .required(t('required') || required)
-      .max(60, max + '60'),
+      .max(60, max + ' 60'),
     lastname: Yup.string()
       .trim()
-      .required(t('required') || required)
-      .max(60, max + '60'),
+      .notRequired()
+      .max(60, max + ' 60'),
     phone: Yup.string()
       .matches(
         /^(?:[0-9\s\(\)\-\+\*\#\,]+)?$/,
@@ -167,7 +175,7 @@ export const validateSchema = Yup.object()
       ),
     about: Yup.string().trim(),
     birthday: Yup.date(),
-    avatar: Yup.object().shape({ uri: Yup.string() }),
+    avatar: Yup.object().shape({uri: Yup.string()}),
     //check: Yup.boolean().oneOf([true], t('agreement') || 'Зөвшөөрөх'),
   })
   .concat(signupPasswordValidationSchema);

@@ -1,6 +1,7 @@
 {
-  "watch": ["api/**/*", "public/**/*"],
+  "verbose": false,
+  "watch": ["api/**/*"],
   "ignore": ["node_modules", ".next"],
   "exec": "ts-node --project tsconfig.server.json api/index.ts",
-  "ext": "js ts json"
+  "ext": "ts,js,json"
 }

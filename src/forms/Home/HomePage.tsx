@@ -1,10 +1,10 @@
 import React from 'react';
-import { Text, Container, Link, Image } from 'nuudel-core';
-import { t } from '@Translate';
-import { useStyles } from './Style';
-import PersonIcon from '@material-ui/icons/Person';
-import { UI } from 'nuudel-core';
-import { USER_KEY, CONF } from '../../config';
+import {Text, Container, Link, Image} from 'nuudel-core';
+import {t} from '@Translate';
+import styles from './styles.module.scss';
+import PersonIcon from '@mui/icons-material/Person';
+import {UI} from 'nuudel-core';
+import {CONF, USER_TOKEN} from '../../config';
 import config from '../../common/config.json';
 
 const _conf = !CONF?.site_title ? config : CONF;
@@ -14,14 +14,25 @@ interface ITrackingProps {
 }
 
 export const HomePage = (props: ITrackingProps) => {
-  const classes = useStyles();
-
   return (
-    <div className={classes.root}>
-      <div className={classes.header}>
-        <div className={classes.image} />
-        <Container maxWidth="md" className={classes.navbar}>
-          <div className={classes.logo}>
+    <div className={styles.root}>
+      <div className={styles.header}>
+        <div className={styles.image} />
+        <Container
+          maxWidth="md"
+          sx={theme => ({
+            padding: theme.spacing(3),
+            zIndex: 2,
+            color: '#fff',
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            right: '0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          })}>
+          <div className={styles.logo}>
             {_conf.logo && _conf.logo.uri ? (
               <Image src={_conf.logo.uri} width={50} height={50} />
             ) : (
@@ -30,9 +41,9 @@ export const HomePage = (props: ITrackingProps) => {
               </Text>
             )}
           </div>
-          <div className={classes.contact}>
-            <PersonIcon className={classes.contactIcon} fontSize="small" />
-            {!UI.getItem(USER_KEY) ? (
+          <div className={styles.contact}>
+            <PersonIcon className={styles.contact} fontSize="small" />
+            {!UI.getItem(USER_TOKEN) ? (
               <span>
                 <Link href="/admin/login">{t('Login')}</Link>
               </span>
@@ -43,8 +54,23 @@ export const HomePage = (props: ITrackingProps) => {
             )}
           </div>
         </Container>
-        <Container maxWidth="md" className={classes.trackingContainer}>
-          <Text variant="h5" className={classes.trackingText}>
+        <Container
+          maxWidth="md"
+          sx={theme => ({
+            padding: theme.spacing(1),
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            zIndex: 2,
+            [theme.breakpoints.up('sm')]: {
+              marginTop: '16rem',
+            },
+            [theme.breakpoints.down('xs')]: {
+              marginTop: '7rem',
+            },
+          })}>
+          <Text variant="h5" color="#fff">
             {t('Enter tracking number')}
           </Text>
         </Container>

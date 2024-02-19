@@ -1,4 +1,4 @@
-import { prop as Property, getModelForClass } from '@typegoose/typegoose';
+import {prop as Property, getModelForClass} from '@typegoose/typegoose';
 import {
   Field,
   ObjectType,
@@ -14,51 +14,51 @@ import {
   Authorized,
   Ctx,
 } from 'type-graphql';
-import { ObjectId } from 'mongodb';
-import { registerEnumType } from 'type-graphql';
-import { Note, Image, Link } from 'nuudel-main';
-import { ImageObj, ImageInput } from './image.resolver';
-import { Language, Currency } from '../enums';
-import type { IContext } from 'nuudel-main';
+import {ObjectId} from 'mongodb';
+import {registerEnumType} from 'type-graphql';
+import {Note, Image, Link} from 'nuudel-main';
+import {ImageObj, ImageInput} from './image.resolver';
+import {Language, Currency} from '../enums';
+import type {IContext} from 'nuudel-main';
 
 @ObjectType() //extends CoreType
 export class Settings {
-  @Field()
-  @Property()
+  @Field(type => Boolean, {defaultValue: true})
+  @Property({required: false})
   notification: boolean;
 
-  @Field(type => Currency, { defaultValue: Currency.MNT })
-  @Property({ required: false })
+  @Field(type => Currency, {defaultValue: Currency.MNT})
+  @Property({required: false})
   currency: Currency;
 
-  @Field(type => Language, { defaultValue: Language.Mongolian })
-  @Property({ required: true })
+  @Field(type => Language, {defaultValue: Language.Mongolian})
+  @Property({required: true})
   locale: Language;
 
-  @Field(type => [String], { defaultValue: [], nullable: true })
-  @Property({ required: false })
+  @Field(type => [String], {defaultValue: [], nullable: true})
+  @Property({required: false})
   _devices?: string[];
 }
 
 @InputType()
 @ArgsType()
 export class SettingsInput implements Partial<Settings> {
-  @Field({ defaultValue: true })
+  @Field(type => Boolean, {defaultValue: true})
   notification: boolean;
 
-  @Field(type => Currency, { defaultValue: Currency.MNT })
+  @Field(type => Currency, {defaultValue: Currency.MNT})
   currency: Currency;
 
-  @Field(type => Language, { defaultValue: Language.Mongolian })
+  @Field(type => Language, {defaultValue: Language.Mongolian})
   locale: Language;
 
-  @Field(type => [String], { defaultValue: [], nullable: true })
+  @Field(type => [String], {defaultValue: [], nullable: true})
   _devices?: string[];
 }
 
 @ObjectType()
 export class Partner {
-  @Field(type => Boolean, { defaultValue: false })
+  @Field(type => Boolean, {defaultValue: false})
   @Property()
   custom: boolean;
 }
@@ -66,6 +66,6 @@ export class Partner {
 @InputType()
 @ArgsType()
 export class PartnerInput implements Partial<Partner> {
-  @Field(type => Boolean, { defaultValue: false })
+  @Field(type => Boolean, {defaultValue: false})
   custom: boolean;
 }

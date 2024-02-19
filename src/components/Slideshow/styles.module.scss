@@ -1,41 +1,49 @@
+@use "sass:map";
+@import "../../theme/variables/colors";
+@import "../../theme/variables/sizes";
+
 .sliderContainer {
-  flex: 1;
+  display: flex;
+  flex-direction: row;
   max-width: 100%;
+  max-height: 500px;
+  overflow: hidden;
 }
 
 .slideInnerContainer {
   flex: 1;
   flex-direction: column;
-  flex-wrap: 'nowrap';
-  justify-content: 'flex-start';
-  align-items: 'stretch';
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
 }
 
 .slideContainer {
   flex: 1;
-  align-items: 'stretch';
+  align-items: stretch;
 }
 
 .image {
-  align-self: 'center';
+  align-self: center;
   width: 100%;
   max-height: 100%;
-  position: 'relative';
+  position: relative;
   border-radius: 0;
 }
 
 .title {
-  position: 'relative';
-  background-color: 'transparent';
-  font-weight: 'normal';
-  text-align: 'left';
+  position: relative;
+  background-color: transparent;
+  font-weight: normal;
+  text-align: left;
 }
+
 .subtitle {
-  position: 'relative';
+  position: relative;
   padding: 0;
-  background-color: 'transparent';
-  font-weight: 'normal';
-  text-align: 'left';
+  background-color: transparent;
+  font-weight: normal;
+  text-align: left;
 }
 
 .swiper {
@@ -43,11 +51,61 @@
   height: 100%;
 }
 
-.thumbSlider {
-  padding: 20px 0;
+.prevThumbBtn,
+.nextThumbBtn {
+  border: thin solid $border-light;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: $padding-small;
+}
+
+.prevThumbBtn,
+.nextThumbBtn {
+  width: 100%;
+}
+
+.prevThumbBtn {
+  margin-bottom: $padding-half;
+}
+
+.nextThumbBtn {
+  margin-top: $padding-half;
+}
+
+.prevProductBtn,
+.nextProductBtn {
+  border-top: thin solid $border-light;
+  border-bottom: thin solid $border-light;
+  background-color: rgba(255, 255, 255, 0.9);
+
+  &:hover {
+    background-color: $background-dark;
+  }
+}
+
+.prevProductBtn,
+.nextProductBtn {
+  position: absolute;
+  top: 50%;
+  margin-top: -35px;
+  height: 70px;
+  z-index: 2;
+}
+
+.nextProductBtn {
+  left: auto;
+  right: 0;
+  border-left: thin solid $border-light;
+}
+
+.prevProductBtn {
+  left: 0;
+  right: auto;
+  border-right: thin solid $border-light;
 }
 
 .mainSlider {
-  border: 1px solid rgb(201, 201, 201);
-  background-color: #fff;
+  width: calc(100% - 85px);
+  border: thin solid $border-light;
 }

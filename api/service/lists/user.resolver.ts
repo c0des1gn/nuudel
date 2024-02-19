@@ -28,16 +28,11 @@ import {
   BaseResolver,
   PaginatedResponse,
 } from './core.model';
-import { ObjectId } from 'mongodb';
-import { registerEnumType } from 'type-graphql';
-import { Note, Image, Link } from 'nuudel-main';
-import { ImageObj, ImageInput } from './image.resolver';
-import {
-  Settings,
-  SettingsInput,
-  Partner,
-  PartnerInput,
-} from './setting.resolver';
+import {ObjectId} from 'mongodb';
+import {registerEnumType} from 'type-graphql';
+import {Note, Image, Link} from 'nuudel-main';
+import {ImageObj, ImageInput} from './image.resolver';
+import {Settings, SettingsInput} from './setting.resolver';
 import {
   Sex,
   UserType,
@@ -47,15 +42,17 @@ import {
   Permission,
 } from '../enums';
 import bcrypt from 'bcryptjs';
-import { AuthenticationError, ValidationError } from 'apollo-server-fastify';
-import type { IContext } from 'nuudel-main';
-import { fbProfile } from 'nuudel-main';
-import { Message, reset, verify } from '../../mailer/';
-import { Send, checkHash } from 'nuudel-main';
-import { Min, Max, Length } from 'class-validator';
-import { Verify } from './verify.resolver';
-import { t } from '../../loc/I18n';
-import { converter } from 'nuudel-main';
+import crypto from 'crypto';
+import {AuthenticationError, ValidationError, ForbiddenError} from './errors';
+import type {IContext} from 'nuudel-main';
+import {fbProfile} from 'nuudel-main';
+import {googleProfile} from 'nuudel-main';
+import {Send, checkHash} from 'nuudel-main';
+import {Message, reset, verify} from '../../mailer/';
+import {Min, Max, Length} from 'class-validator';
+import {Verify} from './verify.resolver';
+import {t} from '../../loc/I18n';
+import {converter} from 'nuudel-main';
 
 //const { REFRESH_TOKEN_SECRET } = process?.env;
 
@@ -89,75 +86,79 @@ export const GUEST_USER_ID = '1234567890abcd0987654321';
   next();
 })
 @ObjectType()
-@modelOptions({ schemaOptions: { timestamps: true } })
+@modelOptions({schemaOptions: {timestamps: true}})
 export class User extends CoreType {
   @Field()
-  @Property({ required: true })
+  @Property({required: true})
   firstname: string;
 
-  @Field()
-  @Property({ required: true })
-  lastname: string;
+  @Field(type => String, {defaultValue: '', nullable: true})
+  @Property({required: false})
+  lastname?: string;
 
   @Max(60)
   @Field()
-  @Property({ required: true, unique: true })
+  @Property({required: true, unique: true})
   username: string;
 
-  @Property({ required: true })
+  @Property({required: true})
   password: string;
 
   @Field()
-  @Property({ required: false })
+  @Property({required: false})
   phone: string;
 
-  @Field()
-  @Property({ required: false })
+  @Field(type => String, {nullable: true})
+  @Property({required: false})
   mobile?: string;
 
   @Field()
-  @Property({ required: false, unique: true, index: true })
+  @Property({required: false, unique: true, index: true})
   email: string;
 
-  @Field({ defaultValue: '' })
-  @Property({ required: false })
+  @Field({defaultValue: '', nullable: true})
+  @Property({required: false})
   _verifiedEmail: string;
 
-  @Field(type => Date, { defaultValue: new Date('1970-01-01 12:00:00') })
-  @Property({ required: false })
+  @Field(type => Date, {defaultValue: new Date('1970-01-01T12:00:00')})
+  @Property({required: false})
   birthday: Date;
 
-  @Field(type => Sex, { nullable: true, defaultValue: null })
-  @Property({ required: false })
+  @Field(type => Sex, {nullable: true, defaultValue: null})
+  @Property({required: false})
   gender: Sex;
 
-  @Field(type => String, { nullable: true, defaultValue: '' })
-  @Property({ required: false })
+  @Field(type => String, {nullable: true, defaultValue: ''})
+  @Property({required: false})
   _fbId: string;
 
-  @Field(type => String, { nullable: true, defaultValue: '' })
-  @Property({ required: false })
+  @Field(type => String, {nullable: true, defaultValue: ''})
+  @Property({required: false})
   _appleId: string;
 
-  @Field(type => Note, { nullable: true, defaultValue: '' })
-  @Property({ required: false })
+  @Field(type => String, {nullable: true, defaultValue: ''})
+  @Property({required: false})
+  _googleId: string;
+
+  @Field(type => Note, {nullable: true, defaultValue: ''})
+  @Property({required: false})
   about: string;
 
-  @Field(type => Image, { nullable: true })
-  @Property({ required: false })
+  @Field(type => Image, {nullable: true})
+  @Property({required: false})
   avatar: object;
 
-  @Field(type => Link, { nullable: true })
-  @Property({ required: false })
+  @Field(type => Link, {nullable: true})
+  @Property({required: false})
   web: string;
 
+  @Field(type => UserType, {defaultValue: UserType.User})
   @Authorized()
-  @Field(type => UserType, { defaultValue: UserType.User })
-  @Property({ required: false })
+  @Property({required: false})
   type: UserType;
 
-  @Field(type => UserStatus, { defaultValue: UserStatus.Active })
-  @Property({ required: false })
+  @Field(type => UserStatus, {defaultValue: UserStatus.Inactive})
+  @Property({required: false})
   _status: UserStatus;
 
   @Field(type => Settings, {
@@ -167,11 +168,12 @@ export class User extends CoreType {
       locale: Language.Mongolian,
       _devices: [],
     },
+    nullable: true,
   })
-  @Property({ required: false })
-  settings: object;
+  @Property({required: false})
+  settings?: object;
 
-  public async comparePassword(password: string): Promise<Boolean> {
+  public async comparePassword(password: string): Promise<boolean> {
     //const [salt, key] = this.password.split(":");
     //return key === crypto.scryptSync(password, salt, 64).toString('hex');
     return await bcrypt.compare(password, this.password);
@@ -183,8 +185,8 @@ export class UserInput implements Partial<User> {
   @Field()
   firstname: string;
 
-  @Field()
-  lastname: string;
+  @Field(type => String, {defaultValue: '', nullable: true})
+  lastname?: string;
 
   @Field()
   username: string;
@@ -195,7 +197,7 @@ export class UserInput implements Partial<User> {
   @Field()
   phone: string;
 
-  @Field()
+  @Field(type => String, {nullable: true})
   mobile?: string;
 
   @Field()
@@ -204,40 +206,36 @@ export class UserInput implements Partial<User> {
   @Field(type => Date)
   birthday: Date;
 
-  @Field(type => Sex, { nullable: true, defaultValue: null })
+  @Field(type => Sex, {nullable: true, defaultValue: null})
   gender: Sex;
 
-  @Field(type => String, { nullable: true, defaultValue: '' })
+  @Field(type => String, {nullable: true, defaultValue: ''})
   _fbId: string;
 
-  @Field(type => String, { nullable: true, defaultValue: '' })
+  @Field(type => String, {nullable: true, defaultValue: ''})
   _appleId: string;
 
-  @Field(type => Note, { nullable: true, defaultValue: '' })
+  @Field(type => String, {nullable: true, defaultValue: ''})
+  _googleId: string;
+
+  @Field(type => Note, {nullable: true, defaultValue: ''})
   about?: string;
 
-  @Field(type => ImageInput, { nullable: true })
+  @Field(type => ImageInput, {nullable: true})
   avatar: object;
 
-  @Field(type => Link, { nullable: true })
+  @Field(type => Link, {nullable: true})
   web: string;
 
   @Authorized('Admin')
-  @Field(type => UserType, { nullable: true, defaultValue: UserType.User })
+  @Field(type => UserType, {nullable: true, defaultValue: UserType.User})
   type: UserType;
 
-  @Field(type => UserStatus, { defaultValue: UserStatus.Active })
+  @Field(type => UserStatus, {defaultValue: UserStatus.Active})
   _status: UserStatus;
 
-  @Field(type => SettingsInput, {
-    defaultValue: {
-      notification: true,
-      currency: Currency.MNT,
-      locale: Language.Mongolian,
-      _devices: [],
-    },
-  })
-  settings: object;
+  @Field(type => SettingsInput, {nullable: true})
+  settings?: object;
 }
 
 @ArgsType()
@@ -245,8 +243,8 @@ export class UserArg {
   @Field()
   firstname: string;
 
-  @Field()
-  lastname: string;
+  @Field(type => String, {defaultValue: '', nullable: true})
+  lastname?: string;
 
   @Field()
   phone: string;
@@ -257,37 +255,33 @@ export class UserArg {
   @Field(type => Date)
   birthday: Date;
 
-  @Field(type => Sex, { nullable: true, defaultValue: null })
+  @Field(type => Sex, {nullable: true, defaultValue: null})
   gender: Sex;
 
-  @Field(type => String, { nullable: true, defaultValue: '' })
+  @Field(type => String, {nullable: true, defaultValue: ''})
   _fbId: string;
 
-  @Field(type => String, { nullable: true, defaultValue: '' })
+  @Field(type => String, {nullable: true, defaultValue: ''})
   _appleId: string;
 
-  @Field(type => Note, { nullable: true, defaultValue: '' })
+  @Field(type => String, {nullable: true, defaultValue: ''})
+  _googleId: string;
+
+  @Field(type => Note, {nullable: true, defaultValue: ''})
   about?: string;
 
-  @Field(type => ImageInput, { nullable: true })
+  @Field(type => ImageInput, {nullable: true})
   avatar: object;
 
-  @Field(type => Link, { nullable: true })
+  @Field(type => Link, {nullable: true})
   web: string;
 
   @Authorized('Admin')
-  @Field(type => UserType, { nullable: true, defaultValue: UserType.User })
+  @Field(type => UserType, {nullable: true, defaultValue: UserType.User})
   type: UserType;
 
-  @Field(type => SettingsInput, {
-    defaultValue: {
-      notification: true,
-      currency: Currency.MNT,
-      locale: Language.Mongolian,
-      _devices: [],
-    },
-  })
-  settings: object;
+  @Field(type => SettingsInput, {nullable: true})
+  settings?: object;
 }
 
 @ObjectType()
@@ -296,14 +290,14 @@ export class IPermission {
   @Property()
   listname: string;
 
-  @Field(type => Permission, { defaultValue: Permission.Read })
+  @Field(type => Permission, {defaultValue: Permission.Read})
   @Property()
   permission: Permission;
 }
 
 @ObjectType()
 export class CurrentUser {
-  @Field(type => ObjectId, { nullable: true })
+  @Field(type => ObjectId, {nullable: true})
   @Property()
   readonly _id: ObjectId;
 
@@ -311,9 +305,9 @@ export class CurrentUser {
   @Property()
   firstname: string;
 
-  @Field()
+  @Field(type => String, {defaultValue: '', nullable: true})
   @Property()
-  lastname: string;
+  lastname?: string;
 
   @Field()
   @Property()
@@ -323,29 +317,29 @@ export class CurrentUser {
   @Property()
   email: string;
 
-  @Field({ defaultValue: '' })
+  @Field({defaultValue: '', nullable: true})
   @Property()
-  _verifiedEmail: string;
+  _verifiedEmail?: string;
 
-  @Field(type => Image, { nullable: true })
+  @Field(type => Image, {nullable: true})
   @Property()
   avatar: object;
 
-  @Field(type => UserType, { defaultValue: UserType.User })
+  @Field(type => UserType, {defaultValue: UserType.User})
   @Property()
   type: UserType;
 
-  @Field(type => [IPermission], { defaultValue: [] })
+  @Field(type => [IPermission], {defaultValue: []})
   @Property()
   permission: object[];
 
   @Field()
-  @Property({ required: false })
+  @Property({required: false})
   phone: string;
 
-  @Field()
-  @Property({ required: false })
-  mobile: string;
+  @Field(type => String, {nullable: true})
+  @Property({required: false})
+  mobile?: string;
 
   @Field(type => Settings, {
     defaultValue: {
@@ -356,7 +350,7 @@ export class CurrentUser {
     },
     nullable: true,
   })
-  @Property({ required: false })
+  @Property({required: false})
   settings?: object;
 }
 
@@ -366,7 +360,7 @@ export class Token extends CoreType {
   @Property()
   token: string;
 
-  @Field(type => String, { nullable: true, defaultValue: null })
+  @Field(type => String, {nullable: true, defaultValue: null})
   @Property()
   refreshToken?: string;
 
@@ -418,39 +412,35 @@ export class ResetArg {
 }
 
 @ObjectType()
-export class Courier {
-  @Field(type => ObjectId, { nullable: true })
-  @Property({ required: false })
-  _id: ObjectId;
-
-  @Field(type => String, { nullable: true })
-  @Property({ required: false })
+export class Courier extends CoreType {
+  @Field(type => String, {nullable: true})
+  @Property({required: false})
   username: string;
 
   @Field()
-  @Property({ required: false })
+  @Property({required: false})
   firstname: string;
 
   @Field()
-  @Property({ required: false })
+  @Property({required: false})
   lastname: string;
 
   @Field()
-  @Property({ required: false })
+  @Property({required: false})
   phone: string;
 
   @Field()
-  @Property({ required: false })
+  @Property({required: false})
   mobile: string;
 }
 
 @InputType()
 @ArgsType()
 export class CourierInput implements Partial<Courier> {
-  @Field(type => ObjectId, { nullable: true })
+  @Field(type => ObjectId, {nullable: true})
   _id: ObjectId;
 
-  @Field(type => String, { nullable: true })
+  @Field(type => String, {nullable: true})
   username: string;
 
   @Field()
@@ -478,14 +468,14 @@ const UserBaseResolver = BaseResolver<User, UserResponse>(User, UserResponse);
 
 @Resolver(of => User)
 export class UserResolver extends UserBaseResolver {
-  protected _verify: any;
+  protected _verify: any = undefined;
   constructor() {
     super();
     this._verify = getModelForClass(Verify);
   }
 
   @Authorized()
-  @Mutation(returns => User, { name: `update${User.name}` })
+  @Mutation(returns => User, {name: `update${User.name}`})
   async updateItem(
     @Arg('_id', type => ObjectId) _id: string,
     @Args() obj: UserArg,
@@ -494,19 +484,16 @@ export class UserResolver extends UserBaseResolver {
     if (
       ctx.user &&
       _id &&
-      (_id.toString() === ctx?.user?._id || ctx?.user?.type === 'Admin')
+      (_id.toString() === ctx.user._id || ctx.user.type === 'Admin')
     ) {
       if (ctx.user.type !== 'Admin') {
         delete obj._fbId;
         delete obj._appleId;
-        //delete obj.username;
-        //delete obj.type;
-        //delete obj._status;
-        //delete obj._verifiedEmail;
+        delete obj._googleId;
       }
       if (
-        obj.hasOwnProperty('type') &&
         obj.type &&
+        obj.hasOwnProperty('type') &&
         ctx?.user?.type !== 'Admin'
       ) {
         obj['type'] = (ctx.user?.type as UserType) || UserType.User;
@@ -518,48 +505,54 @@ export class UserResolver extends UserBaseResolver {
       );
   }
 
-  @Mutation(returns => User, { name: `add${User.name}` })
+  @Mutation(returns => User, {name: `add${User.name}`})
   async addItem(
-    @Arg(`input${User.name}`, { nullable: true }) data: UserInput,
+    @Arg(`input${User.name}`, {nullable: true}) data: UserInput,
     @Ctx() ctx: IContext,
   ) {
-    if (
-      data.hasOwnProperty('type') &&
-      data.type &&
-      ctx?.user?.type !== 'Admin'
-    ) {
+    if (data?.type && ctx?.user?.type !== 'Admin') {
       data['type'] = UserType.User;
     }
-    if (data.hasOwnProperty('email')) {
+    if (data?.email) {
       data.email = data.email.toLowerCase();
     }
-    if (data.hasOwnProperty('username')) {
+    if (data?.username) {
       data.username = data.username.toLowerCase();
     }
     const avialable = await this.Model.findOne({
       $or: [
-        { email: data.email },
-        { _verifiedEmail: data.email },
-        { username: data.username },
+        {email: data.email},
+        {_verifiedEmail: data.email},
+        {username: data.username},
       ],
     }).select('-password');
+
+    if (data && !data?.settings) {
+      data.settings = {
+        notification: true,
+        currency: Currency.MNT,
+        locale: Language.Mongolian,
+        _devices: [],
+      };
+    }
+
     if (!avialable) {
       return this.signUp(data as User, ctx);
-    } else throw new AuthenticationError('The user already exist');
+    } else throw new AuthenticationError(t('That username already exist'));
   }
 
   @Authorized()
   @Mutation(returns => User)
   async changePassword(
-    @Args() { oldpass, password, newpass }: ResetArg,
-    @Ctx() { user }: IContext,
+    @Args() {oldpass, password, newpass}: ResetArg,
+    @Ctx() {user}: IContext,
   ): Promise<User> {
     if (!user) {
       throw new AuthenticationError(
         "Don't have permission to update this user",
       );
     }
-    const _user = await this.Model.findById(user._id.toString()).select(
+    const _user = await this.Model.findById(user._id?.toString()).select(
       '+password',
     );
 
@@ -583,23 +576,23 @@ export class UserResolver extends UserBaseResolver {
           _modifiedby: user?.username || 'system',
         },
       },
-      { new: true },
+      {new: true},
     );
   }
 
   @Authorized()
-  @Mutation(returns => Boolean, { name: `updateEmail${User.name}` })
+  @Mutation(returns => Boolean, {name: `updateEmail${User.name}`})
   async updateEmail(
     @Arg('email', type => String) email: string,
     @Arg('pass', type => String) pass: string,
-    @Ctx() { user }: IContext,
+    @Ctx() {user}: IContext,
   ): Promise<boolean> {
     if (typeof user === 'undefined' || user._id.toString() === GUEST_USER_ID) {
       throw new AuthenticationError('Wrong user');
     }
     email = email.toLowerCase();
     const usr = await this.Model.findOne({
-      $or: [{ email: email }, { _verifiedEmail: email }],
+      $or: [{email: email}, {_verifiedEmail: email}],
     }).select('-password');
 
     if (usr) {
@@ -625,11 +618,11 @@ export class UserResolver extends UserBaseResolver {
   @Mutation(returns => Boolean)
   async requestPassword(
     @Arg('email', type => String) email: string,
-    @Ctx() { app }: IContext,
+    @Ctx() {app}: IContext,
   ): Promise<boolean> {
     email = email.toLowerCase();
     const _user = await this.Model.findOne({
-      $or: [{ email: email }, { _verifiedEmail: email }],
+      $or: [{email: email}, {_verifiedEmail: email}],
     }).select('-password');
 
     if (!_user) {
@@ -652,28 +645,28 @@ export class UserResolver extends UserBaseResolver {
   @Mutation(returns => Boolean)
   async resetPassword(
     @Ctx() ctx: IContext,
-    @Arg('token', type => String, { nullable: false }) token: string,
+    @Arg('token', type => String, {nullable: false}) token: string,
     @Arg('password', type => String) password: string,
-    @Arg('confirmPassword', type => String, { nullable: true })
+    @Arg('confirmPassword', type => String, {nullable: true})
     confirmPassword?: string,
-    @Arg('oldPassword', type => String, { nullable: true })
+    @Arg('oldPassword', type => String, {nullable: true})
     oldPassword?: string,
   ): Promise<boolean> {
     let r: any = undefined;
     if (password === confirmPassword) {
       if (token === 'reset' && !!oldPassword) {
         const _user = await this.changePassword(
-          { oldpass: oldPassword, password, newpass: confirmPassword },
+          {oldpass: oldPassword, password, newpass: confirmPassword},
           ctx,
         );
         return !!_user;
       }
-      const veri = this._verify.findOne({ code: token });
+      const veri = this._verify.findOne({code: token});
       if (veri && !!veri.mail) {
         let _user = await this.Model.findOne({
           $or: [
-            { email: veri.mail, _id: new ObjectId(veri.userId) },
-            { _verifiedEmail: veri.mail, _id: new ObjectId(veri.userId) },
+            {email: veri.mail, _id: new ObjectId(veri.userId)},
+            {_verifiedEmail: veri.mail, _id: new ObjectId(veri.userId)},
           ],
         }).select('-password');
 
@@ -690,7 +683,7 @@ export class UserResolver extends UserBaseResolver {
               _modifiedby: ctx?.user?.username || 'system',
             },
           },
-          { new: true },
+          {new: true},
         );
       } else {
         return false;
@@ -705,11 +698,11 @@ export class UserResolver extends UserBaseResolver {
   @Authorized('Admin')
   @Mutation(returns => Boolean)
   async passwordResetByAdmin(
-    @Ctx() { user }: IContext,
+    @Ctx() {user}: IContext,
     @Arg('password', type => String) password: string,
-    @Arg('id', type => ObjectId, { nullable: true })
+    @Arg('id', type => ObjectId, {nullable: true})
     id?: string,
-    @Arg('email', type => String, { nullable: true }) email?: string,
+    @Arg('email', type => String, {nullable: true}) email?: string,
   ): Promise<boolean> {
     if (user?.type !== 'Admin') {
       return false;
@@ -720,7 +713,7 @@ export class UserResolver extends UserBaseResolver {
         return false;
       }
       const _user = await this.Model.findOne({
-        $or: [{ email: email }, { _verifiedEmail: email }],
+        $or: [{email: email}, {_verifiedEmail: email}],
       }).select('-password');
       id = _user._id;
     }
@@ -735,7 +728,7 @@ export class UserResolver extends UserBaseResolver {
           _modifiedby: user?.username || 'system',
         },
       },
-      { new: true },
+      {new: true},
     );
     return !!r;
   }
@@ -743,16 +736,20 @@ export class UserResolver extends UserBaseResolver {
   @Mutation(returns => Boolean)
   async resend(
     @Arg('email', type => String) email: string,
-    @Arg('token', type => String, { nullable: false }) token: string,
-    @Ctx() { app }: IContext,
+    @Arg('token', type => String, {nullable: false}) token: string,
+    @Ctx() {app}: IContext,
   ): Promise<boolean> {
     const decoded: any = app.jwt.verify(token);
     if (decoded) {
-      const _user = await this.Model.findOne({
-        $or: [{ email: email.toLowerCase() }, { _id: email }],
-      }).select('-password');
+      const _user = await this.Model.findOne(
+        typeof email === 'string' && email?.length !== 24
+          ? {email: email.toLowerCase()}
+          : {
+              $or: [{email: email.toLowerCase()}, {_id: this.getOid(email)}],
+            },
+      ).select('-password');
       if (
-        decoded._id === _user._id.toString() &&
+        decoded._id === _user._id?.toString() &&
         _user.email !== _user._verifiedEmail
       ) {
         this.sendmail(_user);
@@ -765,17 +762,18 @@ export class UserResolver extends UserBaseResolver {
   @Query(returns => Boolean)
   async available(
     @Arg('email', type => String) email: string,
-    @Arg('token', type => String, { nullable: false }) token: string,
-    @Ctx() { app }: IContext,
+    @Arg('token', type => String, {nullable: false}) token: string,
+    @Ctx() {app}: IContext,
   ): Promise<boolean> {
     if (!email || !token) {
       return false;
     }
 
+    //const decoded: any = app.jwt.verify(token);
     if (checkHash(token)) {
       email = email.trim().toLowerCase();
       const _user = await this.Model.findOne({
-        $or: [{ email: email }, { _verifiedEmail: email }],
+        $or: [{email: email}, {_verifiedEmail: email}],
       }).select('-password');
       return !_user;
     }
@@ -785,13 +783,13 @@ export class UserResolver extends UserBaseResolver {
   @Query(returns => Boolean)
   async possible(
     @Arg('username', type => String) username: string,
-    @Arg('token', type => String, { nullable: false }) token: string,
-    @Ctx() { app }: IContext,
+    @Arg('token', type => String, {nullable: false}) token: string,
+    @Ctx() {app}: IContext,
   ): Promise<boolean> {
     if (!username || !token) {
       return false;
     }
-
+    //const decoded: any = app.jwt.verify(token);
     if (checkHash(token)) {
       const _user = await this.Model.findOne({
         username: username.trim().toLowerCase(),
@@ -802,13 +800,19 @@ export class UserResolver extends UserBaseResolver {
   }
 
   @Mutation(returns => Boolean)
-  async logout(@Ctx() { app }: IContext) {
+  async logout(
+    @Ctx() {app}: IContext,
+    @Arg('token', {nullable: true}) token?: string,
+  ) {
+    if (token) {
+      app.jwt.decode(token);
+    }
     return true;
   }
 
   @Query(returns => Boolean)
   async signout(
-    @Arg('token', { nullable: false }) token: string,
+    @Arg('token', {nullable: false}) token: string,
     @Ctx() ctx: IContext,
   ) {
     ctx.app.jwt.decode(token);
@@ -818,19 +822,19 @@ export class UserResolver extends UserBaseResolver {
   @Authorized()
   @Query(returns => Token)
   async refresh(
-    @Arg('refresh_token', { nullable: false }) refresh_token: string,
+    @Arg('refresh_token', {nullable: false}) refresh_token: string,
     @Ctx() ctx: IContext,
   ) {
     let decoded: any = ctx.app.jwt.verify(refresh_token);
     if (decoded && decoded._id === ctx.user?._id) {
       delete decoded.iat;
       delete decoded.exp;
-      const { user } = ctx;
+      const {user} = ctx;
       return {
         _id: new ObjectId(user._id),
         currency: Currency.MNT,
         locale: Language.Mongolian,
-        token: await ctx.app.jwt.sign(decoded, { expiresIn: '60d' }),
+        token: await ctx.app.jwt.sign(decoded, {expiresIn: '60d'}),
         type: user.type,
         status: user.status,
         username: user.username,
@@ -843,10 +847,10 @@ export class UserResolver extends UserBaseResolver {
   }
 
   @Query(returns => Token)
-  async auth(@Args() { password, email }: LoginArg, @Ctx() ctx: IContext) {
+  async auth(@Args() {password, email}: LoginArg, @Ctx() ctx: IContext) {
     email = email.toLowerCase();
     const user = await this.Model.findOne({
-      $or: [{ email }, { username: email }],
+      $or: [{email}, {username: email}],
     }).select('+password');
     if (!user) {
       throw new AuthenticationError('Email and Password mismatch');
@@ -856,7 +860,7 @@ export class UserResolver extends UserBaseResolver {
       throw new AuthenticationError('Email and Password mismatch');
     }
 
-    if (user._status === UserStatus.Blocked) {
+    if (user._status !== UserStatus.Active) {
       throw new AuthenticationError(
         'The user status is ' + UserStatus[user._status],
       );
@@ -884,15 +888,21 @@ export class UserResolver extends UserBaseResolver {
   }
 
   @Query(returns => Token)
-  async oauth(
-    @Args() { provider, accessToken }: OauthArg,
-    @Ctx() ctx: IContext,
-  ) {
+  async oauth(@Args() {provider, accessToken}: OauthArg, @Ctx() ctx: IContext) {
     let column = '',
       apple: any = {};
     switch (provider) {
       case 'facebook':
         column = '_fbId';
+        break;
+      case 'google':
+        column = '_googleId';
+        break;
+      case 'apple':
+        column = '_appleId';
+        try {
+          apple = JSON.parse(accessToken);
+        } catch {}
         break;
       case 'guest':
         if (!!accessToken && accessToken !== ctx.deviceId) {
@@ -929,7 +939,7 @@ export class UserResolver extends UserBaseResolver {
         throw new ValidationError('Wrong provider');
       }
 
-      user = await this.Model.findOne({ [column]: social_user[column] }).select(
+      user = await this.Model.findOne({[column]: social_user[column]}).select(
         '-password',
       );
 
@@ -953,7 +963,7 @@ export class UserResolver extends UserBaseResolver {
                 _modifiedby: ctx?.user?.username || 'system',
               },
             },
-            { new: true },
+            {new: true},
           );
         }
       }
@@ -976,7 +986,7 @@ export class UserResolver extends UserBaseResolver {
           phone: '',
           mobile: '',
           email: '',
-          birthday: new Date('1970-01-01 12:00:00'),
+          birthday: new Date('1970-01-01T12:00:00'),
           gender: Sex.Male,
           web: '',
           _status: UserStatus.Active,
@@ -988,7 +998,7 @@ export class UserResolver extends UserBaseResolver {
             _devices: [ctx.deviceId],
           },
         };
-        user = await this.signUp({ ...defaultValue, ...social_user }, ctx);
+        user = await this.signUp({...defaultValue, ...social_user}, ctx);
       }
     }
     const payLoad = {
@@ -1012,10 +1022,10 @@ export class UserResolver extends UserBaseResolver {
   }
 
   @Authorized()
-  @Mutation(returns => Language, { name: `changeLanguage`, nullable: true })
+  @Mutation(returns => Language, {name: `changeLanguage`, nullable: true})
   async changeLanguage(
-    @Ctx() { user }: IContext,
-    @Arg('locale', type => Language, { nullable: false }) locale?: string,
+    @Ctx() {user}: IContext,
+    @Arg('locale', type => Language, {nullable: false}) locale?: string,
   ): Promise<Language> {
     let r: any = undefined;
     if (!!user?._id && user?._id !== GUEST_USER_ID && locale) {
@@ -1026,13 +1036,13 @@ export class UserResolver extends UserBaseResolver {
             'settings.locale': locale,
           },
         },
-        { new: true },
+        {new: true},
       );
     }
     return r?.settings?.locale;
   }
 
-  @Query(returns => CurrentUser, { name: `currentUser` })
+  @Query(returns => CurrentUser, {name: `currentUser`, nullable: true})
   async currentUser(@Ctx() ctx: IContext): Promise<CurrentUser> {
     if (!!ctx?.user?._id && ctx.user._id !== GUEST_USER_ID) {
       let r: any = await this.Model.findById(ctx.user._id).select('-password');
@@ -1053,10 +1063,38 @@ export class UserResolver extends UserBaseResolver {
         };
       }
     }
-    throw new AuthenticationError('access denied');
+    throw new Error('not logged'); //new ForbiddenError('not logged');
   }
 
-  private randomString(n, r = '') {
+  @Authorized('Admin', 'Manager')
+  @Query(returns => CurrentUser, {name: `userInfo`, nullable: true})
+  async userInfo(
+    @Arg('_id', type => ObjectId) _id: string,
+    @Ctx() ctx: IContext,
+  ): Promise<CurrentUser> {
+    if (!!_id && _id !== GUEST_USER_ID) {
+      let r: any = await this.Model.findById(_id).select('-password');
+      if (r?._id) {
+        return {
+          _id: r._id,
+          email: r.email,
+          username: r.username,
+          firstname: r.firstname,
+          lastname: r.lastname,
+          type: r.type,
+          _verifiedEmail: r._verifiedEmail,
+          avatar: r.avatar,
+          permission: [],
+          phone: r.phone,
+          mobile: r.mobile,
+          settings: r.settings,
+        };
+      }
+    }
+    throw new Error('id does not exist');
+  }
+
+  private randomString(n: number, r = '') {
     let l: number;
     while (n--)
       r += String.fromCharCode(((l = (Math.random() * 26) | 0), (l += 97)));
@@ -1111,7 +1149,10 @@ export class UserResolver extends UserBaseResolver {
   }
 
   protected async signUp(obj: any, ctx: IContext): Promise<any> {
-    this.sendmail(obj);
-    return this.newItem(obj, ctx);
+    const saved = await this.newItem(obj, ctx);
+    try {
+      this.sendmail(obj);
+    } catch {}
+    return saved;
   }
 }

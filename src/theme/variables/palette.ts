@@ -1,35 +1,11 @@
-import { CONF } from '../../config';
-
-const colorShade = (col: string, amt: number) => {
-  col = col.replace(/^#/, '');
-  if (col.length === 3) {
-    col = col[0] + col[0] + col[1] + col[1] + col[2] + col[2];
-  }
-  let [r, g, b]: any = col.match(/.{2}/g);
-  [r, g, b] = [
-    parseInt(r, 16) + amt,
-    parseInt(g, 16) + amt,
-    parseInt(b, 16) + amt,
-  ];
-  r = Math.max(Math.min(255, r), 0).toString(16);
-  g = Math.max(Math.min(255, g), 0).toString(16);
-  b = Math.max(Math.min(255, b), 0).toString(16);
-  const rr = (r.length < 2 ? '0' : '') + r;
-  const gg = (g.length < 2 ? '0' : '') + g;
-  const bb = (b.length < 2 ? '0' : '') + b;
-  return `#${rr}${gg}${bb}`;
-};
-
-const _brand = CONF['color'] || '#F58C22';
-
 const color: any = {
-  brand: _brand,
-  'brand-light': colorShade(_brand, 25),
-  'brand-dark': colorShade(_brand, -25),
-  accent: '#d9534f',
+  brand: '#0793fa',
+  'brand-light': '#42a5e0',
+  'brand-dark': '#2777f7',
+  accent: '#D32F2F',
   white: '#ffffff',
   'white-bright': '#fafafa',
-  'white-light': '#f8f9fc',
+  'white-light': '#f7f7f7',
   black: '#161616',
   'black-dark': '#000000',
   'black-light': '#1e1e1e',
@@ -68,6 +44,7 @@ export const DARK = {
   primary: color.brand,
   secondary: color.accent,
   'primary-light': color['brand-light'],
+  'primary-dark': color['brand-dark'],
   info: color['blue-dark'],
   danger: color['red-dark'],
   warning: color['orange-dark'],
@@ -90,7 +67,7 @@ export const DARK = {
   icon: color['gray-light'],
   'icon-light': color['gray-light'],
   shadow: color.dark,
-  disabled: color['gray-light'],
+  disabled: color['grey-light'],
   'inverse-bg': color['gray-light'],
   'inverse-text': color['white-light'],
   loader: color['white-bright'],
@@ -103,13 +80,14 @@ export const LIGHT = {
   primary: color.brand,
   secondary: color.accent,
   'primary-light': color['brand-light'],
+  'primary-dark': color['brand-dark'],
   info: color.blue,
   danger: color.red,
   warning: color.orange,
   success: color.green,
   button: color.blue,
   link: color.blue,
-  text: color['grey-dark'],
+  text: color.gray,
   'text-dark': color.dark,
   'text-light': color.grey,
   background: color.white,
@@ -125,7 +103,7 @@ export const LIGHT = {
   icon: color.dark,
   'icon-light': color['grey-dark'],
   shadow: color.dark,
-  disabled: color['gray-light'],
+  disabled: color['grey-light'],
   'inverse-bg': color['black-dark'],
   'inverse-text': color.dark,
   loader: color['grey-bright'],
@@ -139,6 +117,6 @@ export const setTheme = (mode: boolean = false) => {
 
 var COLORS = setTheme();
 
-export { COLORS };
+export {COLORS};
 
 export default COLORS;

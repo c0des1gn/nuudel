@@ -5,31 +5,49 @@ export const StatusColor = {
   Created: {
     backgroundColor: 'none',
   },
-  Pending: {
-    backgroundColor: 'rgba(235, 235, 235, 0.3)',
+  Received: {
+    backgroundColor: 'rgba(253, 216, 53, 0.2)',
   },
-  Facility: {
-    backgroundColor: 'rgba(210, 237, 250, 0.3)',
+  ShippingApproved: {
+    backgroundColor: 'rgba(255, 143, 0, 0.2)',
   },
-  InTransit: {
-    backgroundColor: 'none',
+  Shipped: {
+    backgroundColor: 'rgba(103, 58, 183, 0.2)',
   },
-  Failed: {
-    backgroundColor: 'rgba(255, 205, 210, 0.5)',
+  PrepairingShipment: {
+    backgroundColor: 'rgba(255, 205, 210, 0.2)',
   },
-  Declined: {
-    backgroundColor: 'rgba(240, 240, 160, 0.5)',
+  ShippingPaid: {
+    backgroundColor: 'rgba(109, 76, 65, 0.2)',
   },
-  Returned: {
-    backgroundColor: 'rgba(245, 245, 245, 0.3)',
+  Departed: {
+    backgroundColor: 'rgba(103, 58, 183, 0.2)',
+  },
+  Arrived: {
+    backgroundColor: 'rgba(0, 145, 234, 0.2)',
+  },
+  Return: {
+    backgroundColor: 'rgba(158, 158, 158, 0.2)',
   },
   Deleted: {
-    backgroundColor: 'rgba(245, 245, 245, 0.3)',
+    backgroundColor: 'rgba(244, 67, 54, 0.2)',
   },
   Canceled: {
-    backgroundColor: 'rgba(245, 245, 245, 0.3)',
+    backgroundColor: 'rgba(158, 158, 158, 0.2)',
   },
   Delivered: {
-    backgroundColor: 'rgba(200, 250, 200, 0.5)',
+    backgroundColor: 'rgba(96, 213, 23, 0.2)',
+  },
+};
+
+export const PaidColor = {
+  None: {
+    backgroundColor: 'none',
+  },
+  Үгүй: {
+    backgroundColor: 'rgba(244, 67, 54, 0.4)',
+  },
+  Тийм: {
+    backgroundColor: 'rgba(96, 213, 23, 0.4)',
   },
 };

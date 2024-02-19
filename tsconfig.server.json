@@ -2,12 +2,13 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es2017",
+    "lib": ["es2019"],
+    "target": "es2019",
     "outDir": "dist",
     "isolatedModules": false,
     "noEmit": false,
     "noUnusedParameters": false
   },
   "include": ["api/**/*.ts", "api/**/*.json"],
-  "exclude": ["node_modules", "dist", "src", "test", ".next"]
+  "exclude": ["node_modules", "dist", "test", "src/**/*.scss.d.ts"]
 }

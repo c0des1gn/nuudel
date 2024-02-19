@@ -1,16 +1,13 @@
-import React, { FunctionComponent, useState, useEffect, useRef } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, TextField } from 'nuudel-core';
+import React, {FunctionComponent, useState, useEffect, useRef} from 'react';
+import {useForm, Controller} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {Button} from 'nuudel-core';
 import styles from './styles.module.scss';
-import { getValidationSchema, initialValues, isEmailError } from './schema';
-import { IProps, ISignInFormValues } from './types';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import IconButton from '@material-ui/core/IconButton';
-import { InputAdornment } from '@material-ui/core';
-import { t } from '@Translate';
+import {getValidationSchema, initialValues, isEmailError} from './schema';
+import {IProps, ISignInFormValues} from './types';
+import {InputAdornment} from '@mui/material';
+import {t} from '@Translate';
+import TextField from '@mui/material/TextField';
 
 const SignInForm: FunctionComponent<IProps> = (props: IProps) => {
   const {
@@ -18,7 +15,7 @@ const SignInForm: FunctionComponent<IProps> = (props: IProps) => {
     handleSubmit,
     reset,
     setValue,
-    formState: { errors, isSubmitting, submitCount, touchedFields },
+    formState: {errors, isSubmitting, submitCount, touchedFields},
   } = useForm<ISignInFormValues>({
     resolver: yupResolver(getValidationSchema),
     defaultValues: initialValues,
@@ -42,7 +39,7 @@ const SignInForm: FunctionComponent<IProps> = (props: IProps) => {
   };
 
   const handleMouseDownPassword = event => {
-    event.preventDefault();
+    //event.preventDefault();
   };
 
   const isInitalRender = useRef<boolean>(true);
@@ -58,10 +55,12 @@ const SignInForm: FunctionComponent<IProps> = (props: IProps) => {
     <form className={styles.container}>
       <Controller
         render={({
-          field: { onChange, onBlur, name: fieldName, value },
-          fieldState: { error },
+          field: {onChange, onBlur, name: fieldName, value},
+          fieldState: {error},
         }) => (
           <TextField
+            size="small"
+            className={styles.loginInput}
             placeholder={t('EmailOrUsername')}
             label={t('EmailOrUsername')}
             autoCapitalize="none"
@@ -73,21 +72,26 @@ const SignInForm: FunctionComponent<IProps> = (props: IProps) => {
             margin="normal"
             autoComplete="username"
             autoCorrect="off"
-            inputProps=\{{ autoCapitalize: 'none' }}
+            inputProps=\{{autoCapitalize: 'none', maxLength: 128}}
             fullWidth
             error={error && !!error.message}
+            InputProps=\{{
+              className: styles.loginInput,
+            }}
           />
         )}
         control={control}
         name="email"
         defaultValue={initialValues.email}
       />
+      {/* <p className={styles.label + ' ' + styles.marginTop}>{t('Password')}</p> */}
       <Controller
         render={({
-          field: { onChange, onBlur, name: fieldName, value },
-          fieldState: { error },
+          field: {onChange, onBlur, name: fieldName, value},
+          fieldState: {error},
         }) => (
           <TextField
+            size="small"
             placeholder={t('Password')}
             label={t('Password')}
             type={showPass ? 'text' : 'password'}
@@ -99,7 +103,7 @@ const SignInForm: FunctionComponent<IProps> = (props: IProps) => {
             name={fieldName}
             autoComplete="current-password"
             autoCorrect="off"
-            inputProps=\{{ autoCapitalize: 'none' }}
+            inputProps=\{{autoCapitalize: 'none', maxLength: 40}}
             margin="normal"
             fullWidth
             error={error && !!error.message}
@@ -110,15 +114,27 @@ const SignInForm: FunctionComponent<IProps> = (props: IProps) => {
               }
             }}
             InputProps=\{{
+              className: styles.loginInput,
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton
+                  <button
+                    type="button"
+                    className={styles.visibilityBtn}
                     aria-label="toggle password visibility"
                     onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                  >
-                    {showPass ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
+                    onMouseDown={handleMouseDownPassword}>
+                    {!showPass ? (
+                      <i
+                        className="icon-eye"
+                        style=\{{fontSize: '20px', lineHeight: 1}}
+                      />
+                    ) : (
+                      <i
+                        className="icon-closed-eye"
+                        style=\{{fontSize: '20px', lineHeight: 1}}
+                      />
+                    )}
+                  </button>
                 </InputAdornment>
               ),
             }}
@@ -130,11 +146,13 @@ const SignInForm: FunctionComponent<IProps> = (props: IProps) => {
       />
       <div className={styles.buttonCont}>
         <Button
+          disableElevation
+          className={styles.btn + ' ' + styles.loginBtn}
           fullWidth
+          size="large"
           disabled={isSubmitting || disabled}
           onClick={onSubmit}
-          color="primary"
-        >
+          color="primary">
           {isSubmitting ? t('loading') : t('Login')}
         </Button>
       </div>

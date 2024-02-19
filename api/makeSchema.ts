@@ -5,18 +5,19 @@ import {
   LookupScalar,
   ImageScalar,
 } from 'nuudel-main';
-import { ObjectId, Binary, Timestamp } from 'mongodb';
-import { Note, Image, Link, Lookup } from 'nuudel-main';
-import { TypegooseMiddleware } from './typegoose-middleware';
-import type { IContext } from 'nuudel-main';
-import { buildSchema, AuthChecker } from 'type-graphql';
+import {ObjectId, Binary, Timestamp} from 'mongodb';
+import {Note, Image, Link, Lookup} from 'nuudel-main';
+import {TypegooseMiddleware} from './typegoose-middleware';
+import type {IContext} from 'nuudel-main';
+import {buildSchema, AuthChecker, AuthCheckerFn} from 'type-graphql';
 import path from 'path';
-import { PubSub } from 'graphql-subscriptions';
+import {PubSub} from 'graphql-subscriptions';
 //import Redis from 'ioredis';
 //import { RedisPubSub } from 'graphql-redis-subscriptions';
+import {loadResolvers} from 'nuudel-main';
 
-const authChecker: AuthChecker<IContext> = (
-  { root, args, context, info },
+const authChecker: AuthCheckerFn<IContext> = (
+  {root, args, context, info},
   roles,
 ) => {
   if (!context.user) {
@@ -61,18 +62,18 @@ const makeSchema = async (HOST: string = '127.0.0.1', PORT: number = 8080) => {
   const pubSub = new PubSub();
 
   return await buildSchema({
-    resolvers: [__dirname + '/**/*.resolver.ts'],
+    resolvers: loadResolvers([__dirname + '/**/*.resolver.ts']),
     emitSchemaFile: path.resolve(__dirname, 'schema.gql'),
     globalMiddlewares: [TypegooseMiddleware],
-    authChecker,
+    authChecker: authChecker,
     //authMode: 'null',
     pubSub: pubSub,
     scalarsMap: [
-      { type: ObjectId, scalar: ObjectIdScalar },
-      { type: Note, scalar: NoteScalar },
-      { type: Link, scalar: LinkScalar },
-      { type: Lookup, scalar: LookupScalar },
-      { type: Image, scalar: ImageScalar },
+      {type: ObjectId, scalar: ObjectIdScalar},
+      {type: Note, scalar: NoteScalar},
+      {type: Link, scalar: LinkScalar},
+      {type: Lookup, scalar: LookupScalar},
+      {type: Image, scalar: ImageScalar},
     ],
   });
 };

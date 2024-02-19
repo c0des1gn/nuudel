@@ -17,8 +17,8 @@
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "lib": ["dom", "dom.iterable", "es2017"],
-    "moduleResolution": "node",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     //"types": ["node","jest"],
     "allowSyntheticDefaultImports": true,
@@ -28,12 +28,13 @@
     "paths": {
       "@Components": ["src/components"],
       "@Translate": ["src/loc/i18n"],
-      "@Interfaces": ["src/common/Interfaces"],
       "@App": ["src/modules/layouts/App/App"],
+      "@Interfaces": ["src/common/Interfaces"],
       "@Variables": ["src/theme/variables/palette"],
       "@Helper": ["src/common/helper"],
-    }
+    },
+    "incremental": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "dist", "test", ".next", "next.config.js", "src/**/*.scss.d.ts", ".babelrc"]
+  "exclude": ["node_modules", "dist", "test", "src/**/*.scss.d.ts"]
 }

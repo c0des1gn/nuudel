@@ -1,11 +1,11 @@
 // Энийг хэрэглээгүй
-$brand: #f58c22 !default;
-$brand-light: #42a5f5 !default;
+$brand: #0793fa !default;
+$brand-light: #42a5e0 !default;
 $brand-dark: #2777f7 !default;
-$accent: #d9534f !default;
+$accent: #D32F2F !default;
 $white: #ffffff !default;
 $white-bright: #fafafa !default;
-$white-light: #f8f9fc !default;
+$white-light: #f7f7f7 !default;
 $black: #161616 !default;
 $black-dark: #000000 !default;
 $black-light: #1e1e1e !default;
@@ -30,6 +30,7 @@ $blue-dark: #5e98d8 !default;
 $pink-dark: #b4004e !default;
 $yellow-dark: #ffa000 !default;
 $neutral: rgba(255, 255, 255, 0.65) !default;
+
 //*
 :root {
   $brand: #{$brand};
@@ -64,6 +65,7 @@ $neutral: rgba(255, 255, 255, 0.65) !default;
   $yellow-dark: #{$yellow-dark};
   $neutral: #{$neutral};
 }
+
 //*/
 
 //:export { primary: $primary; }

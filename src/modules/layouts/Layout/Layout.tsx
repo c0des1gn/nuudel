@@ -1,200 +1,42 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import clsx from 'clsx';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { alpha } from '@material-ui/core';
-import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import Hidden from '@material-ui/core/Hidden';
-import List from '@material-ui/core/List';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import { ICurrentUser } from '@Interfaces';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import MenuIcon from '@material-ui/icons/Menu';
-import MoreIcon from '@material-ui/icons/MoreVert';
-
+import Toolbar from '@mui/material/Toolbar';
+import MuiDrawer from '@mui/material/Drawer';
+import MuiAppBar from '@mui/material/AppBar';
+// import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import {ICurrentUser} from 'nuudel-core';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import MenuIcon from '@mui/icons-material/Menu';
 import routes from '../../../routes';
-import { useRouter } from 'next/router';
-import { Collapse } from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import Avatar from '@material-ui/core/Avatar';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Badge from '@material-ui/core/Badge';
+import {useParams, usePathname, useSearchParams} from 'next/navigation';
+import {Collapse} from '@mui/material';
+import Icon from '@mui/material/Icon';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import HeaderUserbox from './HeaderUserBox';
-import { CONF } from '../../../config';
-import { t } from '@Translate';
-import { capitalizeFirstLetter } from 'nuudel-utils';
-import { Text, Link } from 'nuudel-core';
-import { useApolloClient } from '@apollo/react-hooks';
-import { QUERY } from 'nuudel-core';
-import { SNACKBAR_STATE_QUERY } from '../../../graphql/queries';
+import {CONF} from '../../../config';
+import {t} from '@Translate';
+import {capitalizeFirstLetter} from 'nuudel-utils';
+import {Text, Link} from 'nuudel-core';
+import {useApolloClient} from '@apollo/react-hooks';
+import {QUERY} from 'nuudel-core';
+import {SNACKBAR_STATE_QUERY} from '../../../graphql/queries';
+import styles from './styles.module.scss';
 
-export const drawerWidth = 240;
-export const miniDrawerWidth = 140;
+export const drawerWidth = '240px';
+export const closedDrawerWidth = '73px';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      display: 'flex',
-      width: '100%',
-      height: 'auto',
-      minHeight: '100%',
-    },
-    appBar: {
-      zIndex: theme.zIndex.drawer + 1,
-      transition: theme.transitions.create(['width', 'margin'], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-    },
-    appBarShift: {
-      [theme.breakpoints.up('md')]: {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(['width', 'margin'], {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.enteringScreen,
-        }),
-      },
-    },
-    menuButton: {
-      marginRight: 36,
-      marginLeft: 10,
-    },
-    hide: {
-      [theme.breakpoints.up('md')]: {
-        display: 'none',
-      },
-    },
-    pageTitle: {
-      //textTransform: 'capitalize',
-    },
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
-      whiteSpace: 'nowrap',
-    },
-    drawerOpen: {
-      width: drawerWidth,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-    },
-    drawerClose: {
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-      overflowX: 'hidden',
-      width: theme.spacing(9) + 1,
-    },
-    toolbar: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-      padding: theme.spacing(0, 1),
-      // necessary for content to be below app bar
-      ...theme.mixins.toolbar,
-      '@media print': {
-        display: 'none',
-      },
-    },
-    content: {
-      flexGrow: 1,
-      padding: theme.spacing(2),
-      //backgroundColor: theme.palette.background.default,
-
-      [theme.breakpoints.down('sm')]: {
-        padding: theme.spacing(1),
-      },
-    },
-    contentOpen: {
-      width: `calc(100% - ${drawerWidth}px)`,
-    },
-    contentClose: {
-      width: `calc(100% - ${theme.spacing(9) + 1}px)`,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.easeIn,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-    },
-    item: {
-      position: 'relative',
-      display: 'block',
-      textDecoration: 'none',
-      '&:hover,&:focus,&:visited,&': {
-        color: theme.palette.text.primary,
-      },
-    },
-    itemLink: {
-      display: 'flex',
-      overflow: 'hidden',
-      width: 'auto',
-      transition: 'all 300ms linear',
-      margin: '10px 0',
-      position: 'relative',
-      padding: '10px 15px',
-      backgroundColor: 'transparent',
-      // ...defaultFont,
-    },
-    itemIcon: {
-      width: '24px',
-      height: '30px',
-      fontSize: '24px',
-      lineHeight: '30px',
-      float: 'left',
-      marginRight: '15px',
-      textAlign: 'center',
-      verticalAlign: 'middle',
-      color: "rgba('0,0,0', 0.8)",
-    },
-    itemText: {
-      // ...defaultFont,
-      margin: '0',
-      lineHeight: '30px',
-      fontSize: '14px',
-      color: theme.palette.text.primary,
-    },
-    selectedMenu: {
-      //color: theme.palette.primary.main,
-      backgroundColor: alpha(
-        theme.palette.action.selected,
-        theme.palette.action.selectedOpacity,
-      ),
-    },
-    nested: {
-      paddingLeft: theme.spacing(4),
-    },
-    logoImage: {
-      width: '30px',
-      display: 'inline-block',
-      maxHeight: '30px',
-      // marginLeft: "10px",
-      marginRight: '15px',
-    },
-    headerToolbar: {
-      padding: '0 10px',
-    },
-    grow: {
-      flexGrow: 1,
-    },
-  }),
-);
-
-const heading = (path: string, query: any) => {
-  const line1 = path.replace('/', ''); //remove first slash
+const heading = (path: string, query: any = {}) => {
+  const line1 = path?.replace('/', ''); //remove first slash
   const line2 = line1.replace(/-/g, ' '); // replace other slash with >
   const line3 = line2.replace(/\[(.+?)\]/g, (full: string, match: string) => {
     if (query[match]) {
@@ -203,31 +45,36 @@ const heading = (path: string, query: any) => {
     return match;
   });
   let line4 = line3.split('/');
-    // page path fix on blog
-    if (query?.post_type === 'page' && line4[line4.length - 1] === 'post') {
-      line4[line4.length - 1] = 'page';
-    }
-  line4 = line4.map(p => t(capitalizeFirstLetter(p), { defaultValue: p }));
+  // page path fix on blog
+  if (query?.post_type === 'page' && line4[line4.length - 1] === 'post') {
+    line4[line4.length - 1] = 'page';
+  }
+  line4 = line4.map(p => t(capitalizeFirstLetter(p), {defaultValue: p}));
   return line4.join(' > '); //slash with >
 };
 
 // export default function MiniDrawer() {
-type Props = { user?: ICurrentUser };
-const Layout: React.FC<Props> = ({ children, ...props }) => {
-  const router = useRouter();
+type Props = {user?: ICurrentUser; children?: any};
+const Layout: React.FC<Props> = ({children, ...props}) => {
+  const pathname = usePathname(),
+    param = useParams(),
+    searchParams = useSearchParams();
+  let query: any = {...param};
+  searchParams.forEach((value: string, key: string) => {
+    query[key] = value;
+  });
   const client: any = useApolloClient();
   // verifies if routeName is the one active (in browser input)
   function activeRoute(routeName: any) {
-    return router.pathname === routeName ? true : false;
+    return pathname === routeName ? true : false;
   }
 
-  const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [mobileMenu, setMobileMenu] = React.useState(false);
   const [expand, setExpand] = React.useState(
     new Array<boolean>(routes.length).map(b => false),
   );
-
+  /*
   const color = 'white';
   ///////////////////////////////////////////////////////////
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -254,9 +101,10 @@ const Layout: React.FC<Props> = ({ children, ...props }) => {
   };
   const menuId = 'primary-search-account-menu';
   const mobileMenuId = 'primary-search-account-menu-mobile';
-
+ ///////////////////////////////////////////////////////////
+ // */
   useEffect(() => {
-    const cacheData = client.readQuery({
+    const cacheData = client?.readQuery({
       query: SNACKBAR_STATE_QUERY,
     });
     if (cacheData?.isLeftDrawerOpen !== open) {
@@ -264,15 +112,14 @@ const Layout: React.FC<Props> = ({ children, ...props }) => {
     }
   }, []);
 
-  ///////////////////////////////////////////////////////////
   const handleDrawerOpen = (openDrawer: boolean) => {
     setOpen(openDrawer);
-    const cacheData = client.readQuery({
+    const cacheData = client?.readQuery({
       query: SNACKBAR_STATE_QUERY,
     });
     client.writeQuery({
       query: QUERY,
-      data: { ...cacheData, isLeftDrawerOpen: openDrawer },
+      data: {...cacheData, isLeftDrawerOpen: openDrawer},
     });
   };
 
@@ -286,7 +133,7 @@ const Layout: React.FC<Props> = ({ children, ...props }) => {
     setExpand(copy);
   };
 
-  const Menus = ({ routes, root, type = undefined }) => {
+  const Menus = ({routes, root, type = undefined}) => {
     return (
       <List component={!root ? 'div' : 'nav'} disablePadding={!root}>
         {routes
@@ -299,19 +146,21 @@ const Layout: React.FC<Props> = ({ children, ...props }) => {
           .map((prop: any, key: any) => {
             var listItemClasses;
             listItemClasses = clsx({
-              [' ' + classes.selectedMenu]: activeRoute(prop.path),
+              [styles.selectedMenu]: activeRoute(prop.path),
             });
             const whiteFontClasses = clsx({
-              [' ' + classes.selectedMenu]: activeRoute(prop.path),
+              [styles.selectedMenu]: activeRoute(prop.path),
             });
             return prop.child instanceof Array && prop.child.length > 0 ? (
-              <span key={key} className={classes.item}>
+              <span
+                key={key}
+                className={styles.item}
+                style=\{{width: !open ? closedDrawerWidth : drawerWidth}}>
                 <ListItem
-                  button
+                  sx=\{{cursor: 'pointer'}}
                   onClick={() => handleClick(key)}
                   key={key}
-                  className={listItemClasses}
-                >
+                  className={listItemClasses}>
                   <ListItemIcon>
                     {typeof prop.icon === 'string' ? (
                       <Icon className={clsx(whiteFontClasses)}>
@@ -329,13 +178,16 @@ const Layout: React.FC<Props> = ({ children, ...props }) => {
                 </Collapse>
               </span>
             ) : (
-              <Link href={prop.path} passHref key={key}>
-                <span className={classes.item}>
+              <Link href={prop.path} key={key}>
+                <span
+                  className={styles.item}
+                  style=\{{width: !open ? closedDrawerWidth : drawerWidth}}>
                   <ListItem
-                    button
                     key={key}
-                    className={!root ? classes.nested : listItemClasses}
-                  >
+                    sx={theme => ({
+                      paddingLeft: !root ? theme.spacing(4) : 'auto',
+                    })}
+                    className={listItemClasses}>
                     <ListItemIcon>
                       {typeof prop.icon === 'string' ? (
                         <Icon className={clsx(whiteFontClasses)}>
@@ -356,130 +208,154 @@ const Layout: React.FC<Props> = ({ children, ...props }) => {
   };
 
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <AppBar
-        position="fixed"
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: open,
+    <Box
+      sx=\{{display: 'flex', width: '100%', height: 'auto', minHeight: '100%'}}>
+      <MuiAppBar
+        sx={theme => ({
+          transition: theme.transitions.create(['width', 'left'], {
+            // easing: theme.transitions.easing.sharp,
+            duration: open
+              ? theme.transitions.duration.enteringScreen
+              : theme.transitions.duration.leavingScreen,
+          }),
+          zIndex: theme.zIndex.drawer + 1,
+          [theme.breakpoints.up('md')]: {
+            left: open ? drawerWidth : '0',
+            width: open ? `calc(100% - ${drawerWidth})` : '100%',
+          },
         })}
-      >
-        <Toolbar className={classes.headerToolbar}>
-          <Avatar
-            className={clsx({
-              [classes.hide]: open,
-            })}
-            alt={CONF.site_title}
-            src={CONF.logo.uri}
-          />
-          <Hidden mdUp implementation="css">
+        position="fixed">
+        <Toolbar className={styles.headerToolbar}>
+          <Link href="/">
+            <Avatar
+              sx=\{{display: open ? 'none' : 'flex'}}
+              alt={CONF.site_title}
+              src={CONF.logo.uri}
+            />
+          </Link>
+          <div className={styles.hiddenMdUp}>
             <IconButton
               color="inherit"
               aria-label="open drawer"
               onClick={hadleMobileMenu}
               edge="start"
-              className={classes.menuButton}
-            >
+              sx=\{{marginRight: '36px', marginLeft: '10px'}}>
               <MenuIcon />
             </IconButton>
-          </Hidden>
-          <Hidden smDown implementation="css">
+          </div>
+          <div className={styles.hiddenSmDown}>
             <IconButton
               color="inherit"
               aria-label="open drawer"
               onClick={() => handleDrawerOpen(true)}
               edge="start"
-              className={clsx(classes.menuButton, {
-                [classes.hide]: open,
-              })}
-            >
+              sx=\{{
+                marginRight: '36px',
+                marginLeft: '10px',
+                display: open ? 'none' : 'inline-flex',
+              }}>
               <MenuIcon />
             </IconButton>
-          </Hidden>
-
-          <Text variant="h6" noWrap className={classes.pageTitle}>
-            {heading(router.pathname, router.query)}
+          </div>
+          <Text variant="h6" noWrap className={styles.pageTitle}>
+            {heading(pathname, query)}
           </Text>
-          <div className={classes.grow} />
+          <div className={styles.grow} />
           <Box display="flex" alignItems="center" justifyContent="center">
-            <IconButton aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={17} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-
             <HeaderUserbox />
           </Box>
         </Toolbar>
-      </AppBar>
-
-      <Hidden mdUp implementation="css">
-        <SwipeableDrawer
-          open={mobileMenu}
-          onOpen={hadleMobileMenu}
-          onClose={hadleMobileMenu}
-          anchor="left"
-        >
-          <Box
-            className={classes.toolbar}
-            color="text.primary"
-            style=\{{ justifyContent: 'space-evenly' }}
-          >
+      </MuiAppBar>
+      <MuiDrawer
+        variant="temporary"
+        open={mobileMenu}
+        // onOpen={hadleMobileMenu}
+        onClose={hadleMobileMenu}
+        anchor="left"
+        sx=\{{display: {xs: 'block', md: 'none'}}}>
+        <Box
+          className={styles.toolbar}
+          color="text.primary"
+          style=\{{justifyContent: 'space-evenly'}}>
+          <Link
+            href="/"
+            style=\{{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+            noLinkStyle>
             <Avatar alt={CONF.site_title} src={CONF.logo.uri} />
-            <Text variant="h5">&nbsp;{CONF.site_title}</Text>
-            <Grid container style=\{{ justifyContent: 'flex-end' }}>
-              <IconButton onClick={hadleMobileMenu}>
-                <ChevronLeftIcon />
-              </IconButton>
-            </Grid>
-          </Box>
-          <Divider />
-          <Menus routes={routes} type={props.user?.type} root></Menus>
-        </SwipeableDrawer>
-      </Hidden>
-      <Hidden smDown implementation="css">
-        <Drawer
-          variant="permanent"
-          className={clsx(classes.drawer, {
-            [classes.drawerOpen]: open,
-            [classes.drawerClose]: !open,
-          })}
-          classes=\{{
-            paper: clsx({
-              [classes.drawerOpen]: open,
-              [classes.drawerClose]: !open,
-            }),
-          }}
-        >
-          <Box
-            className={classes.toolbar}
-            color="text.primary"
-            style=\{{ justifyContent: 'space-evenly' }}
-          >
-            <Avatar alt={CONF.site_title} src={CONF.logo.uri} />
-            <Text variant="h5">&nbsp;{CONF.site_title}</Text>
-            <Grid container style=\{{ justifyContent: 'flex-end' }}>
-              <IconButton onClick={() => handleDrawerOpen(false)}>
-                <ChevronLeftIcon />
-              </IconButton>
-            </Grid>
-          </Box>
-
-          <Divider />
-          <Menus routes={routes} type={props.user?.type} root></Menus>
-        </Drawer>
-      </Hidden>
-
-      <main
-        className={clsx(classes.content, {
-          [classes.contentOpen]: open,
-          [classes.contentClose]: !open,
+            <Text className={styles.title} variant="h6">
+              &nbsp;{CONF.site_title}
+            </Text>
+          </Link>
+          <Grid container style=\{{justifyContent: 'flex-end'}}>
+            <IconButton onClick={hadleMobileMenu}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </Grid>
+        </Box>
+        <Divider />
+        <Menus routes={routes} type={props.user?.type} root></Menus>
+      </MuiDrawer>
+      <MuiDrawer
+        variant="permanent"
+        className={clsx(styles.drawer, {
+          [styles.drawerOpen]: open,
+          [styles.drawerClose]: !open,
         })}
-      >
-        <div className={classes.toolbar} />
+        PaperProps=\{{
+          sx: {
+            overflowX: 'hidden',
+            width: !open ? closedDrawerWidth : drawerWidth,
+            transition: theme =>
+              theme.transitions.create('all', {
+                easing: theme.transitions.easing.sharp,
+                duration: open
+                  ? theme.transitions.duration.enteringScreen
+                  : theme.transitions.duration.leavingScreen,
+              }),
+          },
+        }}
+        sx=\{{
+          display: {xs: 'none', md: 'block'},
+        }}>
+        <Box
+          className={styles.toolbar}
+          color="text.primary"
+          style=\{{justifyContent: 'space-evenly'}}>
+          <Link
+            href="/"
+            style=\{{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+            noLinkStyle>
+            <Avatar alt={CONF.site_title} src={CONF.logo.uri} />
+            <Text className={styles.title} variant="h6">
+              &nbsp;{CONF.site_title}
+            </Text>
+          </Link>
+          <Grid container style=\{{justifyContent: 'flex-end'}}>
+            <IconButton onClick={() => handleDrawerOpen(false)}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </Grid>
+        </Box>
+        <Divider />
+        <Menus routes={routes} type={props.user?.type} root></Menus>
+      </MuiDrawer>
+      <main
+        className={clsx(styles.content, {
+          [styles.contentOpen]: open,
+          [styles.contentClose]: !open,
+        })}>
+        <div className={styles.toolbar} />
         {children}
       </main>
-    </div>
+    </Box>
   );
 };
 export default Layout;

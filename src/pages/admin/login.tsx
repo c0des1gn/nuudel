@@ -1,29 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { PageProps } from '../_app';
-import { useRouter } from 'next/router';
-import { H1, Button, Text, Spinner, Grid, Link, Image } from 'nuudel-core';
-import { Container, Paper, Box } from '@material-ui/core';
+import React, {useEffect, useRef, useState} from 'react';
+import {PageProps} from '../_app';
+import {useRouter, useSearchParams} from 'next/navigation';
+import {Text, Spinner, Link, Image, Grid, Button, Divider} from 'nuudel-core';
+import {Container, Paper} from '@mui/material';
 import SignInForm from '../../forms/SignIn';
-import { USER_KEY, USER_TOKEN, USER_ID, USER_LANG } from '../../config';
-import { UI, DeviceId } from 'nuudel-core';
-import { Language } from 'nuudel-utils';
-import { ISignInFormValues } from '../../forms/SignIn/types';
+import {USER_TOKEN, USER_LANG} from '../../config';
+import {UI, DeviceId} from 'nuudel-core';
+import {Language} from 'nuudel-utils';
+import {ISignInFormValues} from '../../forms/SignIn/types';
 import gql from 'graphql-tag';
-import { useApolloClient } from '@apollo/react-hooks';
-import { store } from 'nuudel-core';
-import { sign_in } from 'nuudel-core';
-import I8, { t, changeLanguage } from '@Translate';
+import {store} from 'nuudel-core';
+import {sign_in} from 'nuudel-core';
+import I8, {t, changeLanguage} from '@Translate';
 import styles from '../../forms/SignIn/styles.module.scss';
-import { Copyright } from 'nuudel-core';
-import { Message, TOGGLE_SNACKBAR_MUTATION } from 'nuudel-core';
-import { useMutation } from '@apollo/react-hooks';
-import { CONF } from '../../config';
-
-export const SIGN_IN_SCREEN = {
-  id: 'SignIn',
-  name: 'app.SignIn',
-  title: '',
-};
+import {Copyright} from 'nuudel-core';
+import {Message, TOGGLE_SNACKBAR_MUTATION} from 'nuudel-core';
+import {useMutation, useApolloClient} from '@apollo/react-hooks';
+import {CONF} from '../../config';
 
 interface AuthData {
   auth: string;
@@ -81,8 +74,14 @@ interface IProps extends PageProps {
 }
 
 const SignInScreen = (props: IProps): JSX.Element => {
-  const { autologin = false, showGuestBtn = false, isModal = false } = props;
-  const router = useRouter();
+  const {autologin = false, showGuestBtn = false, isModal = false} = props;
+  const router = useRouter(),
+    searchParams = useSearchParams();
+  let query: any = {};
+  searchParams.forEach((value: string, key: string) => {
+    query[key] = value;
+  });
+
   const client = useApolloClient();
   const [loading, setLoading] = useState(false);
 
@@ -91,7 +90,7 @@ const SignInScreen = (props: IProps): JSX.Element => {
   const guest_login = () => {
     handleOAuth('guest', DeviceId.uniqueId + '|' + DeviceId.device);
   };
-  let _debounce: any = undefined;
+  var _debounce: any = undefined;
   useEffect(() => {
     if (autologin && !props.isModal) {
       // no need auto login
@@ -104,12 +103,31 @@ const SignInScreen = (props: IProps): JSX.Element => {
     };
   }, [props]);
 
+  const fb_login = (res: any) => {
+    if (res?.status === 'connected' && res?.authResponse) {
+      handleOAuth(
+        'facebook',
+        !res.authResponse?.accessToken ? '' : res.authResponse.accessToken,
+      );
+    } else if (res?.accessToken) {
+      handleOAuth('facebook', res.accessToken);
+    }
+  };
+
+  const errorGoogle = (err: any) => {
+    setLoading(false);
+    if (err?.error !== 'idpiframe_initialization_failed') {
+      showToast(t('OAuthIsFailed'));
+    }
+  };
+
   const handleSubmit = async (
-    { email, password }: ISignInFormValues,
+    {email, password}: ISignInFormValues,
     reset: Function,
   ) => {
     setLoading(true);
-    let res: any = undefined;
+    let res: any = undefined,
+      errorText: string = 'EmailPasswordIsWrong';
     try {
       // get auth server response
       res = await client.query<AuthData, AuthVars>({
@@ -119,12 +137,21 @@ const SignInScreen = (props: IProps): JSX.Element => {
           password: `${password}`,
         },
       });
-    } catch {}
+    } catch (ex) {
+      if (ex.graphQLErrors?.length === 0 && !!ex.networkError) {
+        errorText = 'NoConnection';
+      } else if (
+        ex.graphQLErrors?.length > 0 &&
+        ex.graphQLErrors[0]?.message !== 'Email and Password mismatch'
+      ) {
+        errorText = ex.graphQLErrors[0]?.message;
+      }
+    }
 
     if (!res || res.errors || !res.data) {
       setLoading(false);
       reset();
-      showToast(t('EmailPasswordIsWrong'));
+      showToast(t(errorText));
       return;
     }
     loginSuccess(email, res);
@@ -132,14 +159,18 @@ const SignInScreen = (props: IProps): JSX.Element => {
 
   const handleOAuth = async (provider, accessToken) => {
     setLoading(true);
+
+    let res: any = undefined;
     // get auth server response
-    const res = await client.query<AuthData, OAuthVars>({
-      query: OAUTH_USER,
-      variables: {
-        provider: `${provider}`,
-        accessToken: `${accessToken}`,
-      },
-    });
+    try {
+      res = await client.query<AuthData, OAuthVars>({
+        query: OAUTH_USER,
+        variables: {
+          provider: `${provider}`,
+          accessToken: `${accessToken}`,
+        },
+      });
+    } catch {}
 
     if (!res || res.errors || !res.data) {
       setLoading(false);
@@ -154,10 +185,7 @@ const SignInScreen = (props: IProps): JSX.Element => {
 
   const loginSuccess = async (key: string | null, res) => {
     const auth = !res.data.auth ? res.data.oauth : res.data.auth;
-    if (key) {
-      UI.setItem(USER_KEY, key);
-    }
-    UI.setItem(USER_ID, auth['_id']);
+
     UI.setItem(USER_TOKEN, auth['token']);
 
     // set Language by user's option
@@ -168,7 +196,7 @@ const SignInScreen = (props: IProps): JSX.Element => {
       sign_in({
         userId: auth['_id'],
         currency: auth['currency'],
-        locale: Language[auth['locale']],
+        locale: locale,
         token: auth['token'],
         type: auth['type'],
         status: auth['status'],
@@ -180,80 +208,104 @@ const SignInScreen = (props: IProps): JSX.Element => {
     } else {
       setLoading(false);
     }
-    _debounce = setTimeout(
-      () => router.push('/admin?success=1', undefined, { shallow: false }),
-      50,
-    );
+    _debounce = setTimeout(() => {
+      let link: string = '';
+      let referringURL: string =
+        (query?.referrer instanceof Array
+          ? query.referrer.length > 0
+            ? query['referrer'][0]
+            : ''
+          : query['referrer']) || document?.referrer;
+      if (referringURL) {
+        referringURL = decodeURI(referringURL);
+        const url = window?.location?.origin;
+        if (
+          referringURL.startsWith(url) &&
+          !referringURL.startsWith(url + window.location?.pathname)
+        ) {
+          link = referringURL;
+        }
+      }
+      router.push(
+        !link && ['Admin', 'Manager'].includes(auth['type'])
+          ? '/admin?success=1'
+          : link || '/',
+        {scroll: !!link},
+      );
+    }, 50);
   };
 
-  const showToast = text => {
+  const showToast = (text: string) => {
     messageMutation({
-      variables: { msg: text, type: 'error' },
+      variables: {msg: text, type: 'error'},
     });
   };
 
   const render = (
     <div
       style=\{{
-        minHeight: '90vh',
-        margin: 0,
-        padding: 0,
-      }}
-    >
-      <Container maxWidth="sm">
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+      }}>
+      <Container maxWidth="xs">
         <Message />
-        <Paper elevation={3} className={styles.paperStyle}>
-          {loading && <Spinner />}
-          <Grid container direction="column">
-            {CONF.logo && CONF.logo.uri ? (
-              <Image
-                className={styles.logo}
-                src={CONF.logo.uri}
-                //width={100}
-                height={100}
-                alt="logo"
-              />
-            ) : (
-              <h2 className={styles.title}>{t('SignIn')}</h2>
-            )}
-            <SignInForm onSubmit={handleSubmit} username={props.username} />
-            <div className={styles.linkCont}>
-              {CONF.active && (
-                <Link
-                  noLinkStyle
-                  href="/admin/signup"
-                  className={styles.link + ' ' + styles.marginLeft}
-                >
-                  {t('CreateAnAccount')}
-                </Link>
-              )}
+        {/* <Paper elevation={3} className={styles.paperStyle}> */}
+        {loading && <Spinner />}
+        <div className={styles.paperStyle + ' ' + styles.border}>
+          {!!CONF.logo?.uri ? (
+            <Image className={styles.logo} src={CONF.logo.uri} alt="logo" />
+          ) : (
+            <Text variant="h5" align="center" style=\{{fontWeight: 500}}>
+              {t('SignIn')}
+            </Text>
+          )}
+          <SignInForm onSubmit={handleSubmit} username={props.username} />
+          <div className={styles.marginTop}>
+            <Divider />
+          </div>
+          <div className={styles.linkCont + ' ' + styles.text}>
+            <Link
+              href="/"
+              className={styles.link}
+              style=\{{float: 'left', textAlign: 'left'}}>
+              {'⬅ ' + t('Home')}
+            </Link>
+            {CONF.active && (
               <Link
                 noLinkStyle
-                href="/admin/reset-password"
-                className={styles.link + ' ' + styles.marginLeft}
-              >
-                {t('Forgotpassword?')}
+                href="/admin/signup"
+                className={styles.link + ' ' + styles.marginLeft}>
+                {t('CreateAnAccount')}
               </Link>
-              {showGuestBtn && (
-                <>
-                  <Text> | </Text>
-                  <button
-                    onClick={() => {
-                      if (!loading) guest_login();
-                    }}
-                    className={styles.link}
-                  >
-                    {t('LoginAsGuest')}
-                  </button>
-                </>
-              )}
-            </div>
-          </Grid>
-        </Paper>
-        <Box mt={10}>
-          <Copyright />
-        </Box>
+            )}
+            <Link
+              noLinkStyle
+              href="/admin/reset-password"
+              className={styles.link + ' ' + styles.marginLeft}>
+              {t('Forgotpassword?')}
+            </Link>
+            {showGuestBtn && (
+              <>
+                <Text> | </Text>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!loading) guest_login();
+                  }}
+                  className={styles.link}>
+                  {t('LoginAsGuest')}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+        {/* </Paper> */}
       </Container>
+      <div style=\{{marginTop: '80px'}}>
+        <Copyright />
+      </div>
     </div>
   );
 

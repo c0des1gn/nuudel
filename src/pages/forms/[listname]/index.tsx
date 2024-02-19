@@ -1,28 +1,21 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Forms } from 'nuudel-core';
+import {Forms} from 'nuudel-core';
 import App from '@App';
-import { capitalizeFirstLetter } from 'nuudel-utils';
-import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
-import { useRouter } from 'next/router';
-import { ControlMode, Permission } from 'nuudel-utils';
+import {usePathname, useParams, useSearchParams} from 'next/navigation';
+import {ControlMode, Permission, capitalizeFirstLetter} from 'nuudel-utils';
 
-export const getStaticProps = async () => {
-  return {
-    props: {},
-  };
-};
+interface IProps {}
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: true,
-  };
-};
-
-function Form(props: InferGetStaticPropsType<typeof getStaticProps>) {
-  const router = useRouter();
-  const { listname, IsDlg } = router.query;
+function Form({...props}: IProps) {
+  const pathname = usePathname(),
+    param = useParams(),
+    searchParams = useSearchParams();
+  let query: any = {};
+  searchParams.forEach((value: string, key: string) => {
+    query[key] = value;
+  });
+  const {listname} = param || {};
+  const {IsDlg} = query;
   const _Props: any = {
     IsDlg: IsDlg === '0' ? IsDlg : '1',
     formType: ControlMode.New,
@@ -32,16 +25,10 @@ function Form(props: InferGetStaticPropsType<typeof getStaticProps>) {
       listname instanceof Array ? listname[0] : listname,
     ),
   };
-  //const { t, i18n } = useTranslation();
   return !listname ? (
     <></>
   ) : (
-    <App
-      component={Forms}
-      {..._Props}
-      pathname={router.pathname}
-      query={router.query}
-    />
+    <App component={Forms} {..._Props} pathname={pathname} query={query} />
   );
 }
 

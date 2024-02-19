@@ -1,10 +1,10 @@
 import React from 'react';
 import SignUp from '../../forms/Signup';
-import { useRouter } from 'next/router';
-import { PageProps } from '../_app';
-import { ICurrentUser } from '@Interfaces';
-import { CONF } from '../../config';
-import { isServer } from 'nuudel-utils';
+import {useRouter} from 'next/navigation';
+import {PageProps} from '../_app';
+import {ICurrentUser} from '@Interfaces';
+import {CONF} from '../../config';
+import {isServer} from 'nuudel-utils';
 
 interface IProps extends PageProps {
   error?: string;

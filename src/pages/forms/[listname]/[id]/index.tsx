@@ -1,48 +1,38 @@
 import React from 'react';
-import { withApollo } from 'nuudel-core';
-import { useTranslation } from 'react-i18next';
-import { Forms } from 'nuudel-core';
+import {Forms} from 'nuudel-core';
 import App from '@App';
-import { capitalizeFirstLetter } from 'nuudel-utils';
-import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next';
-import { useRouter } from 'next/router';
-import { ControlMode, Permission } from 'nuudel-utils';
+import {usePathname, useParams, useSearchParams} from 'next/navigation';
+import {ControlMode, Permission, capitalizeFirstLetter} from 'nuudel-utils';
 
-export const getStaticProps = async () => {
-  return {
-    props: { formType: ControlMode.Edit, permission: Permission.Edit },
-  };
-};
+interface IProps {
+  formType?: ControlMode;
+  permission?: Permission;
+}
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: true,
-  };
-};
-
-export function Form(props: InferGetStaticPropsType<typeof getStaticProps>) {
-  const router = useRouter();
-  const { listname, id, IsDlg } = router.query;
+export function Form({...props}: IProps) {
+  const pathname = usePathname(),
+    param = useParams(),
+    searchParams = useSearchParams();
+  let query: any = {};
+  searchParams.forEach((value: string, key: string) => {
+    query[key] = value;
+  });
+  const {listname, id} = param || {};
+  const {IsDlg} = query;
   const _Props: any = {
+    ...props,
     IsDlg: IsDlg === '0' ? IsDlg : '1',
-    formType: props.formType,
-    permission: props.permission,
+    formType: ControlMode.Edit,
+    permission: Permission.Edit,
     id: id instanceof Array ? id[0] : id,
     listname: capitalizeFirstLetter(
-      listname instanceof Array ? listname[0] : listname,
+      listname instanceof Array ? listname.join('') : listname,
     ),
   };
-  const { t, i18n } = useTranslation();
   return !listname ? (
     <></>
   ) : (
-    <App
-      component={Forms}
-      {..._Props}
-      pathname={router.pathname}
-      query={router.query}
-    />
+    <App component={Forms} {..._Props} pathname={pathname} query={query} />
   );
 }
 

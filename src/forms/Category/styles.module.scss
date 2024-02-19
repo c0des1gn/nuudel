@@ -1,0 +1,34 @@
+@import '../../theme/variables/colors';
+@import '../../theme/variables/sizes';
+
+.mainroot {
+    max-width: 450px;
+    display: block;
+    margin: 0 auto;
+}
+
+.textField {
+    &>* {
+        width: 100%;
+    }
+}
+
+.submitButton {
+    margin-top: 24px;
+}
+
+/*
+.maintitle {
+    text-align: center;
+    font-weight: 400;
+    font-size: 22px;
+}
+
+.successMessage {
+    color: $success;
+}
+
+.errorMessage {
+    color: $danger;
+}
+*/

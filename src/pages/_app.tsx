@@ -1,35 +1,33 @@
 import React from 'react';
-import { NextPageContext } from 'next';
+import {NextPageContext} from 'next';
 import App from '../modules/layouts/App/App';
 import i18n from '@Translate';
 import Head from 'next/head';
-import { I18nextProvider } from 'react-i18next';
-import { ThemeProvider, CssBaseline } from '@material-ui/core';
-import { CONF, DARKMODE } from '../config';
-import { UI } from 'nuudel-core';
-import { isServer } from 'nuudel-utils';
+import {I18nextProvider} from 'react-i18next';
+import {CssBaseline} from '@mui/material';
+import {ThemeProvider} from '@mui/material/styles';
+import {CONF, DARKMODE} from '../config';
+import {UI} from 'nuudel-core';
+import {isServer} from 'nuudel-utils';
 import useDarkMode from 'use-dark-mode';
-import { withRouter } from 'next/router';
-import { setTheme } from '@Variables';
-import { thememode } from '../theme';
-import { COLORS } from '@Variables';
-//import ErrorBoundary from '../modules/layouts/ErrorBoundary';
-//import withRedux from "next-redux-wrapper";
-//import { store } from "../hocs/withRedux";
+import {setTheme} from '@Variables';
+import {thememode} from '../theme';
+import {COLORS} from '@Variables';
+import type {AppProps} from 'next/app';
 
 // @ts-ignore
 import '../theme/global.scss';
 import '../../public/fontello/css/ecommerce.css';
 
-const { NEXT_PUBLIC_GOOGLE_ANALYTICS_ID } = process?.env;
+const {NEXT_PUBLIC_GOOGLE_ANALYTICS_ID} = process?.env;
 
 export type PageProps = {
-  query?: { code?: string; emailToken?: string };
+  query?: {code?: string; emailToken?: string};
   pathname?: string;
   req?: NextPageContext['req'];
 };
 
-const MyApp: React.FC = ({ Component, pageProps, router }: any) => {
+function MyApp({Component, pageProps, router}: AppProps & PageProps) {
   // i opt out of localStorage and the built in onChange handler because I want all theming to be based on the user's OS preferences
   const darkMode = useDarkMode(false, {
     storageKey: DARKMODE,
@@ -91,7 +89,7 @@ gtag('config', '${NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}');
           {/* PWA primary color */}
           <meta name="theme-color" content={COLORS.primary} />
           <meta name="description" content={CONF.site_description} />
-          <meta name="keywords" content={CONF.site_keywords.join(' ')} />
+          <meta name="keywords" content={CONF.site_keywords.join(', ')} />
           <meta
             name="viewport"
             content="minimum-scale=1, initial-scale=1, width=device-width"
@@ -99,15 +97,13 @@ gtag('config', '${NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}');
           {NEXT_PUBLIC_GOOGLE_ANALYTICS_ID && (
             <script
               async
-              src={`https://www.googletagmanager.com/gtag/js?id=${NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}`}
-            ></script>
+              src={`https://www.googletagmanager.com/gtag/js?id=${NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}`}></script>
           )}
           {NEXT_PUBLIC_GOOGLE_ANALYTICS_ID && (
             <script
-              dangerouslySetInnerHTML={{
+              dangerouslySetInnerHTML=\{{
                 __html: GA,
-              }}
-            ></script>
+              }}></script>
           )}
         </Head>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
@@ -120,7 +116,7 @@ gtag('config', '${NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}');
       </ThemeProvider>
     </I18nextProvider>
   );
-};
+}
 
-export default withRouter(MyApp);
+export default MyApp;
 //export default withRedux(store)(withRouter(MyApp));

@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import Paper from '@material-ui/core/Paper';
+import React, {useState, useEffect} from 'react';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import {
   TreeDataState,
   CustomTreeData,
@@ -11,31 +13,19 @@ import {
   TableHeaderRow,
   TableTreeColumn,
 } from '@devexpress/dx-react-grid-material-ui';
-import { Spinner, Menu, Button, Link } from 'nuudel-core';
-import { useQuery, useMutation } from '@apollo/react-hooks';
-import Add from '@material-ui/icons/Add';
-import { useRouter } from 'next/router';
+import {Spinner, Menu, Link, Text} from 'nuudel-core';
+import {useQuery, useMutation} from '@apollo/react-hooks';
+import Add from '@mui/icons-material/Add';
+import {useRouter} from 'next/navigation';
 import {
   UPDATE_CATEGORY_MUTATION,
   REMOVE_CATEGORY_MUTATION,
 } from './CategoryMutation';
-import { Message, TOGGLE_SNACKBAR_MUTATION } from 'nuudel-core';
-import { GET_CATEGORIES } from './CategoryQuery';
-import { useApolloClient } from '@apollo/react-hooks';
-import { ApolloClient } from '@apollo/client';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { t } from '@Translate';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    button: {
-      marginTop: theme.spacing(2),
-      marginRight: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-    },
-  }),
-);
+import {Message, TOGGLE_SNACKBAR_MUTATION} from 'nuudel-core';
+import {GET_CATEGORIES} from './CategoryQuery';
+import {useApolloClient} from '@apollo/react-hooks';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import {t} from '@Translate';
 
 const ROOT_ID = null;
 
@@ -55,7 +45,7 @@ const Category: React.FC = () => {
   const [messageMutation] = useMutation(TOGGLE_SNACKBAR_MUTATION);
   const client: any = useApolloClient();
   const [data, setData] = useState([]);
-  const classes = useStyles();
+  const [error, setError] = useState(false);
 
   const [deleteCategoryMutation] = useMutation<any, any>(
     REMOVE_CATEGORY_MUTATION,
@@ -67,14 +57,17 @@ const Category: React.FC = () => {
       // refetchQueries: {
       // },
       update(cache, result: any) {
-        const deletedId = result.data.deleteCategory.id;
+        let dat: any = [];
+        const deletedId = result.data.removeCategory._id;
         // 1. Read the cache from the items we want
-        const data: any = cache.readQuery({ query: GET_CATEGORIES });
-
+        try {
+          dat = cache.readQuery({query: GET_CATEGORIES});
+          dat = dat.getCategories.itemSummaries;
+        } catch {
+          dat = [...data];
+        }
         // 2. Filter the deleted item
-        data.getCategories.itemSummaries = data.getCategories.itemSummaries.filter(
-          (item: any) => item.cid !== deletedId,
-        );
+        setData(dat.filter((item: any) => item._id !== deletedId));
       },
     },
   );
@@ -89,8 +82,8 @@ const Category: React.FC = () => {
       // refetchQueries: {
       // },
       update(cache, result) {
-        const data: any = cache.readQuery({ query: GET_CATEGORIES });
-        const returnedData = { ...result.data };
+        const data: any = cache.readQuery({query: GET_CATEGORIES});
+        const returnedData = {...result.data};
         const returnedDataValue: any = Object.values(returnedData)[0];
         data.getCategories.itemSummaries.map((item: any) => {
           if (item._id === returnedDataValue._id) {
@@ -105,7 +98,7 @@ const Category: React.FC = () => {
   );
 
   const [columns] = useState([
-    { name: 'name', title: t('Name') },
+    {name: 'name', title: t('Name')},
     {
       name: 'slug',
       title: t('Slug'),
@@ -119,8 +112,8 @@ const Category: React.FC = () => {
   ]);
 
   const [tableColumnExtensions] = useState([
-    { columnName: 'name', width: 400 },
-    { columnName: 'slug', width: 120, align: 'right' as const },
+    {columnName: 'name', width: 400},
+    {columnName: 'slug', width: 120, align: 'right' as const},
   ]);
 
   const [expandedRowIds, setExpandedRowIds] = useState([]);
@@ -180,24 +173,23 @@ const Category: React.FC = () => {
     return (
       <div>
         <Message />
-        <Link href="category">
+        <Box sx={theme => ({paddingBottom: theme.spacing(2)})}>
+          <Link href="category">
+            <Button variant="contained" color="primary" startIcon={<Add />}>
+              {t('Add new category')}
+            </Button>
+          </Link>
+
           <Button
-            className={classes.button}
-            color="primary"
-            startIcon={<Add />}
-          >
-            {t('Add new category')}
+            variant="contained"
+            sx={theme => ({marginLeft: theme.spacing(2)})}
+            aria-controls="action-menu"
+            aria-haspopup="true"
+            onClick={handleClick}
+            startIcon={<MoreVertIcon />}>
+            {t('Action')}
           </Button>
-        </Link>
-        <Button
-          className={classes.button}
-          aria-controls="action-menu"
-          aria-haspopup="true"
-          onClick={handleClick}
-          startIcon={<MoreVertIcon />}
-        >
-          {t('Action')}
-        </Button>
+        </Box>
         <Menu
           items={[
             {
@@ -208,6 +200,9 @@ const Category: React.FC = () => {
                   if (index >= 0 && data[index]) {
                     router.push(`/admin/category/${data[index]._id}`);
                   }
+                } else {
+                  setError(true);
+                  handleClose();
                 }
                 /*
                 let newData: any = {};
@@ -243,7 +238,7 @@ const Category: React.FC = () => {
                   let index = data.findIndex(it => it.cid === selection[0]);
                   if (index >= 0 && data[index]) {
                     deleteCategoryMutation({
-                      variables: { id: selection[0] },
+                      variables: {id: selection[0]},
                     })
                       .then(data => {
                         messageMutation({
@@ -252,14 +247,19 @@ const Category: React.FC = () => {
                             type: 'success',
                           },
                         });
+                        setSelection([]);
+                        setError(false);
+                        handleClose();
                       })
                       .catch(err => {
                         messageMutation({
-                          variables: { msg: err.message, type: 'error' },
+                          variables: {msg: err.message, type: 'error'},
                         });
                       });
                     setData([...data].splice(index, 1));
                   }
+                } else {
+                  setError(true);
                 }
               },
             },
@@ -268,9 +268,15 @@ const Category: React.FC = () => {
           anchorEl={anchorEl}
           keepMounted
           open={Boolean(anchorEl)}
-          onClose={handleClose}
-        ></Menu>
-        <Paper style=\{{ position: 'relative' }}>
+          onClose={handleClose}></Menu>
+        <Paper style=\{{position: 'relative'}}>
+          {error && (
+            <Text
+              style=\{{paddingTop: '10px', paddingLeft: '10px'}}
+              color="error">
+              {t('Check only one checkbox at a time')}
+            </Text>
+          )}
           <Grid rows={data} columns={columns} getRowId={getRowId}>
             <SelectionState
               selection={selection}
@@ -295,7 +301,8 @@ const Category: React.FC = () => {
   } else {
     return (
       <div>
-        <Spinner overflowHide />{' ' + t('loading')}
+        <Spinner overflowHide />
+        {' ' + t('loading')}
       </div>
     );
   }

@@ -1,6 +1,5 @@
-import { createTheme } from '@material-ui/core';
-
-import { setTheme, LIGHT, DARK } from './variables/palette';
+import {createTheme} from '@mui/material/styles';
+import {setTheme, LIGHT, DARK} from './variables/palette';
 
 // Create a theme instance.
 
@@ -8,11 +7,11 @@ export const thememode = (prefersDarkMode: boolean = false) => {
   const palette = setTheme(prefersDarkMode);
   return createTheme({
     palette: {
-      type: prefersDarkMode ? 'dark' : 'light', // For Dark Theme
+      mode: prefersDarkMode ? 'dark' : 'light', // For Dark Theme
       primary: {
-        light: LIGHT.primary,
+        light: palette['primary-light'],
         main: palette.primary,
-        dark: DARK.primary,
+        dark: palette['primary-dark'],
       },
       secondary: {
         light: LIGHT.secondary,
@@ -53,7 +52,8 @@ export const thememode = (prefersDarkMode: boolean = false) => {
       },
       //divider: palette['border-light'],
       background: {
-        default: palette['background-light'],
+        //default: palette['background-light'],
+        default: palette.background,
         paper: palette.background,
       },
     },
@@ -62,7 +62,7 @@ export const thememode = (prefersDarkMode: boolean = false) => {
       // so a smaller fontsize may be appropriate.
       fontSize: 14,
       fontFamily: [
-        'Montserrat',
+        'Open Sans',
         'Segoe UI WestEuropean',
         'Segoe UI',
         '-apple-system',
@@ -71,6 +71,55 @@ export const thememode = (prefersDarkMode: boolean = false) => {
         'sans-serif',
         'Arial',
       ].join(','),
+      // subtitle2 is used as textfield label
+      subtitle2: {
+        fontWeight: 700,
+        fontSize: '14px',
+        textTransform: 'none',
+        // paddingLeft: '5px',
+        // marginBottom: '16px',
+        // marginTop: '8px',
+      },
+    },
+    // Overrides style
+    components: {
+      // Textfield outlined input style
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            borderRadius: '8px',
+          },
+        },
+      },
+      // button
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: '0',
+          },
+          containedPrimary: {
+            color: '#fff',
+          },
+        },
+      },
+      // link
+      MuiLink: {
+        styleOverrides: {
+          root: {
+            //textDecoration: 'none',
+            textDecorationColor: 'transparent',
+          },
+        },
+      },
+    },
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 540,
+        md: 900,
+        lg: 1200,
+        xl: 1536,
+      },
     },
   });
 };

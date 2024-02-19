@@ -1,39 +1,19 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Grid, Theme, createStyles, makeStyles } from '@material-ui/core';
-import { Button, IImage, TextField } from 'nuudel-core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import React, {useState, useEffect} from 'react';
+import {Card, CardContent, Divider, Box} from '@mui/material';
+import {Button, IImage, TextField, Grid} from 'nuudel-core';
+import Autocomplete from '@mui/material/Autocomplete';
+import {useForm} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { useRouter } from 'next/router';
-import { useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { Message, TOGGLE_SNACKBAR_MUTATION } from 'nuudel-core';
-import { GET_CATEGORY_QUERY, GET_CATEGORIES } from './CategoryQuery';
-import { UPDATE_CATEGORY_MUTATION } from './CategoryMutation';
-import { IParentProps } from '../IParentProps';
-import { Option } from './AddCategory';
-import { t } from '@Translate';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      maxWidth: '450px',
-      display: 'block',
-      margin: '0 auto',
-    },
-    textField: {
-      '& > *': {
-        width: '100%',
-      },
-    },
-    submitButton: {
-      marginTop: '24px',
-    },
-    title: { textAlign: 'center', fontWeight: 400, fontSize: '22px' },
-    successMessage: { color: 'green' },
-    errorMessage: { color: 'red' },
-  }),
-);
+import {useRouter} from 'next/navigation';
+import {useMutation, useLazyQuery} from '@apollo/react-hooks';
+import {Message, TOGGLE_SNACKBAR_MUTATION} from 'nuudel-core';
+import {GET_CATEGORY_QUERY, GET_CATEGORIES} from './CategoryQuery';
+import {UPDATE_CATEGORY_MUTATION} from './CategoryMutation';
+import {IParentProps} from '../IParentProps';
+import {Option} from './AddCategory';
+import {t} from '@Translate';
+import styles from './styles.module.scss';
 
 interface EditCategoryForm {
   name: string;
@@ -54,15 +34,14 @@ const categorySchema: Yup.SchemaOf<EditCategoryForm> = Yup.object().shape({
   slug: Yup.string(),
   parent_id: Yup.string().nullable(),
   hasChild: Yup.boolean().notRequired(),
-  img: Yup.object().shape({ uri: Yup.string() }).notRequired().nullable(),
+  img: Yup.object().shape({uri: Yup.string()}).notRequired().nullable(),
 });
 
 interface IProps extends IParentProps {
   id: string;
 }
-const EditCategory: React.FC<IProps> = ({ id }) => {
+const EditCategory: React.FC<IProps> = ({id}) => {
   const router = useRouter();
-  const classes = useStyles();
 
   const {
     handleSubmit,
@@ -71,7 +50,7 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
     setValue,
     watch,
     getValues,
-    formState: { isSubmitting, errors, touchedFields },
+    formState: {isSubmitting, errors, touchedFields},
   } = useForm<EditCategoryForm>({
     resolver: yupResolver(categorySchema),
     defaultValues: initialValues,
@@ -132,127 +111,115 @@ const EditCategory: React.FC<IProps> = ({ id }) => {
     // API call integration will be here. Handle success / error response accordingly.
     if (data) {
       updateCategory({
-        variables: { ...data, id: id },
+        variables: {...data, id: id},
       })
         .then(data => {
           //console.log('then of editCategory');
           messageMutation({
-            variables: { msg: 'Category added successfully', type: 'success' },
+            variables: {msg: 'Category added successfully', type: 'success'},
           });
         })
         .catch(err => {
           //console.log('error of editCategory');
           messageMutation({
-            variables: { msg: err.message, type: 'error' },
+            variables: {msg: err.message, type: 'error'},
           });
         });
       // resetForm(initialValues)
     }
   };
-
   return (
-    <div className={'mainroot'}>
+    <div className={styles.mainroot}>
       <Message />
       <form onSubmit={onSubmit}>
-        <Grid container justifyContent="space-around" direction="row">
-          <Grid
-            item
-            style=\{{ paddingTop: 15, paddingBottom: 20 }}
-            lg={10}
-            md={10}
-            sm={10}
-            xs={10}
-            className={classes.textField}
-          >
-            <TextField
-              {...register('name')}
-              value={watch('name')}
-              label={t('category.name')}
-              placeholder={t('category.name')}
-              type="text"
-              maxLength={255}
-              inputProps=\{{ pattern: `^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _,.\\-+&'\\/]+)?$` }}
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              error={!!errors.name}
-              helperText={errors?.name?.message}
-              onChange={e => setValue('name', e.target.value)}
-            />
-          </Grid>
-          <Grid
-            item
-            style=\{{ paddingTop: 15, paddingBottom: 20 }}
-            lg={10}
-            md={10}
-            sm={10}
-            xs={10}
-            className={classes.textField}
-          >
-            <TextField
-              {...register('slug')}
-              value={watch('slug')}
-              label={t('category.slug')}
-              placeholder={t('category.slug')}
-              type="text"
-              maxLength={250}
-              inputProps=\{{ pattern: `^([0-9a-zA-Z _\\-]+)?$` }}
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              error={!!errors.slug}
-              helperText={errors?.slug?.message}
-              onChange={e => setValue('slug', e.target.value)}
-            />
-          </Grid>
-          <Grid
-            item
-            style={{ paddingTop: 15, paddingBottom: 20 }}
-            lg={10}
-            md={10}
-            sm={10}
-            xs={10}
-            className={classes.textField}
-          >
-            <Autocomplete
-              //{...register('parent_id')}
-              value={listCat.find(v => v?.cid === watch('parent_id')) || null}
-              autoHighlight
-              options={listCat}
-              getOptionLabel={(option: Option) => option?.name || ''}
-              onChange={(e, op: Option) =>
-                setValue('parent_id', op?.cid ? op.cid : null)
-              }
-              renderOption={(option: Option) => <>{option.name}</>}
-              renderInput={params => (
+        <Card>
+          <CardContent>
+            <Grid
+              container
+              justifyContent="space-around"
+              direction="row"
+              spacing={2}>
+              <Grid item xs={12} className={styles.textField}>
                 <TextField
-                  {...params}
+                  {...register('name')}
+                  value={watch('name')}
+                  label={t('category.name')}
+                  placeholder={t('category.name')}
+                  type="text"
+                  maxLength={255}
+                  inputProps=\{{
+                    pattern: `^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _,.\\-+&'\\/]+)?$`,
+                  }}
+                  fullWidth
                   variant="outlined"
-                  label={t('category.parent_id')}
-                  error={Boolean(errors?.parent_id)}
-                  //helperText={errors?.zoning?.message}
+                  margin="dense"
+                  size="small"
+                  error={!!errors.name}
+                  helperText={errors?.name?.message}
+                  onChange={e => setValue('name', e.target.value)}
                 />
-              )}
-            />
-          </Grid>
-          <Grid
-            item
-            lg={10}
-            md={10}
-            sm={10}
-            xs={10}
-            className={classes.submitButton}
-          >
+              </Grid>
+              <Grid item xs={12} className={styles.textField}>
+                <TextField
+                  {...register('slug')}
+                  value={watch('slug')}
+                  label={t('category.slug')}
+                  placeholder={t('category.slug')}
+                  type="text"
+                  maxLength={250}
+                  inputProps=\{{
+                    pattern: `^([0-9a-zA-Z _\\-]+)?$`,
+                  }}
+                  fullWidth
+                  variant="outlined"
+                  margin="dense"
+                  size="small"
+                  error={!!errors.slug}
+                  helperText={errors?.slug?.message}
+                  onChange={e => setValue('slug', e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} className={styles.textField}>
+                <Autocomplete
+                  //{...register('parent_id')}
+                  value={
+                    listCat.find(v => v?.cid === watch('parent_id')) || null
+                  }
+                  autoHighlight
+                  options={listCat}
+                  getOptionLabel={(option: Option) => option?.name || ''}
+                  onChange={(e, op: Option) =>
+                    setValue('parent_id', op?.cid ? op.cid : null)
+                  }
+                  renderOption={(prop: any, option: Option) => (
+                    <li {...prop}>{option?.name}</li>
+                  )}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label={t('category.parent_id')}
+                      margin="dense"
+                      size="small"
+                      error={Boolean(errors?.parent_id)}
+                      //helperText={errors?.zoning?.message}
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </CardContent>
+          <Divider />
+          <Box display="flex" justifyContent="flex-end" p={3}>
             <Button
               style=\{{}}
               disabled={isSubmitting || disabled}
               color="primary"
-              type="submit"
-            >
+              type="submit">
               {isSubmitting ? t('loading') : t('Submit')}
             </Button>
-          </Grid>
-        </Grid>
+          </Box>
+        </Card>
       </form>
     </div>
   );

@@ -1,11 +1,33 @@
 import React, {useState, useEffect} from 'react';
-import {Text, ICurrentUser, useAuth, UI, Link, Image} from 'nuudel-core';
+import {Text, ICurrentUser, useAuth, UI, Link, Image, Box} from 'nuudel-core';
 import {Language} from 'nuudel-utils';
 import {USER_LANG} from '../../config';
 import {COLORS} from '../../theme/variables/palette';
 import I8, {changeLanguage, defaultLocale} from '@Translate';
 import {changeLanguageMutation} from './Query';
 import {useMutation} from '@apollo/react-hooks';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import {InputBase} from '@mui/material';
+import {styled} from '@mui/material/styles';
+
+const StyledInput = styled(InputBase)(({theme}) => ({
+  backgroundColor: COLORS['background-light'],
+  border: `1px solid ${COLORS['border-light']}`,
+  height: '30px',
+
+  boxSizing: 'content-box',
+  '&:hover': {textDecoration: 'underline'},
+  '& .MuiSelect-standard': {
+    paddingTop: 0,
+    paddingBottom: 0,
+    paddingLeft: theme.spacing(2),
+  },
+  '& .MuiSvgIcon-root': {
+    right: '5px',
+    fontSize: '18px',
+  },
+}));
 
 interface IProps {
   user?: ICurrentUser;
@@ -14,6 +36,7 @@ interface IProps {
   saveChanges?: boolean;
   invert?: boolean;
   color?: string;
+  className?: string;
 }
 
 const LangSwitcher: React.FC<IProps> = (props: IProps) => {
@@ -42,6 +65,26 @@ const LangSwitcher: React.FC<IProps> = (props: IProps) => {
     fetchPolicy: 'no-cache',
   });
 
+  const handleChange = event => {
+    clearTimeout(_debounce);
+    let current: string = event.target.value;
+    UI.setItem(USER_LANG, current);
+    setLocale(current);
+    _debounce = setTimeout(() => {
+      if (I8.language !== current) {
+        if (saveChanges && !!lang) {
+          changeLangMutation({
+            variables: {
+              locale: current === 'en-US' ? 'English' : 'Mongolian',
+            },
+          });
+        } else {
+          changeLanguage(current);
+        }
+      }
+    }, 1000);
+  };
+
   let _debounce: any = undefined;
   useEffect(() => {
     return function cleanup() {
@@ -49,53 +92,58 @@ const LangSwitcher: React.FC<IProps> = (props: IProps) => {
     };
   }, []);
 
-  const isSwither = !invert ? 'mn-MN' !== locale : 'mn-MN' === locale;
-
   return (
-    <div>
-      <Link
-        onClick={() => {
-          clearTimeout(_debounce);
-          let current: string = locale === 'mn-MN' ? 'en-US' : 'mn-MN';
-          UI.setItem(USER_LANG, current);
-          setLocale(current);
-          _debounce = setTimeout(() => {
-            if (I8.language !== current) {
-              if (saveChanges && !!lang) {
-                changeLangMutation({
-                  variables: {
-                    locale: current === 'en-US' ? 'English' : 'Mongolian',
-                  },
-                });
-              } else {
-                changeLanguage(current);
-              }
-            }
-          }, 1000);
-        }}
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          cursor: 'pointer',
-          textDecoration: 'none',
-        }}>
-        <div
-          style={{marginRight: '8px', marginTop: '2px', marginBottom: '2px'}}>
-          <Image
-            src={isSwither ? imageLinkEn : imageLinkMn}
-            width={25}
-            height={15}
-          />
-        </div>
-        <Text
-          style={{
-            fontSize: '12px',
-            lineHeight: '20px',
-            color: color || COLORS['text-dark'],
-          }}>
-          {isSwither ? 'English' : 'Монгол'}
-        </Text>
-      </Link>
+    <div className={!props.className ? '' : props.className}>
+      <Select
+        value={locale}
+        variant="standard"
+        onChange={handleChange}
+        input={<StyledInput />}>
+        <MenuItem value={'en-US'}>
+          <Box
+            sx=\{{
+              display: 'flex',
+              height: '27px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              '& .FlagImage': {
+                marginRight: '12px',
+                display: 'flex',
+              },
+            }}>
+            <Image
+              src={imageLinkEn}
+              width={27}
+              height={16}
+              className="FlagImage"
+              alt="English language"
+            />
+            <Text variant="caption">English</Text>
+          </Box>
+        </MenuItem>
+        <MenuItem value={'mn-MN'}>
+          <Box
+            sx=\{{
+              display: 'flex',
+              height: '27px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              '& .FlagImage': {
+                marginRight: '12px',
+                display: 'flex',
+              },
+            }}>
+            <Image
+              src={imageLinkMn}
+              width={27}
+              height={16}
+              className="FlagImage"
+              alt="Монгол хэл"
+            />
+            <Text variant="caption">Монгол</Text>
+          </Box>
+        </MenuItem>
+      </Select>
     </div>
   );
 };

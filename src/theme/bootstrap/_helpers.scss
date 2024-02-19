@@ -1,1 +1,3 @@
-@import 'helpers/clearfix';
+.clearfix {
+    @include clearfix();
+}

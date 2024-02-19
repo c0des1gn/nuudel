@@ -14,7 +14,7 @@ import {
   Args,
   Ctx,
 } from 'type-graphql';
-import type { IContext } from 'nuudel-main';
+import type {IContext} from 'nuudel-main';
 import {
   prop as Property,
   getModelForClass,
@@ -23,12 +23,12 @@ import {
   ReturnModelType,
   DocumentType,
 } from '@typegoose/typegoose';
-import { ObjectId } from 'mongodb';
-import { Schema } from 'mongoose';
-import { AuthenticationError, ValidationError } from 'apollo-server-fastify';
-import { FirebaseMessaging, sendAPN } from 'nuudel-main';
-import { Permission } from '../enums';
-import { _permissions } from '../../permissions';
+import {ObjectId} from 'mongodb';
+import {Schema} from 'mongoose';
+import {AuthenticationError, ValidationError} from './errors';
+import {FirebaseMessaging, sendAPN} from 'nuudel-main';
+import {Permission} from '../enums';
+import {_permissions} from '../../permissions';
 //import { Min, Max, Length } from 'class-validator';
 
 type IPermission = 'Read' | 'List' | 'Add' | 'Edit' | 'Delete' | 'All';
@@ -36,21 +36,33 @@ type IPermission = 'Read' | 'List' | 'Add' | 'Edit' | 'Delete' | 'All';
 //@InterfaceType()
 @ArgsType()
 export class CoreArgs implements BaseArgs {
-  @Field(type => Int, { nullable: true, defaultValue: 0 })
+  @Field(type => Int, {nullable: true, defaultValue: 0})
   skip: number = 0;
 
-  @Field(type => Int, { nullable: true })
+  @Field(type => Int, {nullable: true})
   take: number = 200;
 
-  @Field(type => String, { nullable: true, defaultValue: '' }) //Schema.Types.Mixed
+  @Field(type => String, {nullable: true, defaultValue: ''}) //Schema.Types.Mixed
   filter?: string;
 
-  @Field(type => String, { nullable: true, defaultValue: '' })
+  @Field(type => String, {nullable: true, defaultValue: ''})
   sort?: string;
 
   //@Min(0)
-  @Field(type => Int, { nullable: true, defaultValue: 0 })
+  @Field(type => Int, {nullable: true, defaultValue: 0})
   total?: number = 0;
+}
+
+@ArgsType()
+export class ListArgs {
+  @Field(type => Int, {nullable: true, defaultValue: 0})
+  limit?: number;
+
+  @Field(type => String, {nullable: true, defaultValue: ''})
+  filter?: string;
+
+  @Field(type => String, {nullable: true, defaultValue: ''})
+  sort?: string;
 }
 
 export interface BaseArgs {
@@ -74,39 +86,39 @@ export interface ICore {
   }
   next();
 })
-@ObjectType({ isAbstract: true })
-@modelOptions({ schemaOptions: { timestamps: true } })
+@ObjectType()
+@modelOptions({schemaOptions: {timestamps: true}})
 export abstract class CoreType implements ICore {
   @Field()
   readonly _id: ObjectId;
 
   //@Authorized()
-  @Field({ nullable: true })
-  @Property({ required: false })
+  @Field({nullable: true})
+  @Property({required: false})
   _createdby: string;
 
   //@Authorized()
-  @Field({ nullable: true })
-  @Property({ required: false })
+  @Field({nullable: true})
+  @Property({required: false})
   _modifiedby: string;
 
-  @Field(type => Date, { nullable: true, defaultValue: Date.now })
-  @Property({ required: false })
+  @Field(type => Date, {nullable: true, defaultValue: Date.now})
+  @Property({required: false})
   createdAt?: Date;
 
-  @Field(type => Date, { nullable: true, defaultValue: Date.now })
-  @Property({ required: false })
+  @Field(type => Date, {nullable: true, defaultValue: Date.now})
+  @Property({required: false})
   updatedAt?: Date;
 }
 
 @ObjectType()
 export class LookupItem {
   @Field(type => String) //ObjectId
-  @Property({ required: true })
+  @Property({required: true})
   _id: string;
 
-  @Field(type => String, { nullable: true })
-  @Property({ required: false })
+  @Field(type => String, {nullable: true})
+  @Property({required: false})
   name?: string;
 }
 
@@ -116,39 +128,41 @@ export class LookupItemInput implements Partial<LookupItem> {
   @Field(type => String)
   _id: string;
 
-  @Field(type => String, { nullable: true })
+  @Field(type => String, {nullable: true})
   name?: string;
 }
 
-export function PaginatedResponse<T>(TItemClass: ClassType<T>): any {
+export function PaginatedResponse<T extends CoreType>(
+  TItemClass: ClassType<T>,
+): any {
   // `isAbstract` decorator option is mandatory to prevent registering in schema
-  @ObjectType({ isAbstract: true })
+  @ObjectType()
   abstract class PaginatedResponseClass {
     // here we use the runtime argument
     @Field(type => [TItemClass])
     // and here the generic type
     itemSummaries: T[];
 
-    @Field(type => Int, { defaultValue: 0 })
+    @Field(type => Int, {defaultValue: 0})
     total: number;
 
-    @Field(type => Int, { defaultValue: 200 })
+    @Field(type => Int, {defaultValue: 200})
     limit: number;
 
-    @Field(type => Int, { defaultValue: 0 })
+    @Field(type => Int, {defaultValue: 0})
     offset: number;
 
-    @Field(type => Boolean, { defaultValue: false })
+    @Field(type => Boolean, {defaultValue: false})
     next: boolean;
   }
   return PaginatedResponseClass;
 }
 
-export function BaseResolver<T, P>(
+export function BaseResolver<T extends CoreType, P extends Object>(
   objType: ClassType<T>,
   pageType: ClassType<P>,
 ): any {
-  @Resolver({ isAbstract: true })
+  @Resolver()
   abstract class BaseResolver {
     public Model: any;
     constructor() {
@@ -173,17 +187,17 @@ export function BaseResolver<T, P>(
       ) {
         let userId: ObjectId | null = this.getOid(user?._id);
         let keys: string[] = !_filter ? [] : Object.keys(_filter);
-        let criteria: any = { _userId: userId };
+        let criteria: any = {_userId: userId};
         if (
           _filter._userId === null ||
           filter?.replace(/\s/g, '')?.includes('{"_userId":null}')
         ) {
-          criteria = { $or: [{ _userId: null }, { _userId: userId }] };
+          criteria = {$or: [{_userId: null}, {_userId: userId}]};
         }
         if (keys.length === 0) {
           _filter = criteria;
         } else if (keys.includes('_userId')) {
-          _filter = { ..._filter, ...criteria };
+          _filter = {..._filter, ...criteria};
         } else {
           _filter = {
             $and: [_filter, criteria],
@@ -233,16 +247,9 @@ export function BaseResolver<T, P>(
     }
 
     @Authorized()
-    @Query(returns => [objType], { name: `getAll${objType.name}` })
-    async getAll(
-      @Ctx() { user }: IContext,
-      @Arg('filter', type => String, { nullable: true, defaultValue: '' })
-      filter?: string,
-      @Arg('sort', type => String, { nullable: true, defaultValue: '' })
-      sort?: string,
-      @Arg('limit', type => Int, { nullable: true, defaultValue: 0 })
-      limit?: number,
-    ): Promise<T[]> {
+    @Query(returns => [objType], {name: `getAll${objType.name}`})
+    async getAll(@Args() pr: ListArgs, @Ctx() {user}: IContext): Promise<T[]> {
+      let {filter, sort, limit} = pr;
       if (!this.permissionCheck(user, objType.name, 'List')) {
         throw new ValidationError("Don't have permission to read an items");
       }
@@ -251,7 +258,7 @@ export function BaseResolver<T, P>(
 
       const result = await this.Model.find(_filter)
         .sort(sort)
-        .limit(limit ? limit : 200);
+        .limit(!limit ? 200 : limit);
       return result;
     }
 
@@ -274,7 +281,7 @@ export function BaseResolver<T, P>(
           : objType.name
       }s`,
     })
-    async getItems(@Args() pr: CoreArgs, @Ctx() { user }: IContext) {
+    async getItems(@Args() pr: CoreArgs, @Ctx() {user}: IContext) {
       if (!this.permissionCheck(user, objType.name, 'List')) {
         throw new ValidationError("Don't have permission to read an items");
       }
@@ -284,7 +291,7 @@ export function BaseResolver<T, P>(
         pr.total === 0 || pr.skip == 0
           ? await this.Model.find(filter).countDocuments()
           : pr.total;
-      const data = await this.Model.find(filter)
+      const data: any = await this.Model.find(filter)
         .sort(sort)
         .skip(pr.skip)
         .limit(pr.take);
@@ -299,17 +306,17 @@ export function BaseResolver<T, P>(
     }
 
     @Authorized()
-    @Query(returns => Int, { name: `count${objType.name}` })
+    @Query(returns => Int, {name: `count${objType.name}`})
     async count(): Promise<number> {
       return await this.Model.estimatedDocumentCount();
     }
 
     @Authorized()
-    @Query(returns => objType, { name: `getOne${objType.name}` })
+    @Query(returns => objType, {name: `getOne${objType.name}`})
     async getOne(
       @Arg('column', type => String) col: string,
       @Arg('value', type => String) val: string,
-      @Ctx() { user }: IContext,
+      @Ctx() {user}: IContext,
     ): Promise<T> {
       if (this.permissionCheck(user, objType.name, 'Read')) {
         return await this.Model.findOne({
@@ -319,10 +326,10 @@ export function BaseResolver<T, P>(
     }
 
     @Authorized()
-    @Query(returns => objType, { name: `get${objType.name}` })
+    @Query(returns => objType, {name: `get${objType.name}`})
     async getItem(
       @Arg('_id', type => ObjectId) _id: string,
-      @Ctx() { user }: IContext,
+      @Ctx() {user}: IContext,
     ): Promise<T> {
       let obj = null;
       if ('undefined' !== typeof this.Model.schema.path('_userId')) {
@@ -354,7 +361,7 @@ export function BaseResolver<T, P>(
       permission: IPermission = 'Read',
       userId?: string,
     ): boolean {
-      const { type: userType = 'Guest' } = user || {};
+      const {type: userType = 'Guest'} = user || {};
       if (
         (userType === 'Admin' && 'All' !== permission) ||
         (!!userId &&
@@ -444,10 +451,10 @@ export function BaseResolver<T, P>(
     //public abstract removeAfter?(_id: string): Promise<void>;
 
     @Authorized()
-    @Mutation(returns => objType, { name: `delete${objType.name}` })
+    @Mutation(returns => objType, {name: `delete${objType.name}`})
     async deleteItem(
       @Arg('_id', type => ObjectId) _id: string,
-      @Ctx() { user }: IContext,
+      @Ctx() {user}: IContext,
     ): Promise<T> {
       let obj = null;
       if ('undefined' !== typeof this.Model.schema.path('_userId')) {
@@ -459,7 +466,7 @@ export function BaseResolver<T, P>(
           user,
           objType.name,
           'Delete',
-          obj?._userId ? obj._userId.toString() : undefined,
+          !obj?._userId ? undefined : obj._userId.toString(),
         )
       ) {
         const deleted = await this.Model.findByIdAndDelete(_id);
@@ -474,6 +481,7 @@ export function BaseResolver<T, P>(
       obj: any,
       ctx: IContext,
       model?: any,
+      listname?: string,
     ): Promise<any> {
       obj['_createdby'] = obj['_modifiedby'] = ctx?.user?.username || 'system';
 
@@ -486,10 +494,10 @@ export function BaseResolver<T, P>(
       }
       if (
         this.permissionCheck(
-          ctx.user,
-          objType.name,
+          ctx?.user,
+          listname || objType.name,
           'Add',
-          obj?._userId ? obj._userId.toString() : undefined,
+          !obj?._userId ? undefined : obj._userId.toString(),
         )
       ) {
         const Form = !model ? new this.Model(obj) : new model(obj);
@@ -522,8 +530,8 @@ export function BaseResolver<T, P>(
       ) {
         return await this.Model.findByIdAndUpdate(
           _id,
-          isSet ? { $set: { ...obj } } : obj,
-          { new: true },
+          !isSet ? obj : {$set: {...obj}},
+          {new: true},
         );
       } else {
         throw new ValidationError("Don't have permission to update this item");
@@ -536,24 +544,24 @@ export function BaseResolver<T, P>(
           {
             _userId: _userId,
           },
-          { registerToken: 1, details: 1, _id: 0 },
+          {registerToken: 1, details: 1, _id: 0},
         )
-        .sort({ subscribedOn: -1 })
+        .sort({subscribedOn: -1})
         .limit(20);
     }
 
-    protected async addNotification(obj: any, ctx: IContext, model: any) {
+    protected async addNotification(obj: any, ctx: IContext, model?: any) {
       obj = {
         _userId: this.getOid(ctx.user._id),
         title: '',
         message: '',
         icon: null,
         expired: new Date(new Date().getTime() + 86400000 * 3),
-        data: { screen: '', itemId: '', market: null },
+        data: {screen: '', itemId: '', market: null},
         viewed: false,
         ...obj,
       };
-      return await this.newItem(obj, ctx, model);
+      return await this.newItem(obj, ctx, model, 'Notification');
     }
 
     public async sendNotification(data: any, keys: any[], badge: number = 1) {
@@ -564,31 +572,43 @@ export function BaseResolver<T, P>(
         .filter(item => item.details.os !== 'ios')
         .map(item => item.registerToken);
       if (tokens.length > 0) {
-        FirebaseMessaging(
-          tokens,
-          data._userId.toString(),
-          data.title,
-          data.message,
-          data.icon,
-          data._id,
-          data.data,
-          badge,
-        );
+        try {
+          FirebaseMessaging(
+            tokens,
+            data._userId?.toString(),
+            data.title,
+            data.message,
+            data.icon,
+            data._id,
+            data.data,
+            badge,
+          );
+        } catch {
+          ex => {
+            console.warn(ex);
+          };
+        }
       }
       const deviceTokens = keys
         .filter(item => item.details.os === 'ios')
         .map(item => item.registerToken);
       if (deviceTokens.length > 0) {
-        sendAPN(
-          deviceTokens,
-          data._userId.toString(),
-          data.title,
-          data.message,
-          data.icon,
-          data._id,
-          data.data,
-          badge,
-        );
+        try {
+          sendAPN(
+            deviceTokens,
+            data._userId?.toString(),
+            data.title,
+            data.message,
+            data.icon,
+            data._id,
+            data.data,
+            badge,
+          );
+        } catch {
+          ex => {
+            console.warn(ex);
+          };
+        }
       }
     }
 
@@ -608,9 +628,9 @@ export function BaseResolver<T, P>(
       countModel: any,
     ): Promise<number> => {
       const auto_increment = await countModel.findOneAndUpdate(
-        { listname: listname },
-        { $inc: { sequence: 1 } },
-        { new: true },
+        {listname: listname},
+        {$inc: {sequence: 1}},
+        {new: true},
       );
       return auto_increment.sequence;
     };

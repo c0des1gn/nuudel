@@ -1,37 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  Theme,
-  createStyles,
-  makeStyles,
-  Card,
-  CardContent,
-  Divider,
-  Box,
-} from '@material-ui/core';
-import { Button, TextField, Grid } from 'nuudel-core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import React, {useState, useEffect} from 'react';
+import {Card, CardContent, Divider, Box} from '@mui/material';
+import {Button, TextField, Grid} from 'nuudel-core';
+import Autocomplete from '@mui/material/Autocomplete';
+import {useForm} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { useRouter } from 'next/router';
-import { useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { Message, TOGGLE_SNACKBAR_MUTATION } from 'nuudel-core';
-import { GET_CATEGORIES } from './CategoryQuery';
-import { CREATE_CATEGORY } from './CategoryMutation';
-import { t } from '@Translate';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    mainRoot: {
-      maxWidth: '600px',
-      display: 'block',
-      margin: '0 auto',
-    },
-    title: { textAlign: 'center', fontWeight: 400, fontSize: '22px' },
-    successMessage: { color: 'green' },
-    errorMessage: { color: 'red' },
-  }),
-);
+import {useRouter} from 'next/navigation';
+import {useMutation, useLazyQuery} from '@apollo/react-hooks';
+import {Message, TOGGLE_SNACKBAR_MUTATION} from 'nuudel-core';
+import {GET_CATEGORIES} from './CategoryQuery';
+import {CREATE_CATEGORY} from './CategoryMutation';
+import {t} from '@Translate';
+import styles from './styles.module.scss';
 
 interface NewCategoryForm {
   name: string;
@@ -67,14 +47,13 @@ const categorySchema: Yup.SchemaOf<NewCategoryForm> = Yup.object().shape({
 
 const AddCategory: React.FunctionComponent = () => {
   const router = useRouter();
-  const classes = useStyles();
 
   const {
     handleSubmit,
     reset,
     register,
     setValue,
-    formState: { isSubmitting, errors, touchedFields },
+    formState: {isSubmitting, errors, touchedFields},
   } = useForm<NewCategoryForm>({
     resolver: yupResolver(categorySchema),
     defaultValues: initialValues,
@@ -122,23 +101,23 @@ const AddCategory: React.FunctionComponent = () => {
     // API call integration will be here. Handle success / error response accordingly.
     if (data) {
       createCategory({
-        variables: { data },
+        variables: {data},
       })
         .then(data => {
           messageMutation({
-            variables: { msg: 'Category added successfully', type: 'success' },
+            variables: {msg: 'Category added successfully', type: 'success'},
           });
         })
         .catch(err => {
           messageMutation({
-            variables: { msg: err.message, type: 'error' },
+            variables: {msg: err.message, type: 'error'},
           });
         });
     }
   };
 
   return (
-    <div className={classes.mainRoot}>
+    <div className={styles.mainroot}>
       <Message />
       <form onSubmit={onSubmit}>
         <Card>
@@ -147,8 +126,7 @@ const AddCategory: React.FunctionComponent = () => {
               container
               justifyContent="space-around"
               direction="row"
-              spacing={3}
-            >
+              spacing={2}>
               <Grid item xs={12}>
                 <TextField
                   {...register('name')}
@@ -158,10 +136,13 @@ const AddCategory: React.FunctionComponent = () => {
                   defaultValue={initialValues.name}
                   type="text"
                   maxLength={255}
-                  inputProps=\{{ pattern: `^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _,.\\-+&'\\/]+)?$` }}
+                  inputProps=\{{
+                    pattern: `^([0-9a-zA-Zа-яА-ЯөӨүҮёЁ _,.\\-+&'\\/]+)?$`,
+                  }}
                   fullWidth
                   variant="outlined"
-                  margin="normal"
+                  margin="dense"
+                  size="small"
                   error={!!errors.name}
                   helperText={errors?.name?.message}
                   onChange={e => setValue('name', e.target.value)}
@@ -175,10 +156,11 @@ const AddCategory: React.FunctionComponent = () => {
                   defaultValue={initialValues.slug}
                   type="text"
                   maxLength={250}
-                  inputProps=\{{ pattern: `^([0-9a-zA-Z _\\-]+)?$` }}
+                  inputProps=\{{pattern: `^([0-9a-zA-Z _\\-]+)?$`}}
                   fullWidth
                   variant="outlined"
-                  margin="normal"
+                  margin="dense"
+                  size="small"
                   error={!!errors.slug}
                   helperText={errors?.slug?.message}
                   onChange={e => setValue('slug', e.target.value)}
@@ -195,13 +177,16 @@ const AddCategory: React.FunctionComponent = () => {
                   onChange={(e, options: Option) =>
                     setValue('parent_id', options?.cid ? options.cid : null)
                   }
-                  renderOption={(option: Option) => <>{option.name}</>}
+                  renderOption={(prop: any, option: Option) => (
+                    <li {...prop}>{option?.name}</li>
+                  )}
                   renderInput={params => (
                     <TextField
                       {...params}
                       label={t('category.parent_id')}
                       variant="outlined"
-                      margin="normal"
+                      margin="dense"
+                      size="small"
                       error={Boolean(errors?.parent_id)}
                       //helperText={errors?.zoning?.message}
                     />
@@ -216,8 +201,7 @@ const AddCategory: React.FunctionComponent = () => {
               style=\{{}}
               disabled={isSubmitting || disabled}
               color="primary"
-              type="submit"
-            >
+              type="submit">
               {isSubmitting ? t('loading') : t('Submit')}
             </Button>
           </Box>

@@ -1,17 +1,14 @@
-import React, { FunctionComponent, useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, {FunctionComponent, useState, useEffect} from 'react';
+import {useForm} from 'react-hook-form';
 import {
   Button,
-  TextField,
   Text,
   Container,
   Link,
-  Box,
   Grid,
   Checkbox,
   Select,
   Upload,
-  Switch,
 } from 'nuudel-core';
 import {
   IProps,
@@ -20,43 +17,23 @@ import {
   ISignUpFormValues,
   userType,
   Gender,
-  Vehicle,
 } from './types';
 import gql from 'graphql-tag';
-import { yupResolver } from '@hookform/resolvers/yup';
+import {yupResolver} from '@hookform/resolvers/yup';
 import styles from '../SignIn/styles.module.scss';
-import {
-  useMutation,
-  useApolloClient,
-  useLazyQuery,
-} from '@apollo/react-hooks';
-import { USER_TOKEN } from '../../config';
-import { UI } from 'nuudel-core';
-import { getHash } from 'nuudel-utils';
-import { t } from '@Translate';
-import { Message, TOGGLE_SNACKBAR_MUTATION } from 'nuudel-core';
-import { onError } from 'nuudel-core';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import {
-  Avatar,
-  Paper,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  FormControl,
-  InputLabel,
-  InputAdornment,
-} from '@material-ui/core';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { dateToString } from 'nuudel-utils';
-import { Copyright } from 'nuudel-core';
-import { useRouter } from 'next/router';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { IWarehouse } from 'nuudel-core';
-import { LIST_WAREHOUSE_QUERY } from '../User/UserQuery';
-
-const { WEB } = process?.env;
+import {useMutation, useApolloClient, useLazyQuery} from '@apollo/react-hooks';
+import {USER_TOKEN} from '../../config';
+import {UI} from 'nuudel-core';
+import {t} from '@Translate';
+import {Message, TOGGLE_SNACKBAR_MUTATION} from 'nuudel-core';
+import {onError} from 'nuudel-core';
+import {FormControl, InputAdornment, Box} from '@mui/material';
+import InputLabel from '@mui/material/InputLabel';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {dateToString, getHash} from 'nuudel-utils';
+import {Copyright} from 'nuudel-core';
+import {useRouter} from 'next/navigation';
+import TextField from '@mui/material/TextField';
 
 const ADD_USER = gql`
   mutation AddUser($data: UserInput!) {
@@ -93,29 +70,29 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
   const client = useApolloClient();
   const [disabled, setDisabled] = useState(props.allowSignup);
   const [type, setType] = useState(initialValues.type);
+  const [showPass, setShowPass] = useState(false);
+
+  const handleClickShowPassword = () => {
+    setShowPass(!showPass);
+  };
+
+  const handleMouseDownPassword = event => {
+    event.preventDefault();
+  };
 
   const {
     handleSubmit,
     reset,
     register,
     setValue,
-    formState: { errors, isSubmitting, touchedFields },
+    formState: {errors, isSubmitting, touchedFields},
     getValues,
     setError,
-    watch,
     clearErrors,
   } = useForm<ISignUpFormValues>({
     resolver: yupResolver(validateSchema),
     //mode: 'onChange',
     defaultValues: initialValues,
-  });
-
-  const [listWarehouse, setListWarehouse] = useState([]);
-
-  const [getWarehouses] = useLazyQuery<any, any>(LIST_WAREHOUSE_QUERY, {
-    onCompleted: data => {
-      setListWarehouse(data.getWarehouses.itemSummaries);
-    },
   });
 
   const [messageMutation] = useMutation(TOGGLE_SNACKBAR_MUTATION);
@@ -131,7 +108,7 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
           query: USERNAME_AVAILABLE,
           variables: {
             username: username.trim().toLowerCase(),
-            token: getHash(),
+            token: getHash() || (await UI.getItem(USER_TOKEN)),
           },
         })
         .then(r => {
@@ -153,7 +130,7 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
           query: EMAIL_AVAILABLE,
           variables: {
             email: email.trim().toLowerCase(),
-            token: getHash(),
+            token: getHash() || (await UI.getItem(USER_TOKEN)),
           },
         })
         .then(r => {
@@ -169,15 +146,6 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
 
   useEffect(() => {
     if (!props.allowSignup) {
-      getWarehouses({
-        variables: {
-          skip: 0,
-          take: 200,
-          filter: '',
-          sort: '',
-          total: 0,
-        },
-      });
     }
     //function cleanup()
     return () => {
@@ -213,7 +181,7 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
   };
 
   const submit = handleSubmit(async (formdata: any) => {
-    let data = { ...formdata };
+    let data = {...formdata};
     delete data.mail;
     delete data.check;
     try {
@@ -249,181 +217,218 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
     }
   });
   return (
-    <Container maxWidth="md">
-      <Paper elevation={3} className={styles.paperStyle}>
-        <Message />
-        <Grid
-          container
-          direction="row"
-          justifyContent="center"
-          alignItems="center"
-          className={styles.paddingBottom}
-        >
-          <Avatar className={styles.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <h3>{t('LetsGetStarted')}</h3>
-        </Grid>
-        <form>
-          <Grid
-            container
-            justifyContent="flex-start"
-            direction="row"
-            spacing={3}
-          >
-            <Grid item sm={6} xs={12}>
-              <TextField
-                {...register('firstname')}
-                label={t('Fistname')}
-                placeholder={t('Fistname')}
-                defaultValue={initialValues.firstname}
-                type="text"
-                //value={watch('firstname')}
-                fullWidth
-                required
-                variant="outlined"
-                margin="normal"
-                error={!!errors.firstname}
-                autoCorrect="off"
-                autoCapitalize="on"
-                spellCheck="false"
-                //textContentType="givenName"
-                helperText={errors?.firstname?.message}
-                onChange={e => setChange('firstname', e.target.value)}
-              />
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField
-                {...register('lastname')}
-                label={t('Lastname')}
-                placeholder={t('Lastname')}
-                defaultValue={initialValues.lastname}
-                type="text"
-                fullWidth
-                required
-                variant="outlined"
-                margin="normal"
-                error={!!errors.lastname}
-                autoCorrect="off"
-                autoCapitalize="on"
-                spellCheck="false"
-                //textContentType="familyName"
-                helperText={errors?.lastname?.message}
-                onChange={e => setChange('lastname', e.target.value)}
-              />
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField
-                {...register('username')}
-                label={t('Username')}
-                placeholder={t('Username')}
-                defaultValue={initialValues.username}
-                type="text"
-                fullWidth
-                required
-                variant="outlined"
-                margin="normal"
-                InputProps=\{{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AccountCircle />
-                    </InputAdornment>
-                  ),
-                }}
-                error={!!errors.username}
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck="false"
-                helperText={errors?.username?.message}
-                onChange={e => {
-                  setChange('username', e.target.value);
-                  if (!!e.target.value && !(errors && errors['username'])) {
-                    checkUsername(e.target.value);
-                  }
-                }}
-              />
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField
-                {...register('password')}
-                label={t('Password')}
-                placeholder={t('Password')}
-                defaultValue={initialValues.password}
-                type="password"
-                fullWidth
-                required
-                variant="outlined"
-                margin="normal"
-                error={!!errors.password}
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck="false"
-                //textContentType="newPassword"
-                helperText={errors?.password?.message}
-                onChange={e => setChange('password', e.target.value)}
-              />
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField
-                {...register('email')}
-                label={t('Email')}
-                required
-                placeholder={t('Email')}
-                defaultValue={initialValues.email}
-                type="email"
-                fullWidth
-                variant="outlined"
-                margin="normal"
-                error={!!errors.email}
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck="false"
-                helperText={errors?.email?.message}
-                onChange={e => {
-                  setChange('email', e.target.value);
-                  if (!!e.target.value && !(errors && errors['email'])) {
-                    checkEmail(e.target.value);
-                  }
-                }}
-              />
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField
-                {...register('mail')}
-                label={t('ConfirmEmail')}
-                placeholder={t('ConfirmEmail')}
-                defaultValue={initialValues.mail}
-                type="email"
-                fullWidth
-                variant="outlined"
-                margin="normal"
-                error={!!errors.mail}
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck="false"
-                helperText={errors?.mail?.message}
-                onChange={e => setChange('mail', e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Text variant="h6" component="h6">
-                    {t('additional')}
-                  </Text>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Grid container spacing={3}>
+    <>
+      <Container maxWidth="md">
+        <div className={styles.paperStyle + ' ' + styles.border}>
+          <Message />
+          <div className={styles.flexRowCenter + ' ' + styles.paddingBottom}>
+            <h3 className={styles.title}>{t('LetsGetStarted')}</h3>
+          </div>
+          <form>
+            <Grid
+              container
+              justifyContent="flex-start"
+              direction="row"
+              spacing={2}>
+              <Grid item sm={6} xs={12}>
+                {/* <p className={styles.label}>{t('Fistname')}</p> */}
+                <TextField
+                  {...register('firstname')}
+                  label={t('Fistname')}
+                  placeholder={t('Fistname')}
+                  defaultValue={initialValues.firstname}
+                  type="text"
+                  inputProps=\{{maxLength: 60}}
+                  fullWidth
+                  size="small"
+                  margin="normal"
+                  required
+                  variant="outlined"
+                  error={!!errors.firstname}
+                  autoCorrect="off"
+                  autoCapitalize="on"
+                  spellCheck="false"
+                  //textContentType="givenName"
+                  helperText={errors?.firstname?.message}
+                  onChange={e => setChange('firstname', e.target.value)}
+                />
+              </Grid>
+              <Grid item sm={6} xs={12}>
+                {/* <p className={styles.label}>{t('Lastname')}</p> */}
+                <TextField
+                  {...register('lastname')}
+                  label={t('Lastname')}
+                  placeholder={t('Lastname')}
+                  defaultValue={initialValues.lastname}
+                  type="text"
+                  inputProps=\{{maxLength: 60}}
+                  fullWidth
+                  size="small"
+                  margin="normal"
+                  variant="outlined"
+                  error={!!errors.lastname}
+                  autoCorrect="off"
+                  autoCapitalize="on"
+                  spellCheck="false"
+                  //textContentType="familyName"
+                  helperText={errors?.lastname?.message}
+                  onChange={e => setChange('lastname', e.target.value)}
+                />
+              </Grid>
+              <Grid item sm={6} xs={12}>
+                {/* <p className={styles.label}>{t('Username')}</p> */}
+                <TextField
+                  {...register('username')}
+                  label={t('Username')}
+                  placeholder={t('Username')}
+                  defaultValue={initialValues.username}
+                  type="text"
+                  fullWidth
+                  size="small"
+                  margin="normal"
+                  required
+                  variant="outlined"
+                  InputProps=\{{
+                    inputProps: {
+                      maxLength: 35,
+                    },
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <i
+                          className="icon-user-1"
+                          style=\{{fontSize: '16px', lineHeight: 1}}
+                        />
+                      </InputAdornment>
+                    ),
+                  }}
+                  error={!!errors.username}
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  helperText={errors?.username?.message}
+                  onChange={e => {
+                    setChange('username', e.target.value);
+                    if (!!e.target.value && !(errors && errors['username'])) {
+                      checkUsername(e.target.value);
+                    }
+                  }}
+                />
+              </Grid>
+              <Grid item sm={6} xs={12}>
+                {/* <p className={styles.label}>{t('Password')}</p> */}
+                <TextField
+                  {...register('password')}
+                  label={t('Password')}
+                  placeholder={t('Password')}
+                  defaultValue={initialValues.password}
+                  type={showPass ? 'text' : 'password'}
+                  inputProps=\{{maxLength: 30}}
+                  fullWidth
+                  size="small"
+                  margin="normal"
+                  required
+                  variant="outlined"
+                  error={!!errors.password}
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  //textContentType="newPassword"
+                  helperText={errors?.password?.message}
+                  onChange={e => setChange('password', e.target.value)}
+                  InputProps=\{{
+                    className: styles.loginInput,
+                    inputProps: {
+                      maxLength: 30,
+                    },
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <button
+                          type="button"
+                          className={styles.visibilityBtn}
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}>
+                          {!showPass ? (
+                            <i
+                              className="icon-eye"
+                              style=\{{fontSize: '20px', lineHeight: 1}}
+                            />
+                          ) : (
+                            <i
+                              className="icon-closed-eye"
+                              style=\{{fontSize: '20px', lineHeight: 1}}
+                            />
+                          )}
+                        </button>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item sm={6} xs={12}>
+                {/* <p className={styles.label}>{t('Email')}</p> */}
+                <TextField
+                  {...register('email')}
+                  required
+                  label={t('Email')}
+                  placeholder={t('Email')}
+                  defaultValue={initialValues.email}
+                  type="email"
+                  inputProps=\{{maxLength: 100, inputMode: 'email'}}
+                  fullWidth
+                  size="small"
+                  margin="normal"
+                  variant="outlined"
+                  error={!!errors.email}
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  helperText={errors?.email?.message}
+                  onChange={e => {
+                    setChange('email', e.target.value);
+                    if (!!e.target.value && !(errors && errors['email'])) {
+                      checkEmail(e.target.value);
+                    }
+                  }}
+                />
+              </Grid>
+              <Grid item sm={6} xs={12}>
+                {/* <p className={styles.label}>{t('ConfirmEmail')}</p> */}
+                <TextField
+                  {...register('mail')}
+                  label={t('ConfirmEmail')}
+                  placeholder={t('ConfirmEmail')}
+                  defaultValue={initialValues.mail}
+                  type="email"
+                  inputProps=\{{maxLength: 100, inputMode: 'email'}}
+                  fullWidth
+                  size="small"
+                  margin="normal"
+                  variant="outlined"
+                  error={!!errors.mail}
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  helperText={errors?.mail?.message}
+                  onChange={e => setChange('mail', e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <div className={styles.marginTop}>
+                  <Grid container spacing={2}>
                     <Grid item sm={6} xs={12}>
+                      {/* <p className={styles.label}>{t('user.phone')}</p> */}
                       <TextField
                         {...register('phone')}
                         label={t('user.phone')}
                         placeholder={t('user.phone')}
                         defaultValue={initialValues.phone}
                         type="text"
+                        inputProps=\{{maxLength: 13, inputMode: 'tel'}}
                         fullWidth
-                        variant="outlined"
+                        size="small"
                         margin="normal"
+                        variant="outlined"
                         error={!!errors.phone}
                         autoCorrect="off"
                         autoCapitalize="on"
@@ -433,63 +438,74 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
                       />
                     </Grid>
                     <Grid item sm={6} xs={12}>
+                      {/* <p className={styles.label}>{t('user.mobile')}</p> */}
                       <TextField
                         {...register('mobile')}
                         label={t('user.mobile')}
                         placeholder={t('user.mobile')}
                         defaultValue={initialValues.mobile}
                         type="text"
+                        inputProps=\{{maxLength: 13, inputMode: 'tel'}}
                         fullWidth
-                        variant="outlined"
+                        size="small"
                         margin="normal"
+                        variant="outlined"
                         error={!!errors.mobile}
                         autoCorrect="off"
                         autoCapitalize="on"
                         spellCheck="false"
-                        //textContentType="givenName"
                         helperText={errors?.mobile?.message}
                         onChange={e => setChange('mobile', e.target.value)}
                       />
                     </Grid>
                     <Grid item md={6} xs={12}>
+                      {/* <p className={styles.label}>{t('user.birthday')}</p> */}
                       <TextField
                         {...register('birthday')}
-                        label={t('user.birthday')}
                         type="date"
                         placeholder={t('user.birthday')}
+                        label={t('user.birthday')}
                         defaultValue={dateToString(
                           initialValues.birthday,
                           'YYYY-MM-DD',
                         )}
                         fullWidth
-                        variant="outlined"
+                        size="small"
                         margin="normal"
+                        variant="outlined"
                         error={!!errors.birthday}
                         helperText={errors?.birthday?.message}
                         onChange={e =>
                           setChange(
                             'birthday',
-                            dateToString(e.target.value, 'YYYY-MM-DDTHH:mm:ss'),
+                            dateToString(e.target.value, 'YYYY-MM-DD'),
                           )
                         }
+                        InputLabelProps=\{{
+                          shrink: true,
+                        }}
                       />
                     </Grid>
                     <Grid item sm={6} xs={12}>
-                      <FormControl variant="outlined" fullWidth margin="normal">
-                        <InputLabel htmlFor="user-gender">
+                      <FormControl
+                        variant="outlined"
+                        fullWidth
+                        size="small"
+                        margin="normal">
+                        <InputLabel id="gender-select-label">
                           {t('user.gender')}
                         </InputLabel>
                         <Select
                           {...register('gender')}
-                          label={t('user.gender')}
                           placeholder={t('user.gender')}
+                          label={t('user.gender')}
                           defaultValue={initialValues.gender}
                           error={!!errors.gender}
                           onChange={value => setChange('gender', value)}
                           renderValue={selected =>
                             !selected
                               ? ''
-                              : t(selected, { defaultValue: selected })
+                              : t(selected, {defaultValue: selected})
                           }
                           inputProps=\{{
                             id: 'user-gender',
@@ -502,110 +518,119 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
                       </FormControl>
                     </Grid>
                     <Grid item md={6} xs={12}>
+                      {/* <p className={styles.label}>{t('user.web')}</p> */}
                       <TextField
                         {...register('web')}
-                        defaultValue={initialValues.web}
                         label={t('user.web')}
+                        defaultValue={initialValues.web}
                         placeholder={'https://'}
                         type="url"
+                        inputProps=\{{maxLength: 255, inputMode: 'url'}}
                         fullWidth
-                        variant="outlined"
+                        size="small"
                         margin="normal"
+                        variant="outlined"
                         error={!!errors.web}
-                        onChange={e => setChange('web', e.target.value)}
+                        autoCorrect="off"
+                        autoCapitalize="on"
+                        spellCheck="false"
+                        helperText={errors?.web?.message}
+                        onChange={e => setChange('web', e.target?.value)}
                       />
                     </Grid>
                     <Grid item sm={6} xs={12}>
+                      {/* <p className={styles.label}>{t('user.about')}</p> */}
                       <TextField
                         {...register('about')}
                         label={t('user.about')}
                         placeholder={t('user.about')}
                         defaultValue={initialValues.about}
                         type="text"
+                        inputProps=\{{maxLength: 1024}}
                         fullWidth
+                        size="small"
+                        margin="normal"
                         multiline
                         minRows={2}
+                        maxRows={8}
                         variant="outlined"
-                        margin="normal"
                         error={!!errors.about}
                         autoCorrect="off"
                         autoCapitalize="on"
                         spellCheck="false"
                         helperText={errors?.about?.message}
-                        onChange={e => setChange('about', e.target.value)}
+                        onChange={e => setChange('about', e.target?.value)}
                       />
                     </Grid>
                     <Grid item md={12} xs={12}>
-                      <Box p={2}>
+                      <div className={styles.padding}>
                         <Upload
                           uploaded={initialValues.avatar}
                           label={t('user.avatar')}
                           multiple={false}
                           onChange={value => setChange('avatar', value)}
                         />
-                      </Box>
+                      </div>
                     </Grid>
                   </Grid>
-                </AccordionDetails>
-              </Accordion>
-            </Grid>
-            {props.allowSignup && (
+                </div>
+              </Grid>
+              {props.allowSignup && (
+                <Box
+                  sx={theme => ({
+                    padding: theme.spacing(2),
+                    display: 'flex',
+                    alignItems: 'center',
+                  })}>
+                  <Checkbox
+                    style=\{{marginRight: '5px'}}
+                    //defaultChecked={false}
+                    color="primary"
+                    checked={!disabled}
+                    onChange={e => {
+                      setDisabled(!e.target.checked);
+                    }}
+                  />
+                  <span className={styles.text}>
+                    {t('agree')}
+                    <Link
+                      target="_blank"
+                      href={`${process?.env?.NEXT_PUBLIC_WEB || ''}/term`}>
+                      {t('Terms of service') + ' '}
+                    </Link>
+                    {t('term')}
+                  </span>
+                </Box>
+              )}
               <Grid
                 container
-                direction="row"
-                alignItems="center"
-                justifyContent="flex-end"
-                className={styles.padding}
-              >
-                <Checkbox
-                  //defaultChecked={false}
-                  checked={!disabled}
-                  onChange={e => {
-                    setDisabled(!e.target.checked);
-                  }}
-                />
-                <span>
-                  {t('agree')}
-                  <Link
-                    target="_blank"
-                    href={`${WEB}/term`}
-                    className={styles.link}
-                  >
-                    {t('privacy policy') + ' '}
-                  </Link>
-                  {t('term')}
-                </span>
+                justifyContent="center"
+                className={styles.padding}>
+                <Button
+                  color="primary"
+                  disabled={isSubmitting || disabled}
+                  onClick={submit}>
+                  {isSubmitting ? t('loading') : t('CreateAnAccount')}
+                </Button>
               </Grid>
-            )}
-            <Grid container justifyContent="center" className={styles.padding}>
-              <Button
-                color="primary"
-                disabled={isSubmitting || disabled}
-                onClick={submit}
-              >
-                {isSubmitting ? t('loading') : t('CreateAnAccount')}
-              </Button>
             </Grid>
-          </Grid>
-        </form>
-        {props.allowSignup && (
-          <Box mt={2} textAlign="right">
-            {
-              <>
-                {t('Already have an account?')}{' '}
-                <Link href="/admin/login" passHref>
-                  {t('Log in')}
-                </Link>
-                .
-              </>
-            }
-          </Box>
-        )}
-        <Box mt={10}>
-          <Copyright />
-        </Box>
-      </Paper>
-    </Container>
+          </form>
+          {props.allowSignup && (
+            <div className={styles.termBox + ' ' + styles.text}>
+              {
+                <>
+                  {t('Already have an account?')}{' '}
+                  <Link href="/admin/login">{t('Log in')}</Link>.
+                </>
+              }
+            </div>
+          )}
+        </div>
+      </Container>
+      <Container maxWidth="lg" sx=\{{paddingBottom: '5px'}}>
+        <Copyright />
+      </Container>
+    </>
   );
 };
 

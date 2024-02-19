@@ -1,8 +1,6 @@
 import config from './common/config.json';
 
 import {
-  USER_KEY,
-  USER_ID,
   USER_TOKEN,
   USER_LANG,
   INIT_DATE,
@@ -16,8 +14,6 @@ import {
 } from 'nuudel-utils';
 
 export {
-  USER_KEY,
-  USER_ID,
   USER_TOKEN,
   USER_LANG,
   INIT_DATE,
@@ -36,3 +32,4 @@ if (!CONF || CONF.minVersion === '1.0.0') {
 
 export const GUEST_USER_ID = '1234567890abcd0987654321';
 export const DARKMODE = 'darkMode';
+export const NOTI_COUNT = 'noti_count';

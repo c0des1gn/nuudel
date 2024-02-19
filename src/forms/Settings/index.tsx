@@ -1,11 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Theme,
-  createStyles,
-  makeStyles,
-  Card,
-  CardContent,
-} from '@material-ui/core';
+import React, {useState, useEffect} from 'react';
+import {Card, CardContent} from '@mui/material';
 import {
   Button,
   TextField,
@@ -15,29 +9,15 @@ import {
   Upload,
   Grid,
   TagsInput,
-  ColorPicker,
 } from 'nuudel-core';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import {useForm} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { useRouter } from 'next/router';
-import { useMutation, useLazyQuery } from '@apollo/react-hooks';
-import { Message, TOGGLE_SNACKBAR_MUTATION } from 'nuudel-core';
-import { UPDATE_SETTINGS_MUTATION, GET_SETTINGS_QUERY } from './Query';
-import { t } from '@Translate';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    switchCont: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    submitButton: {
-      marginTop: theme.spacing(2),
-    },
-  }),
-);
+import {useRouter} from 'next/navigation';
+import {useMutation, useLazyQuery} from '@apollo/react-hooks';
+import {Message, TOGGLE_SNACKBAR_MUTATION} from 'nuudel-core';
+import {UPDATE_SETTINGS_MUTATION, GET_SETTINGS_QUERY} from './Query';
+import {t} from '@Translate';
 
 interface EditSettingsForm {
   active: boolean;
@@ -62,7 +42,7 @@ export const initialValues = {
   site_description: '',
   site_keywords: [],
   posts_per_page: 10,
-  logo: { uri: '' },
+  logo: {uri: ''},
   phone: '',
   location: '',
   web: '',
@@ -84,19 +64,18 @@ const settingsSchema: Yup.SchemaOf<EditSettingsForm> = Yup.object().shape({
   site_description: Yup.string(),
   site_keywords: Yup.array(), //Yup.string().matches( /^[0-9a-zA-Z\s\,]+$/, t('OnlyLatinCharacters')),
   posts_per_page: Yup.number().min(1).max(200),
-  logo: Yup.object().shape({ uri: Yup.string() }),
+  logo: Yup.object().shape({uri: Yup.string()}),
   phone: Yup.string(),
   location: Yup.string(),
-  web: Yup.string(),
+  web: Yup.string().nullable().notRequired(),
   color: Yup.string().nullable(),
 });
 
 interface IProps {
   id: string;
 }
-const EditSettings: React.FC<IProps> = ({ id }) => {
+const EditSettings: React.FC<IProps> = ({id}) => {
   const router = useRouter();
-  const classes = useStyles();
 
   const {
     control,
@@ -106,7 +85,7 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
     setValue,
     watch,
     getValues,
-    formState: { isSubmitting, errors, touchedFields },
+    formState: {isSubmitting, errors, touchedFields},
   } = useForm<EditSettingsForm>({
     resolver: yupResolver(settingsSchema),
     defaultValues: initialValues,
@@ -122,10 +101,7 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
   const [getItem] = useLazyQuery<any, any>(GET_SETTINGS_QUERY, {
     onCompleted: data => {
       if (data) {
-        if (
-          data.getConfig.site_keywords &&
-          data.getConfig.site_keywords instanceof Array
-        ) {
+        if (data.getConfig?.site_keywords instanceof Array) {
           //data.getConfig.site_keywords = data.getConfig.site_keywords.join(', ');
         }
         reset(data.getConfig);
@@ -146,6 +122,7 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
   const [updateSettings] = useMutation<any, any>(UPDATE_SETTINGS_MUTATION, {
     onCompleted: data => {
       router.push('/admin/settings');
+      //console.log('Data ' + JSON.stringify(data));
     },
   });
 
@@ -164,13 +141,12 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
       })
         .then(data => {
           messageMutation({
-            variables: { msg: 'Settings added successfully', type: 'success' },
+            variables: {msg: 'Settings added successfully', type: 'success'},
           });
         })
         .catch(err => {
-          console.log('error of editSettings');
           messageMutation({
-            variables: { msg: err.message, type: 'error' },
+            variables: {msg: err.message, type: 'error'},
           });
         });
       // resetForm(initialValues)
@@ -178,7 +154,7 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
   };
 
   return (
-    <div className={'mainroot'}>
+    <div>
       <Message />
       <form onSubmit={onSubmit}>
         <Card>
@@ -187,8 +163,7 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
               container
               justifyContent="space-around"
               direction="row"
-              spacing={3}
-            >
+              spacing={3}>
               <Grid item md={6} xs={12}>
                 <TextField
                   {...register('minVersion')}
@@ -228,8 +203,8 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
                   fullWidth
                   variant="outlined"
                   margin="normal"
-                  error={!!errors.site_keywords}
-                  onChange={chips => {
+                  error={errors.site_keywords?.message}
+                  onChange={(e, chips) => {
                     if (chips && chips instanceof Array) {
                       setValue('site_keywords', chips);
                     }
@@ -259,8 +234,8 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
                   value={watch('posts_per_page')}
                   label={t('setting.posts_per_page')}
                   placeholder={t('TextFormFieldPlaceholder')}
-                  inputProps={{
-                    pattern: '[1-9]{1}[0-9]{0,}',
+                  inputProps=\{{
+                    pattern: `[1-9]{1}[0-9]{0,}`,
                     inputMode: 'numeric',
                     min: 1,
                   }}
@@ -294,6 +269,7 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
               <Grid item md={6} xs={12}>
                 <TextField
                   {...register('web')}
+                  required={false}
                   value={watch('web')}
                   label={t('setting.web')}
                   placeholder={t('TextFormFieldPlaceholder')}
@@ -329,8 +305,8 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
                   value={watch('phone')}
                   label={t('setting.phone')}
                   placeholder={t('TextFormFieldPlaceholder')}
-                  inputProps={{
-                    pattern: `[0-9\+\-\,\s]*`,
+                  inputProps=\{{
+                    pattern: `[0-9\\-+, ]*`,
                     inputMode: 'tel',
                     maxLength: 12,
                   }}
@@ -349,20 +325,19 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
                   }}
                 />
               </Grid>
-              <Grid item md={6} xs={12} className={classes.switchCont}>
-                <ColorPicker
-                  label={t('color')}
-                  color={watch('color')}
-                  presetColors={[]}
-                  defaultColor={initialValues.color}
-                  showInput={true}
-                  onChange={value => setValue('color', value)}
-                />
+              <Grid
+                item
+                md={6}
+                xs={12}
+                style=\{{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                }}>
                 <Switch
                   {...register('active')}
-                  value={watch('active')}
+                  checked={watch('active') === true}
                   label={t('setting.active')}
-                  defaultChecked={initialValues.active}
+                  //defaultChecked={initialValues.active}
                   onChange={e => setValue('active', e.target.checked)}
                 />
               </Grid>
@@ -377,14 +352,19 @@ const EditSettings: React.FC<IProps> = ({ id }) => {
             </Grid>
           </CardContent>
           <Divider />
-          <Grid item md={12} xs={12} className={classes.submitButton}>
+          <Grid
+            item
+            md={12}
+            xs={12}
+            sx={theme => ({
+              marginTop: theme.spacing(2),
+            })}>
             <Box display="flex" justifyContent="flex-end" p={2}>
               <Button
                 color="primary"
                 variant="contained"
                 disabled={isSubmitting || disabled}
-                type="submit"
-              >
+                type="submit">
                 {isSubmitting ? t('loading') : t('Submit')}
               </Button>
             </Box>

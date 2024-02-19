@@ -27,8 +27,8 @@ const CONFIG_QUERY = `
 const filePath = path.join(__dirname, '../public/manifest.json');
 
 const main = async () => {
-  const { data } = await axios({
-    url: `${process.env.WEB || 'http://localhost:8082'}/${pathname}`,
+  const {data} = await axios({
+    url: `${process?.env?.WEB || 'http://localhost:8080'}/${pathname}`,
     method: 'post',
     data: {
       query: CONFIG_QUERY,
@@ -39,6 +39,7 @@ const main = async () => {
       //'Content-Type': 'application/json'
     },
   });
+
   if (data && data.data) {
     console.log(data);
     fs.writeFileSync(filePath, JSON.stringify(data.data.readConfig, null, 2));
@@ -52,7 +53,7 @@ main()
   .catch(ex => {
     let exit = false;
     try {
-      const cnf = fs.readFileSync(filePath, { encoding: 'utf8' });
+      const cnf = fs.readFileSync(filePath, {encoding: 'utf8'});
       let json = JSON.parse(cnf);
       if (
         json?.base_url !== process?.env?.WEB &&

@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react';
-import { Text, Link } from 'nuudel-core';
-import ArrowRight from '@material-ui/icons/ArrowRight';
+import React, {Fragment} from 'react';
+import {Text, Link} from 'nuudel-core';
+import ArrowRight from '@mui/icons-material/ArrowRight';
 import styles from './styles.module.scss';
 import clsx from 'clsx';
 
@@ -40,7 +40,7 @@ class FlatTable extends React.Component<IFlatTableProps, IFlatTableStates> {
   );
 
   componentDidUpdate(prevProps) {
-    const { data } = this.props;
+    const {data} = this.props;
     if (prevProps.data !== data) {
       this.setState({
         data,
@@ -49,7 +49,7 @@ class FlatTable extends React.Component<IFlatTableProps, IFlatTableStates> {
   }
 
   render() {
-    const { data } = this.state;
+    const {data} = this.state;
     return <div className={styles.container}>{data.map(this._renderItem)}</div>;
   }
 }

@@ -1,36 +1,45 @@
+@import "../bootstrap/functions";
+@import "../bootstrap/variables";
+
+// get breakpoint
+@function get-breakpoint($key: "md", $diff: 0) {
+    @return map-get($container-max-widths, $key)+$diff;
+}
+
+
 $base: 14px;
 
-$fontfamily: 'Montserrat'; //'open sans';
+$fontfamily: 'Open Sans';
 $font: $base;
 $opacity: 0.6;
-$border-radius: 4px;
+$border-radius: 0px;
 $button-border-radius: 999;
 $border-width: 1px;
 $padding: 16px;
 $padding-half: 8px;
 $padding-small: 5px;
 $margingbottom-small: 5px;
-$margingbottom: 16px;
-$margingbottom-big: 25px;
+$margingbottom: 15px;
+$margingbottom-big: 20px;
 // typography
-$h1: $base * 2.5;
-// ~30
-$h2: $base * 2.25;
-// ~27
-$h3: $base * 2;
-// ~24
-$h4: $base * 1.75;
+$h1: $base * 2;
+// ~28
+$h2: $base * 1.5;
 // ~21
-$h5: $base * 1.5;
-// ~18
-$h6: $base * 1.25;
-// ~15
-$big: $base + 2;
+$h3: $base * 1.22;
+// ~17.08
+$h4: $base * 1.08;
+// ~15.12
+$h5: $base;
 // ~14
-$body: $base + 1;
-// ~13
-$small: $base * 0.85;
-// ~10
+$h6: $base * 0.93;
+// ~13.02
+$big: $base + 1;
+// ~16
+$body: $base;
+// ~14
+$small: $base - 2;
+// ~12
 // icons
 $icon: $base;
 $icon-normal: $base * 1.25;

@@ -1,15 +1,9 @@
 import React from 'react';
-import Box from '@material-ui/core/Box';
 
+type Props = {children?: any};
 
-type Props = {};
-
-const LoginLayout: React.FC<Props> = ({ children }) => {
-    return (
-        <Box>
-            { children}
-        </Box>
-    );
+const LoginLayout: React.FC<Props> = ({children}) => {
+  return <>{children}</>;
 };
 
 export default LoginLayout;

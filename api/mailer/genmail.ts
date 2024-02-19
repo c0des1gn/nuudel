@@ -1,12 +1,13 @@
 import Mailgen from 'mailgen';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import { getModelForClass } from '@typegoose/typegoose';
-import { Verify } from '../service/lists/verify.resolver';
-import { t } from '../loc/I18n';
-const { DOMAIN, WEB } = process?.env;
+import {getModelForClass} from '@typegoose/typegoose';
+import {Verify} from '../service/lists/verify.resolver';
+import {t} from '../loc/I18n';
+const {DOMAIN, WEB} = process?.env;
 
 const host = 'https://' + DOMAIN;
+const model = getModelForClass(Verify);
 
 // Configure mailgen by setting a theme and your product info
 const mailGenerator = new Mailgen({
@@ -23,7 +24,6 @@ const mailGenerator = new Mailgen({
 // Prepare email contents
 export const reset = function (name: string, email: string, userId: string) {
   const code = bcrypt.encodeBase64(crypto.pseudoRandomBytes(32), 32);
-  const model = getModelForClass(Verify);
   const Form = new model({
     userId: userId,
     mail: email,
@@ -67,7 +67,6 @@ export const verify = function (
   userId: string = '',
 ) {
   const code = bcrypt.encodeBase64(crypto.pseudoRandomBytes(32), 32);
-  const model = getModelForClass(Verify);
   const Form = new model({
     userId: userId,
     mail: email,
@@ -102,7 +101,7 @@ export const receipt = function (name: string, data: any) {
       signature: false,
       intro: [
         t('Order Placed') + new Date().toISOString().substring(0, 10),
-        t('Shipping Address') + getAdress(address),
+        t('Shipping Address') + getAddress(address),
         t('Order Total') + data.amount,
       ],
       table: {
@@ -135,7 +134,7 @@ export const receipt = function (name: string, data: any) {
   };
 };
 
-const getAdress = (address: any) => {
+const getAddress = (address: any) => {
   return [
     address.address,
     address.address2,
@@ -150,45 +149,11 @@ const getAdress = (address: any) => {
     .join(', ');
 };
 
-export const receiptCargo = function (name: string, data: any) {
-  const product: any = data;
-  return {
-    body: {
-      title: t('cargo title'),
-      signature: false,
-      intro: [
-        t('Invoice') + data.invoice,
-        t('Order') + product._orderNumber,
-        t('Shipping Address') + getAdress(product.address),
-        t('Date') + new Date().toISOString().substring(0, 10),
-        t('Shipping Total') + data.amount,
-      ],
-      table: {
-        data: data.products,
-        columns: {
-          // Optionally, customize the column widths
-          customWidth: {
-            title: '65%',
-            weight: '10%',
-            amount: '25%',
-          },
-          // Optionally, change column text alignment
-          customAlignment: {
-            weight: 'right',
-            amount: 'right',
-          },
-        },
-      },
-      outro: t('outro cargo'),
-    },
-  };
-};
-
 export const Message = function (toMail, title, template) {
   // Message object
   const message = {
     // Comma separated list of recipients
-    to: toMail, //'Damdinsuren <damdinsuren@live.com>'
+    to: toMail,
 
     // Subject of the message
     subject: title,

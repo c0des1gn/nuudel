@@ -1,4 +1,4 @@
-import { prop as Property, getModelForClass } from '@typegoose/typegoose';
+import {prop as Property, getModelForClass} from '@typegoose/typegoose';
 //import { Image } from 'nuudel-main';
 import {
   Field,
@@ -18,15 +18,15 @@ import {
 @ObjectType()
 export class ImageObj {
   @Field()
-  @Property({ required: false })
+  @Property({required: false})
   uri: string;
 
-  @Field(type => Int, { nullable: true })
-  @Property({ required: false })
+  @Field(type => Int, {nullable: true})
+  @Property({required: false})
   width?: number;
 
-  @Field(type => Int, { nullable: true })
-  @Property({ required: false })
+  @Field(type => Int, {nullable: true})
+  @Property({required: false})
   height?: number;
 }
 
@@ -36,9 +36,9 @@ export class ImageInput implements Partial<ImageObj> {
   @Field()
   uri: string;
 
-  @Field(type => Int, { nullable: true })
+  @Field(type => Int, {nullable: true})
   width?: number;
 
-  @Field(type => Int, { nullable: true })
+  @Field(type => Int, {nullable: true})
   height?: number;
 }

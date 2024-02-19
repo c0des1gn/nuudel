@@ -26,4 +26,5 @@ docker push registry.digitalocean.com/your-container-register/nuudel-server:late
 
 # typed-scss-modules
 
+cd node_modules/node-sass && npm rebuild node-sass && cd ../..
 yarn tsm src

@@ -1,17 +1,18 @@
-import { useRouter } from 'next/router';
-import { QueryParamKeys, defaultNumberOfTableRows } from '../constants';
+import {useRouter, useSearchParams, usePathname} from 'next/navigation';
+import {QueryParamKeys, defaultNumberOfTableRows} from '../constants';
 import {
   ConditionArg,
   ProductOrderByInput,
   CoreInput,
 } from '../../graphql/generated/graphql-global-types';
+import {stringify_params} from 'nuudel-utils';
 
 export type TableOrderBy = ProductOrderByInput | CoreInput;
 
 // Converts a union type to an intersectino type: https://stackoverflow.com/questions/50374908/transform-union-type-to-intersection-type
-type UnionToIntersection<U> = (U extends any
-? (k: U) => void
-: never) extends (k: infer I) => void
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I,
+) => void
   ? I
   : never;
 
@@ -43,31 +44,38 @@ export const usePaginationQuery = ({
     seller,
   }: Partial<PaginationQuery>) => void;
 } => {
-  const router = useRouter();
+  const router = useRouter(),
+    pathname = usePathname(),
+    searchParams = useSearchParams();
+  let query: any = {};
+  searchParams.forEach((value: string, key: string) => {
+    query[key] = value;
+  });
+
   const page =
-    parseInt(router.query[QueryParamKeys.PAGE] as string, 10) || defaultPage;
+    parseInt(query[QueryParamKeys.PAGE] as string, 10) || defaultPage;
 
   const pageSize =
-    parseInt(router.query[QueryParamKeys.PAGE_SIZE] as string, 10) ||
-    defaultPageSize;
+    parseInt(query[QueryParamKeys.PAGE_SIZE] as string, 10) || defaultPageSize;
   const orderBy =
-    (router.query[QueryParamKeys.ORDER_BY] as SortByQueryParamKeys) ||
-    defaultOrderBy;
+    (query[QueryParamKeys.ORDER_BY] as SortByQueryParamKeys) || defaultOrderBy;
 
   const condition =
-    (router.query[QueryParamKeys.CONDITION] as string) || defaultCondition;
+    (query[QueryParamKeys.CONDITION] as string) || defaultCondition;
 
-  const seller =
-    (router.query[QueryParamKeys.SELLER] as string) || defaultSeller;
+  const seller = (query[QueryParamKeys.SELLER] as string) || defaultSeller;
 
   const setQuery = (newQuery: Partial<PaginationQuery>): void => {
-    router.push({
-      pathname: router.pathname,
-      query: {
-        ...router.query,
-        ...newQuery,
-      },
-    });
+    router.push(
+      pathname +
+        stringify_params(
+          {
+            ...query,
+            ...newQuery,
+          },
+          '?',
+        ),
+    );
   };
 
   return {

@@ -8,7 +8,7 @@ const translationGetters = {
 };
 const defaultLocale = 'mn-MN';
 
-const translate = (key: string, options?) => I8.t(key, options); //memoize((key, config) => I8.t(key, config), (key, config) => (config ? key + JSON.stringify(config) : key));
+const translate = (key: string, options?): string => I8.t(key, options); //memoize((key, config) => I8.t(key, config), (key, config) => (config ? key + JSON.stringify(config) : key));
 
 if (!I8.isInitialized) {
   I8.init({
@@ -17,19 +17,19 @@ if (!I8.isInitialized) {
     ns: ['trans'],
     defaultNS: 'trans',
     resources: {
-      ['mn-MN']: { trans: translationGetters['mn']() },
-      ['en-US']: { trans: translationGetters['en']() },
+      ['mn-MN']: {trans: translationGetters['mn']()},
+      ['en-US']: {trans: translationGetters['en']()},
     },
     keySeparator: false,
     interpolation: {
       escapeValue: false,
       formatSeparator: ',',
     },
-    parseMissingKeyHandler: function(key) {
+    parseMissingKeyHandler: function (key) {
       return !key || typeof key !== 'string' ? '' : key.split('.').pop() + '!';
     },
   });
 }
 
-export { translate as t, defaultLocale };
+export {translate as t, defaultLocale};
 export default I8;

@@ -1,4 +1,4 @@
-import { INotificationMessages } from 'nuudel-core';
+import {INotificationMessages} from 'nuudel-core';
 
 export interface IListFormState {
   loading: boolean;
@@ -23,7 +23,7 @@ export interface IListFormState {
   pageSizes: number[];
   currentPage: number;
   hiddenColumnNames: string[];
-  fieldErrors: { [fieldName: string]: string };
+  fieldErrors: {[fieldName: string]: string};
   showUnsupportedFields?: boolean;
   selection: (string | number)[];
   dialog: string;
@@ -37,4 +37,5 @@ export interface IListFormState {
   exporting: boolean;
   dialogPrint: any[];
   totalSummaryItems: any[];
+  duplicating?: boolean;
 }

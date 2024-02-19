@@ -1,7 +1,7 @@
-version: '3'
+version: '3.5'
 
 services:
-  magicshop-server:
+  nuudel-server:
     build:
       context: ./
       dockerfile: Dockerfile

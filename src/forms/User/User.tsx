@@ -1,7 +1,7 @@
-import React, { FC } from 'react';
-import { Table } from '@Components';
-import { ICurrentUser } from '@Interfaces';
-//import { useRouter } from 'next/router';
+import React, {FC} from 'react';
+import {Table} from '@Components';
+import {ICurrentUser} from 'nuudel-core';
+//import {useParams, usePathname} from 'next/navigation';
 
 interface IUserProps {
   error?: string;
@@ -9,7 +9,7 @@ interface IUserProps {
 }
 
 export const Users: FC<IUserProps> = (props: IUserProps) => {
-  //const router = useRouter();
+  //const query = useParams(),pathname= usePathname();
   const _dataGridProps: any = {
     ...props,
     listname: 'User',
@@ -18,8 +18,8 @@ export const Users: FC<IUserProps> = (props: IUserProps) => {
     <div>
       <Table
         {..._dataGridProps}
-        //pathname={router.pathname}
-        //query={router.query}
+        //pathname={pathname}
+        //query={query}
         basepath={'/admin/signup'}
         IsDlg={'0'}
       />
