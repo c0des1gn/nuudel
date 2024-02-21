@@ -231,11 +231,11 @@ const SignUpForm: FunctionComponent<IProps> = (props: IProps) => {
               direction="row"
               spacing={2}>
               <Grid item sm={6} xs={12}>
-                {/* <p className={styles.label}>{t('Fistname')}</p> */}
+                {/* <p className={styles.label}>{t('Firstname')}</p> */}
                 <TextField
                   {...register('firstname')}
-                  label={t('Fistname')}
-                  placeholder={t('Fistname')}
+                  label={t('Firstname')}
+                  placeholder={t('Firstname')}
                   defaultValue={initialValues.firstname}
                   type="text"
                   inputProps=\{{maxLength: 60}}

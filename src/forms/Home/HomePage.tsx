@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Text, Container, Link, Image} from 'nuudel-core';
 import {t} from '@Translate';
 import styles from './styles.module.scss';
@@ -14,6 +14,13 @@ interface ITrackingProps {
 }
 
 export const HomePage = (props: ITrackingProps) => {
+  const [token, setToken] = useState<string>('');
+  useEffect(() => {
+    let tkn = UI.getItem(USER_TOKEN);
+    if (tkn) {
+      setToken(tkn || '');
+    }
+  }, []);
   return (
     <div className={styles.root}>
       <div className={styles.header}>
@@ -43,7 +50,7 @@ export const HomePage = (props: ITrackingProps) => {
           </div>
           <div className={styles.contact}>
             <PersonIcon className={styles.contact} fontSize="small" />
-            {!UI.getItem(USER_TOKEN) ? (
+            {!token ? (
               <span>
                 <Link href="/admin/login">{t('Login')}</Link>
               </span>

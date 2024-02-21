@@ -8,7 +8,7 @@
     "img": "Зураг",
     "hasChild": "Has Child"
   },
- 
+
   "user": {
     "firstname": "Нэр",
     "lastname": "Овог",
@@ -239,7 +239,7 @@
   "Username": "Хэрэглэгчийн нэр",
   "Email": "Имэйл",
   "ConfirmEmail": "Имэйл давтах",
-  "Fistname": "Нэр",
+  "Firstname": "Нэр",
   "Lastname": "Овог",
   "CreateAnAccount": "Бүртгүүлэх",
   "agree": "Би ",
@@ -312,7 +312,7 @@
   "Medium": "Дунд",
   "Large": "Том",
   "Logout": "гарах",
-  "Profile settings": "Хувийн тохиргоо",
+  "Profile": "Хувийн тохиргоо",
   "Add new category": "Шинэ Ангилал нэмэх",
   "rowsPerPage": "Нэг хуудаст байх мөр:",
   "showAll": "Бүгд",

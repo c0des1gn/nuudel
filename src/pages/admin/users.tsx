@@ -1,5 +1,5 @@
 import React from 'react';
-import User from '../../forms/User/User';
+import User from '../../forms/User/Users';
 import {PageProps} from '../_app';
 import {ICurrentUser} from '@Interfaces';
 

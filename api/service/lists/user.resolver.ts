@@ -1066,34 +1066,6 @@ export class UserResolver extends UserBaseResolver {
     throw new Error('not logged'); //new ForbiddenError('not logged');
   }
 
-  @Authorized('Admin', 'Manager')
-  @Query(returns => CurrentUser, {name: `userInfo`, nullable: true})
-  async userInfo(
-    @Arg('_id', type => ObjectId) _id: string,
-    @Ctx() ctx: IContext,
-  ): Promise<CurrentUser> {
-    if (!!_id && _id !== GUEST_USER_ID) {
-      let r: any = await this.Model.findById(_id).select('-password');
-      if (r?._id) {
-        return {
-          _id: r._id,
-          email: r.email,
-          username: r.username,
-          firstname: r.firstname,
-          lastname: r.lastname,
-          type: r.type,
-          _verifiedEmail: r._verifiedEmail,
-          avatar: r.avatar,
-          permission: [],
-          phone: r.phone,
-          mobile: r.mobile,
-          settings: r.settings,
-        };
-      }
-    }
-    throw new Error('id does not exist');
-  }
-
   private randomString(n: number, r = '') {
     let l: number;
     while (n--)

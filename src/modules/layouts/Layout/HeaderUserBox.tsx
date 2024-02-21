@@ -143,7 +143,7 @@ export default function HeaderUserbox() {
             <Divider className="w-100" />
 
             <ListItem component="a" href="/admin/profile">
-              {t('Profile settings')}
+              {t('Profile')}
             </ListItem>
 
             <Divider className="w-100" />

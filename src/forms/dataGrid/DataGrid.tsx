@@ -61,7 +61,6 @@ import {
 } from 'nuudel-core';
 import {MessageBarType} from 'nuudel-core';
 import {DataProvider, IDataProvider, ListFormService} from 'nuudel-core';
-//import {ListFormService} from '../../services/ListFormService';
 import {dateToString, getPath, dateToISOString, getAddress} from 'nuudel-utils';
 import {t} from '@Translate';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
@@ -203,7 +202,7 @@ class DataGrid extends React.Component<
     'User',
     'Post',
     'Page',
-    'Slide',
+    'Test',
   ];
 
   constructor(props: IDataGridProps & WithRouterProps) {
@@ -258,8 +257,7 @@ class DataGrid extends React.Component<
       searchValue: '',
       anchorEl: null,
       next: false,
-      basepath:
-        this.props.basepath || getPath(props.listname, this.dialogLists),
+      basepath: props.basepath || getPath(props.listname, this.dialogLists),
       spining: false,
       linkTitle: 'title',
       exporting: false,
@@ -791,6 +789,11 @@ class DataGrid extends React.Component<
   public onExport = (): void => {
     this.setState({exporting: true});
     if (this._isConfigurationValid) {
+      if (this.state.selection.length > 0) {
+        this.formatDataExcel(
+          this.state.selection.map(index => this.state.data[index]),
+        );
+      } else {
       this._dataProvider
         .readListData(this.searchAssign())
         .then(
@@ -807,6 +810,7 @@ class DataGrid extends React.Component<
           this.showToast(t('Excel export failed'), 'error');
           this.setState({exporting: false});
         });
+      }
     }
   };
 
@@ -1116,7 +1120,6 @@ class DataGrid extends React.Component<
                     <IFrame
                       url={`${this.state.drawer}?IsDlg=1`}
                       hidden={!this.state.drawer}
-                      //src={'https://www.youtube.com/embed/YJGCZCaIZkQ'}
                       height="100%"
                       loading="eager"
                       frameBorder={0}
@@ -1145,7 +1148,7 @@ class DataGrid extends React.Component<
                   this.handleClose();
                 }}
               />
-              {!['Order', 'Invoice', 'Cart', 'Featured', 'Recentview'].includes(
+              {!['Order', 'Invoice'].includes(
                 this.props.listname,
               ) && (
                 <Button

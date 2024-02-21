@@ -199,19 +199,6 @@ const bootstrap = async () => {
           });
       }
 
-      app.register(oauth2, {
-        name: 'facebookOAuth2',
-        scope: ['public_profile', 'email'], //'user_birthday'
-        credentials: {
-          client: {
-            id: FB_CLIENT_ID,
-            secret: FB_CLIENT_SECRET,
-          },
-          auth: oauthPlugin.FACEBOOK_CONFIGURATION,
-        },
-        startRedirectPath: '/login/facebook',
-        callbackUri: `${WEB}/login/facebook/callback`,
-      });
       /*
       app.register(oauth2, {
         name: 'appleOAuth2',
@@ -228,24 +215,6 @@ const bootstrap = async () => {
         startRedirectPath: '/login/apple',
         callbackUri: `${WEB}/login/apple/callback`,
       }); // */
-
-      app.register(oauth2, {
-        name: 'googleOAuth2',
-        scope: [
-          'profile', //'https://www.googleapis.com/auth/userinfo.profile',
-          'email', //'https://www.googleapis.com/auth/userinfo.email',
-        ],
-        credentials: {
-          client: {
-            id: GOOGLE_CLIENT_ID,
-            secret: GOOGLE_CLIENT_SECRET,
-          },
-          auth: oauthPlugin.GOOGLE_CONFIGURATION,
-        },
-        startRedirectPath: '/login/google',
-        callbackUri: `${WEB}/login/google/callback`,
-        //callbackUriParams: { access_type: 'online' }, // offline
-      });
 
       /*
       app.register(oauth2, {

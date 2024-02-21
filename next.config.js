@@ -11,7 +11,7 @@ let nextConfig = {
   poweredByHeader: false,
   trailingSlash: false,
   rewrites: () => [
-    { source: '/list', destination: '/lists' },
+    {source: '/list', destination: '/lists'},
     {
       source: '/admin/page/:id/:path*',
       destination: '/admin/post/:id/?post_type=page',
@@ -49,7 +49,7 @@ let nextConfig = {
     NEXT_PUBLIC_FB_APPID: process.env.FB_CLIENT_ID,
     NEXT_PUBLIC_HOST: process.env.HOST,
     NEXT_PUBLIC_WEB: process.env.WEB,
-    NEXT_PUBLIC_PORT: process.env.PORT,
+    NEXT_PUBLIC_PORT: process.env.NEXT_PUBLIC_PORT,
     NEXT_PUBLIC_DOMAIN: process.env.DOMAIN,
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     NEXT_PUBLIC_OBJECT_STORAGE_BUCKET:

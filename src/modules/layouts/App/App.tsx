@@ -59,14 +59,6 @@ const App = ({
     } catch {
       window.location.href = '/admin/login';
     }
-  } else if (
-    userId &&
-    !unauthenticatedPathnames.includes(pathname) &&
-    !isServer &&
-    pathname?.startsWith('/admin') &&
-    tokenObj(UI.getItem(USER_TOKEN)).type === 'User'
-  ) {
-    router.replace('/', {scroll: true});
   }
 
   const isAnUnauthenticatedPage =
