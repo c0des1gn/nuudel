@@ -16,6 +16,6 @@ export enum pageSizes {
 export const pageSizesArray: {
   key: string;
   value: string;
-}[] = Object.entries(pageSizes).map(([key, value]) => ({ key, value }));
+}[] = Object.entries(pageSizes).map(([key, value]) => ({key, value}));
 
 export const defaultNumberOfTableRows = parseInt(pageSizes.level1, 10);

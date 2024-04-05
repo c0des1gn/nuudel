@@ -22,7 +22,7 @@ export interface ISignUpFormValues {
 export const userType: string[] = [
   'Admin',
   'User',
-  'Seller',
+  'Viewer',
   'Manager',
   //'Guest',
 ];

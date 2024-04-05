@@ -7,7 +7,7 @@ export const UPDATE_USER_MUTATION = gql`
     $lastname: String!
     $phone: String!
     $mobile: String!
-    $birthday: DateTimeISO!
+    $birthday: DateTime!
     $gender: Sex = null
     $about: Note = ""
     $avatar: ImageInput

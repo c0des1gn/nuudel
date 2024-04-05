@@ -418,7 +418,7 @@ export function BaseResolver<T extends CoreType, P extends Object>(
       switch (usertype) {
         case 'Manager':
         case 'User':
-        case 'Seller':
+        case 'Viewer':
         case 'Guest':
           break;
         default:
